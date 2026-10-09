@@ -92,8 +92,12 @@ fi
 # ---- good signature -----------------------------------------------------------
 run --version v1 --plain --yes
 [ $RC = 0 ]; check "good signature: exit 0" $? "rc=$RC $OUT"
-case $OUT in *"STUB-RAN args: --payload "*" --plain --yes"*) r=0 ;; *) r=1 ;; esac
-check "good signature: exec with --payload and passthrough args" $r "$OUT"
+case $OUT in *"STUB-RAN args: --payload "*" --plain --yes install"*) r=0 ;; *) r=1 ;; esac
+check "good signature: exec with --payload, passthrough args and the default command install" $r "$OUT"
+run --version v1 repair
+case $OUT in *"STUB-RAN args: --payload "*"/payload repair"*) r=0 ;; *) r=1 ;; esac
+case $OUT in *"repair install"*|*"install repair"*) r=1 ;; esac
+check "an explicit command is kept and install is not added" $r "$OUT"
 case $OUT in *"STUB-STDIN: stdin-from-tty"*) r=0 ;; *) r=1 ;; esac
 check "stdin is the tty, not the pipe" $r "$OUT"
 case $OUT in *"STUB-PAYLOAD-OK: bin installer src"*) r=0 ;; *) r=1 ;; esac

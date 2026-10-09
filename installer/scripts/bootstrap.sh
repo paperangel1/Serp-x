@@ -65,6 +65,13 @@ TTY=${SERP_TTY:-/dev/tty}
 tty_ok=0
 if { : <"$TTY"; } 2>/dev/null; then tty_ok=1; fi
 
+# no command given (the usual `curl | bash`): start the installer's default, `install`
+has_cmd=0
+for a in ${args[@]+"${args[@]}"}; do
+	case $a in install|repair|modules|uninstall|backup|reconcile|export-config) has_cmd=1 ;; esac
+done
+[ $has_cmd = 1 ] || args+=(install)
+
 run_installer() { # run_installer <bin> <payload-dir>
 	if [ $tty_ok = 1 ]; then
 		exec "$1" --payload "$2" ${args[@]+"${args[@]}"} <"$TTY"

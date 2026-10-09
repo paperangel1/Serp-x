@@ -1,0 +1,172 @@
+{
+ "format": 1,
+ "id": "gallery-focus-25",
+ "name": "Фокус 25 минут",
+ "description": "Таймер и «не беспокоить»; в конце уведомление о перерыве.",
+ "enabled": false,
+ "nodes": [
+  {
+   "id": "n1",
+   "type": "event.manual@1",
+   "pos": [
+    0,
+    100
+   ],
+   "props": {}
+  },
+  {
+   "id": "n2",
+   "type": "action.shell.dnd@1",
+   "pos": [
+    340,
+    100
+   ],
+   "props": {
+    "enabled": true,
+    "restore": "end"
+   }
+  },
+  {
+   "id": "n3",
+   "type": "logic.delay@1",
+   "pos": [
+    680,
+    100
+   ],
+   "props": {
+    "seconds": 1500
+   }
+  },
+  {
+   "id": "n4",
+   "type": "action.notify@1",
+   "pos": [
+    1020,
+    100
+   ],
+   "props": {
+    "title": "Перерыв",
+    "body": "25 минут прошло — отдохните 5 минут."
+   }
+  }
+ ],
+ "wires": [
+  {
+   "from": [
+    "n1",
+    "exec"
+   ],
+   "to": [
+    "n2",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n2",
+    "exec_out"
+   ],
+   "to": [
+    "n3",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n3",
+    "exec_out"
+   ],
+   "to": [
+    "n4",
+    "exec_in"
+   ]
+  }
+ ],
+ "variables": [],
+ "comments": [
+  {
+   "id": "c1",
+   "x": 0,
+   "y": -100,
+   "w": 300,
+   "h": 100,
+   "title": {
+    "ru": "Запуск",
+    "en": "Start"
+   },
+   "text": {
+    "ru": "Вручную или по хоткею.",
+    "en": "Manually or by a hotkey."
+   },
+   "color": "#f9e2af"
+  },
+  {
+   "id": "c2",
+   "x": 340,
+   "y": -100,
+   "w": 300,
+   "h": 100,
+   "title": {
+    "ru": "Тишина",
+    "en": "Quiet"
+   },
+   "text": {
+    "ru": "«Не беспокоить» включается и сам откатится в конце команды (restore: end).",
+    "en": "Do-not-disturb turns on and rolls back by itself when the command ends (restore: end)."
+   },
+   "color": "#f9e2af"
+  },
+  {
+   "id": "c3",
+   "x": 680,
+   "y": -100,
+   "w": 300,
+   "h": 100,
+   "title": {
+    "ru": "Таймер",
+    "en": "Timer"
+   },
+   "text": {
+    "ru": "«Задержка» ждёт 1500 секунд = 25 минут. Команду можно отменить.",
+    "en": "«Delay» waits 1500 seconds = 25 minutes. You can cancel the command."
+   },
+   "color": "#f9e2af"
+  },
+  {
+   "id": "c4",
+   "x": 1020,
+   "y": -100,
+   "w": 300,
+   "h": 100,
+   "title": {
+    "ru": "Перерыв",
+    "en": "Break"
+   },
+   "text": {
+    "ru": "Уведомление о перерыве.",
+    "en": "The break notification."
+   },
+   "color": "#f9e2af"
+  }
+ ],
+ "gallery": {
+  "name": {
+   "ru": "Фокус 25 минут",
+   "en": "Focus 25 minutes"
+  },
+  "description": {
+   "ru": "Таймер и «не беспокоить»; в конце уведомление о перерыве.",
+   "en": "A timer plus do-not-disturb; a «break» notification at the end."
+  },
+  "category": "windows",
+  "tags": {
+   "ru": [
+    "уведомления"
+   ],
+   "en": [
+    "notifications"
+   ]
+  },
+  "packages": []
+ }
+}

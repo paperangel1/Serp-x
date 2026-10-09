@@ -1,0 +1,33 @@
+{
+  "format": 1,
+  "steps": [
+    {"id": "create", "target": "new_button", "advance": "command_created",
+     "title": {"ru": "Создайте команду", "en": "Create a command"},
+     "text": {"ru": "Нажмите «Новая команда», назовите её «Первая» и подтвердите. Откроется редактор с одним узлом.",
+              "en": "Press «New command», name it «First» and confirm. The editor opens with one node."}},
+    {"id": "event", "target": "canvas", "advance": "next",
+     "title": {"ru": "Событие запускает команду", "en": "An event starts a command"},
+     "text": {"ru": "Узел «Вручную» уже на холсте: это событие. Любая команда начинается с события. Колесо мыши — масштаб, перетаскивание фона — сдвиг.",
+              "en": "The «Manual» node is already on the canvas: it is an event. Every command begins with an event. Mouse wheel zooms, dragging the background pans."}},
+    {"id": "action", "target": "canvas", "advance": "node_added:action.notify",
+     "title": {"ru": "Добавьте действие", "en": "Add an action"},
+     "text": {"ru": "Дважды щёлкните по пустому месту холста: откроется поиск узлов. Введите «уведомление» (ищет по названию и словам) и нажмите ↵.",
+              "en": "Double-click an empty spot of the canvas to open the node search. Type «notification» (it searches names and keywords) and press ↵."}},
+    {"id": "wire", "target": "canvas", "advance": "wire_added:exec",
+     "title": {"ru": "Соедините узлы", "en": "Connect the nodes"},
+     "text": {"ru": "Потяните провод от белого ромбика «Выполнить» первого узла к ромбику входа второго. Так вы задаёте порядок: сначала это, потом то.",
+              "en": "Drag a wire from the white «Run» diamond of the first node to the input diamond of the second. That sets the order: this first, then that."}},
+    {"id": "data", "target": "canvas", "advance": "wire_added:data",
+     "title": {"ru": "Добавьте данные", "en": "Add data"},
+     "text": {"ru": "Цветные кружки — данные. Добавьте узел «Склеить текст» и соедините его цветной выход с входом «Заголовок» уведомления: провода соединяют только кружки одного цвета (типа).",
+              "en": "Coloured circles are data. Add a «Concatenate» node and connect its coloured output to the «Title» input of the notification: wires join only circles of the same colour (type)."}},
+    {"id": "rehearse", "target": "debug_button", "advance": "rehearsed",
+     "title": {"ru": "Проведите репетицию", "en": "Run a rehearsal"},
+     "text": {"ru": "Нажмите «Отладка», затем «Репетиция»: команда выполнится «понарошку», ничего не изменится, а вы увидите шаги и значения.",
+              "en": "Press «Debug», then «Rehearse»: the command runs «for pretend», nothing changes, and you see the steps and values."}},
+    {"id": "save", "target": "save_button", "advance": "saved",
+     "title": {"ru": "Сохраните", "en": "Save"},
+     "text": {"ru": "Нажмите «Сохранить» (или Ctrl+S). Готово: теперь команду можно запускать из палитры и по хоткею. Больше примеров ждёт в галерее.",
+              "en": "Press «Save» (or Ctrl+S). Done: you can now run the command from the palette or a hotkey. More examples wait in the gallery."}}
+  ]
+}

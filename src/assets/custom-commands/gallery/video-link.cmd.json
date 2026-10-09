@@ -1,0 +1,368 @@
+{
+ "format": 1,
+ "id": "gallery-video-link",
+ "name": "Видео по ссылке",
+ "description": "Скопировали ссылку на YouTube: команда предложит скачать видео или звук через yt-dlp.",
+ "enabled": false,
+ "nodes": [
+  {
+   "id": "n1",
+   "type": "event.clipboard.link@1",
+   "pos": [
+    0,
+    100
+   ],
+   "props": {
+    "domains": "youtube.com, youtu.be"
+   }
+  },
+  {
+   "id": "n2",
+   "type": "logic.ask@1",
+   "pos": [
+    340,
+    100
+   ],
+   "props": {
+    "mode": "choice",
+    "title": "Скачать это видео?",
+    "options": [
+     "Видео 1080p",
+     "Только звук",
+     "Отмена"
+    ]
+   }
+  },
+  {
+   "id": "n3",
+   "type": "data.compare_number@1",
+   "pos": [
+    680,
+    380
+   ],
+   "props": {
+    "op": "==",
+    "b": 0
+   }
+  },
+  {
+   "id": "n4",
+   "type": "logic.if@1",
+   "pos": [
+    680,
+    100
+   ],
+   "props": {}
+  },
+  {
+   "id": "n5",
+   "type": "action.shell@1",
+   "pos": [
+    1020,
+    100
+   ],
+   "props": {
+    "command": "yt-dlp -f 'bv*[height<=1080]+ba/b' --no-playlist -P \"$HOME/Videos\" -- \"$1\"",
+    "timeout": 300
+   }
+  },
+  {
+   "id": "n6",
+   "type": "data.compare_number@1",
+   "pos": [
+    1020,
+    640
+   ],
+   "props": {
+    "op": "==",
+    "b": 1
+   }
+  },
+  {
+   "id": "n7",
+   "type": "logic.if@1",
+   "pos": [
+    1020,
+    380
+   ],
+   "props": {}
+  },
+  {
+   "id": "n8",
+   "type": "action.shell@1",
+   "pos": [
+    1360,
+    380
+   ],
+   "props": {
+    "command": "yt-dlp -x --audio-format mp3 --no-playlist -P \"$HOME/Music\" -- \"$1\"",
+    "timeout": 300
+   }
+  },
+  {
+   "id": "n9",
+   "type": "ui.show_result@1",
+   "pos": [
+    1700,
+    100
+   ],
+   "props": {
+    "title": "Готово"
+   }
+  },
+  {
+   "id": "n10",
+   "type": "ui.show_result@1",
+   "pos": [
+    1700,
+    380
+   ],
+   "props": {
+    "title": "Готово"
+   }
+  }
+ ],
+ "wires": [
+  {
+   "from": [
+    "n1",
+    "exec"
+   ],
+   "to": [
+    "n2",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n2",
+    "exec_out"
+   ],
+   "to": [
+    "n4",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n2",
+    "index"
+   ],
+   "to": [
+    "n3",
+    "a"
+   ]
+  },
+  {
+   "from": [
+    "n3",
+    "result"
+   ],
+   "to": [
+    "n4",
+    "condition"
+   ]
+  },
+  {
+   "from": [
+    "n4",
+    "then"
+   ],
+   "to": [
+    "n5",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n4",
+    "else"
+   ],
+   "to": [
+    "n7",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n2",
+    "index"
+   ],
+   "to": [
+    "n6",
+    "a"
+   ]
+  },
+  {
+   "from": [
+    "n6",
+    "result"
+   ],
+   "to": [
+    "n7",
+    "condition"
+   ]
+  },
+  {
+   "from": [
+    "n7",
+    "then"
+   ],
+   "to": [
+    "n8",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n1",
+    "url"
+   ],
+   "to": [
+    "n5",
+    "arg"
+   ]
+  },
+  {
+   "from": [
+    "n1",
+    "url"
+   ],
+   "to": [
+    "n8",
+    "arg"
+   ]
+  },
+  {
+   "from": [
+    "n5",
+    "exec_out"
+   ],
+   "to": [
+    "n9",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n5",
+    "stdout"
+   ],
+   "to": [
+    "n9",
+    "value"
+   ]
+  },
+  {
+   "from": [
+    "n8",
+    "exec_out"
+   ],
+   "to": [
+    "n10",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n8",
+    "stdout"
+   ],
+   "to": [
+    "n10",
+    "value"
+   ]
+  }
+ ],
+ "variables": [],
+ "comments": [
+  {
+   "id": "c1",
+   "x": 0,
+   "y": -100,
+   "w": 300,
+   "h": 100,
+   "title": {
+    "ru": "Событие",
+    "en": "Event"
+   },
+   "text": {
+    "ru": "Срабатывает, когда в буфер скопирована ссылка на YouTube.",
+    "en": "Fires when a YouTube link is copied."
+   },
+   "color": "#f9e2af"
+  },
+  {
+   "id": "c2",
+   "x": 340,
+   "y": -100,
+   "w": 300,
+   "h": 100,
+   "title": {
+    "ru": "Вопрос",
+    "en": "Question"
+   },
+   "text": {
+    "ru": "«Спросить меня» показывает окно с вариантами. «Отмена» ничего не запускает.",
+    "en": "«Ask me» shows a window with choices. «Cancel» runs nothing."
+   },
+   "color": "#f9e2af"
+  },
+  {
+   "id": "c3",
+   "x": 680,
+   "y": -100,
+   "w": 300,
+   "h": 100,
+   "title": {
+    "ru": "Выбор",
+    "en": "Choice"
+   },
+   "text": {
+    "ru": "Номер ответа сравнивается с 0 (видео) и 1 (звук).",
+    "en": "The answer index is compared with 0 (video) and 1 (audio)."
+   },
+   "color": "#f9e2af"
+  },
+  {
+   "id": "c4",
+   "x": 1020,
+   "y": -100,
+   "w": 640,
+   "h": 100,
+   "title": {
+    "ru": "yt-dlp",
+    "en": "yt-dlp"
+   },
+   "text": {
+    "ru": "Ссылка передаётся скрипту как $1, а не вставляется в текст команды: так безопаснее.",
+    "en": "The link is passed to the script as $1 instead of being pasted into the command text: safer."
+   },
+   "color": "#f9e2af"
+  }
+ ],
+ "gallery": {
+  "name": {
+   "ru": "Видео по ссылке",
+   "en": "Video by link"
+  },
+  "description": {
+   "ru": "Скопировали ссылку на YouTube: команда предложит скачать видео или звук через yt-dlp.",
+   "en": "Copy a YouTube link and the command offers to download the video or the audio with yt-dlp."
+  },
+  "category": "files",
+  "tags": {
+   "ru": [
+    "скрипт",
+    "буфер"
+   ],
+   "en": [
+    "script",
+    "clipboard"
+   ]
+  },
+  "packages": [
+   "yt-dlp"
+  ]
+ }
+}

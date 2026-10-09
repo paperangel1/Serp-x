@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Name=Команды
+Name[en]=Commands
+GenericName=Автоматизации Serpantinum
+GenericName[en]=Serpantinum automations
+Comment=Окно приложения «Команды»: список команд, галерея и редактор
+Comment[en]=Commands app window: command list, gallery and editor
+Exec="@HOME@/.local/bin/serpantinum" ipc call xcmd open
+Icon=system-run
+Terminal=false
+Categories=Utility;Settings;
+Keywords=команды;автоматизация;commands;automation;serpantinum;
+StartupNotify=false

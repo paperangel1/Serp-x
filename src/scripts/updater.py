@@ -81,6 +81,10 @@ except Exception:
     pass
 
 local_ver = get_local_ver()
+if os.path.isfile(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "bin", "serpantinum-x")):  # serp-x hook
+    # updates come from `serpantinum-x update` (XUpdate), never from upstream GitHub
+    print(json.dumps({"local": local_ver, "remote": local_ver, "has_update": False, "last_notified": get_last_notified()}))
+    sys.exit(0)
 remote_ver = ""
 
 try:

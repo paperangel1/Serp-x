@@ -1,0 +1,32 @@
+* Serpantinum - serp-x build   installer v2.2.4-s3                             language  RU  EN   F2
+                                                                                                    
+* Check  -- o Mode -- o Modules -- o Settings -- o Summary -- o Install -- o Done                   
+                                                                                                    
+                            Serpantinum build installer                                             
+S E R P - X                 Serpantinum shell (ilyamiro) + serp-x build modules: hotkeys, updates,  
+                            VPN, servers, Commands.                                                 
+                                                                                                    
+┌─ Language / Язык ────────────────┐  ┌─ System check ─────────────────────────────────────────────┐
+│                                  │  │                                                            │
+│ ( ) Русский                      │  │ + Arch Linux (arch), pacman found                          │
+│ (*) English                      │  │ + Running as a normal user                                 │
+│                                  │  │ + sudo works                                               │
+│ F2 - change any time             │  │ + Network works, about 11.4 MB/s                           │
+└──────────────────────────────────┘  │ + Enough disk space (need about 4096 MiB)                  │
+┌─ What next ──────────────────────┐  │ + RAM 7800 MiB                                             │
+│                                  │  │ ! NVIDIA found: the nvidia module is suggested (driver,~   │
+│ 1. choose a mode                 │  │ o No AUR helper, yay-bin will be installed                 │
+│ 2. pick the modules              │  │ + Terminal xterm-256color, glyphs: unicode, colors: 256    │
+│ 3. answer the questions (all     │  │ * serp-x installation 2.2.4-s2 found                       │
+│    before the start)             │  │                                                            │
+│ 4. go and have tea: the install  │  │ Result: ready to go - warnings: 1                          │
+│    runs on its own, ~10-20       │  │                                                            │
+│    minutes                       │  │                                                            │
+│                                  │  │                                                            │
+│                                  │  │                                                            │
+│                                  │  │                                                            │
+│                                  │  │                                                            │
+│                                  │  │                                                            │
+│                                  │  │                                                            │
+└──────────────────────────────────┘  └────────────────────────────────────────────────────────────┘
+ Enter  continue   F2  language / язык   L  details   q  quit                                       

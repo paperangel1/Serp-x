@@ -1,0 +1,38 @@
+#!/bin/sh
+# Root-side allowlist runner. Only executes regular files that live in the root-owned commands.d directory,
+# are owned by root and are not writable by group/others. One argument: the command token. No other input is used.
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+export PATH
+umask 077
+
+DIR=${SERP_COMMANDS_DIR:-/etc/serpantinum/commands.d}
+CONF=${SERP_CONF:-/etc/serpantinum/serp.conf}
+TIMEOUT=${SERP_TIMEOUT:-60}
+[ -r "$CONF" ] && . "$CONF"
+export NODE_CONTAINER=${NODE_CONTAINER:-remnanode} NODE_DIR=${NODE_DIR:-/opt/remnanode}
+
+tok=$1
+case "$tok" in
+    *[!a-z0-9-]*|'') echo "serp-root: bad command token" >&2; exit 64 ;;
+esac
+[ "${#tok}" -le 32 ] || { echo "serp-root: token too long" >&2; exit 64; }
+
+f="$DIR/$tok"
+[ -f "$f" ] && [ ! -L "$f" ] || { echo "serp-root: unknown command: $tok" >&2; exit 127; }
+# owner must be root (skipped only for the unprivileged test mode) and no group/other write bit
+if [ -z "$SERP_TEST" ]; then
+    [ "$(stat -c %u "$f")" = "0" ] || { echo "serp-root: $tok is not owned by root" >&2; exit 126; }
+fi
+perm=$(stat -c %a "$f")
+case "$perm" in
+    [0-7][0-7][0-7]) ;;
+    *) echo "serp-root: $tok has unusual mode $perm" >&2; exit 126 ;;
+esac
+g=${perm#?}; g=${g%?}; o=${perm#??}
+case "$g$o" in *[2367]*) echo "serp-root: $tok is writable by group/others" >&2; exit 126 ;; esac
+[ -x "$f" ] || { echo "serp-root: $tok is not executable" >&2; exit 126; }
+
+# a script may raise its own limit with a header line "# serp-timeout: <seconds>" (max 1800)
+st=$(sed -n 's/^# serp-timeout: \([0-9]\{1,4\}\)$/\1/p' "$f" | head -n 1)
+[ -n "$st" ] && [ "$st" -le 1800 ] && TIMEOUT=$st
+exec timeout "$TIMEOUT" "$f" 2>&1

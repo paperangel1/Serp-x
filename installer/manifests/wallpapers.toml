@@ -1,0 +1,14 @@
+id = "wallpapers"
+schema = 1
+order = 130
+group = "upstream"
+name = { ru = "Полный пак обоев", en = "Full wallpaper pack" }
+desc = { ru = "Полный набор обоев из upstream (иначе ставятся три случайных).", en = "The full upstream wallpaper set (otherwise three random ones are installed)." }
+requires = ["core"]
+estimate = { download_mib = 300, disk_mib = 320, install_s = 120 }
+
+[[steps]]
+id = "wallpapers.clone"
+kind = "builtin"
+title = { ru = "Обои: загрузка полного набора", en = "Wallpapers: download the full set" }
+estimate_s = 120

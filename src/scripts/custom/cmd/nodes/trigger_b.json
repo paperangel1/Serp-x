@@ -1,0 +1,783 @@
+{
+  "nodes": [
+    {
+      "id": "event.audio.headphones_connected",
+      "version": 1,
+      "category": "event",
+      "flow": "event",
+      "icon": "headphones",
+      "name": {
+        "ru": "Наушники подключены",
+        "en": "Headphones connected"
+      },
+      "description": {
+        "ru": "Срабатывает, когда подключаются наушники: Bluetooth (звуковое устройство BlueZ в PipeWire) или проводные (разъём). Источник наблюдает за изменениями устройств звука (pactl subscribe) и ждёт секунду, пока всё устоится. Только читает состояние.",
+        "en": "Fires when headphones are connected: Bluetooth (a BlueZ audio device in PipeWire) or wired (jack). The source watches sound device changes (pactl subscribe) and waits a second for things to settle. Read-only."
+      },
+      "example": {
+        "ru": "Наушники подключены → громкость 40%.",
+        "en": "Headphones connected → volume 40%."
+      },
+      "inputs": [
+        {
+          "id": "kind_filter",
+          "type": "text",
+          "label": {
+            "ru": "Тип",
+            "en": "Kind"
+          },
+          "default": "any",
+          "literal": true,
+          "choices": [
+            "any",
+            "bluetooth",
+            "wired"
+          ],
+          "choice_labels": {
+            "ru": {
+              "any": "любые",
+              "bluetooth": "Bluetooth",
+              "wired": "проводные"
+            },
+            "en": {
+              "any": "any",
+              "bluetooth": "Bluetooth",
+              "wired": "wired"
+            }
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "id": "exec",
+          "type": "exec",
+          "label": {
+            "ru": "Запуск",
+            "en": "Start"
+          }
+        },
+        {
+          "id": "name",
+          "type": "text",
+          "label": {
+            "ru": "Название",
+            "en": "Name"
+          },
+          "default": ""
+        },
+        {
+          "id": "kind",
+          "type": "text",
+          "label": {
+            "ru": "Тип (bluetooth или wired)",
+            "en": "Kind (bluetooth or wired)"
+          },
+          "default": ""
+        }
+      ],
+      "source": {
+        "emits": "audio.headphones_connected",
+        "src": "audio"
+      },
+      "executor": {
+        "kind": "builtin",
+        "ref": "event"
+      },
+      "capabilities": [
+        "trigger.audio"
+      ],
+      "changes_state": false,
+      "side_effects": false
+    },
+    {
+      "id": "event.audio.headphones_disconnected",
+      "version": 1,
+      "category": "event",
+      "flow": "event",
+      "icon": "headphones",
+      "name": {
+        "ru": "Наушники отключены",
+        "en": "Headphones disconnected"
+      },
+      "description": {
+        "ru": "Срабатывает, когда наушники отключаются (Bluetooth или проводные). Название и тип — те, что были у отключённых наушников.",
+        "en": "Fires when headphones are disconnected (Bluetooth or wired). The name and kind are those of the headphones that went away."
+      },
+      "example": {
+        "ru": "Наушники отключены → пауза.",
+        "en": "Headphones disconnected → pause."
+      },
+      "inputs": [
+        {
+          "id": "kind_filter",
+          "type": "text",
+          "label": {
+            "ru": "Тип",
+            "en": "Kind"
+          },
+          "default": "any",
+          "literal": true,
+          "choices": [
+            "any",
+            "bluetooth",
+            "wired"
+          ],
+          "choice_labels": {
+            "ru": {
+              "any": "любые",
+              "bluetooth": "Bluetooth",
+              "wired": "проводные"
+            },
+            "en": {
+              "any": "any",
+              "bluetooth": "Bluetooth",
+              "wired": "wired"
+            }
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "id": "exec",
+          "type": "exec",
+          "label": {
+            "ru": "Запуск",
+            "en": "Start"
+          }
+        },
+        {
+          "id": "name",
+          "type": "text",
+          "label": {
+            "ru": "Название",
+            "en": "Name"
+          },
+          "default": ""
+        },
+        {
+          "id": "kind",
+          "type": "text",
+          "label": {
+            "ru": "Тип (bluetooth или wired)",
+            "en": "Kind (bluetooth or wired)"
+          },
+          "default": ""
+        }
+      ],
+      "source": {
+        "emits": "audio.headphones_disconnected",
+        "src": "audio"
+      },
+      "executor": {
+        "kind": "builtin",
+        "ref": "event"
+      },
+      "capabilities": [
+        "trigger.audio"
+      ],
+      "changes_state": false,
+      "side_effects": false
+    },
+    {
+      "id": "event.clipboard.link",
+      "version": 1,
+      "category": "event",
+      "flow": "event",
+      "icon": "link",
+      "name": {
+        "ru": "Скопирована ссылка",
+        "en": "Link copied"
+      },
+      "description": {
+        "ru": "Срабатывает, когда в буфер обмена скопирована ссылка (весь буфер — один адрес http или https). Можно ограничить сайтами («youtube.com, youtu.be», поддомены подходят) и регулярным выражением по адресу. Это ОТДЕЛЬНОЕ право: оболочка читает буфер обмена, пока команда включена. Ссылка достаётся только этой команде и нигде не сохраняется; в журнал попадает лишь домен и длина. Копирование самой командой («Положить в буфер») не считается.",
+        "en": "Fires when a link is copied to the clipboard (the whole clipboard is a single http or https address). It can be limited to sites (\"youtube.com, youtu.be\", subdomains match) and by a regular expression on the address. This is a SEPARATE right: the shell reads the clipboard while the command is enabled. The link goes only to this command and is never stored; only the domain and the length are logged. Copies made by a command (\"Put in clipboard\") are ignored."
+      },
+      "example": {
+        "ru": "Скопировали ссылку на YouTube → предложить скачать.",
+        "en": "A YouTube link was copied → offer to download it."
+      },
+      "inputs": [
+        {
+          "id": "domains",
+          "type": "text",
+          "label": {
+            "ru": "Сайты",
+            "en": "Sites"
+          },
+          "default": "",
+          "literal": true
+        },
+        {
+          "id": "regex",
+          "type": "text",
+          "label": {
+            "ru": "Регулярное выражение",
+            "en": "Regular expression"
+          },
+          "default": "",
+          "literal": true
+        }
+      ],
+      "outputs": [
+        {
+          "id": "exec",
+          "type": "exec",
+          "label": {
+            "ru": "Запуск",
+            "en": "Start"
+          }
+        },
+        {
+          "id": "url",
+          "type": "text",
+          "label": {
+            "ru": "Ссылка",
+            "en": "Link"
+          },
+          "default": "",
+          "log": "length"
+        },
+        {
+          "id": "domain",
+          "type": "text",
+          "label": {
+            "ru": "Домен",
+            "en": "Domain"
+          },
+          "default": ""
+        }
+      ],
+      "source": {
+        "emits": "clipboard.link",
+        "src": "clipboard"
+      },
+      "executor": {
+        "kind": "builtin",
+        "ref": "event"
+      },
+      "capabilities": [
+        "trigger.clipboard"
+      ],
+      "changes_state": false,
+      "side_effects": false
+    },
+    {
+      "id": "event.folder.new_file",
+      "version": 1,
+      "category": "event",
+      "flow": "event",
+      "icon": "folder",
+      "name": {
+        "ru": "Новый файл в папке",
+        "en": "New file in a folder"
+      },
+      "description": {
+        "ru": "Срабатывает, когда в папке появляется новый файл. Недокачанные файлы (.part, .crdownload, .tmp, скрытые) пропускаются, а файл считается готовым, когда его размер не меняется 3 секунды. Фильтр: маски или расширения («pdf png», «*.jpg»). Папку наблюдает inotify, содержимое файлов не читается.",
+        "en": "Fires when a new file appears in a folder. Partial downloads (.part, .crdownload, .tmp, hidden files) are skipped and a file counts as ready when its size has not changed for 3 seconds. Filter: patterns or extensions (\"pdf png\", \"*.jpg\"). The folder is watched with inotify; file contents are not read."
+      },
+      "example": {
+        "ru": "Новый файл в «Загрузках» → разложить по папкам.",
+        "en": "New file in Downloads → sort it into folders."
+      },
+      "inputs": [
+        {
+          "id": "folder",
+          "type": "text",
+          "label": {
+            "ru": "Папка",
+            "en": "Folder"
+          },
+          "default": "~/Downloads",
+          "required": true,
+          "literal": true
+        },
+        {
+          "id": "pattern",
+          "type": "text",
+          "label": {
+            "ru": "Маска или расширение",
+            "en": "Pattern or extension"
+          },
+          "default": "",
+          "literal": true
+        },
+        {
+          "id": "recursive",
+          "type": "bool",
+          "label": {
+            "ru": "Вложенные папки",
+            "en": "Subfolders"
+          },
+          "default": false,
+          "literal": true
+        }
+      ],
+      "outputs": [
+        {
+          "id": "exec",
+          "type": "exec",
+          "label": {
+            "ru": "Запуск",
+            "en": "Start"
+          }
+        },
+        {
+          "id": "path",
+          "type": "text",
+          "label": {
+            "ru": "Путь",
+            "en": "Path"
+          },
+          "default": ""
+        },
+        {
+          "id": "name",
+          "type": "text",
+          "label": {
+            "ru": "Имя файла",
+            "en": "File name"
+          },
+          "default": ""
+        },
+        {
+          "id": "kind",
+          "type": "text",
+          "label": {
+            "ru": "Вид (image, document, archive, video, audio, other)",
+            "en": "Kind (image, document, archive, video, audio, other)"
+          },
+          "default": ""
+        }
+      ],
+      "source": {
+        "emits": "folder.new_file",
+        "src": "folder"
+      },
+      "executor": {
+        "kind": "builtin",
+        "ref": "event"
+      },
+      "capabilities": [
+        "trigger.folder"
+      ],
+      "changes_state": false,
+      "side_effects": false
+    },
+    {
+      "id": "event.server.unreachable",
+      "version": 1,
+      "category": "event",
+      "flow": "event",
+      "icon": "server",
+      "name": {
+        "ru": "Сервер недоступен",
+        "en": "Server unreachable"
+      },
+      "description": {
+        "ru": "Срабатывает, когда сервер из раздела «Серверы» перестаёт отвечать. Берётся из журнала событий раздела «Серверы» (только чтение), поэтому срабатывает, когда раздел опрашивает серверы.",
+        "en": "Fires when a server from the Servers section stops responding. It comes from the event log of the Servers section (read-only), so it fires while that section polls the servers."
+      },
+      "example": {
+        "ru": "Узел упал → спросить, перезапускать ли.",
+        "en": "A node went down → ask whether to restart it."
+      },
+      "inputs": [
+        {
+          "id": "server_filter",
+          "type": "text",
+          "label": {
+            "ru": "Сервер (имя или id)",
+            "en": "Server (name or id)"
+          },
+          "default": "",
+          "literal": true
+        }
+      ],
+      "outputs": [
+        {
+          "id": "exec",
+          "type": "exec",
+          "label": {
+            "ru": "Запуск",
+            "en": "Start"
+          }
+        },
+        {
+          "id": "server",
+          "type": "text",
+          "label": {
+            "ru": "Идентификатор",
+            "en": "Id"
+          },
+          "default": ""
+        },
+        {
+          "id": "server_name",
+          "type": "text",
+          "label": {
+            "ru": "Сервер",
+            "en": "Server"
+          },
+          "default": ""
+        },
+        {
+          "id": "reason",
+          "type": "text",
+          "label": {
+            "ru": "Причина",
+            "en": "Reason"
+          },
+          "default": ""
+        }
+      ],
+      "source": {
+        "emits": "server.unreachable",
+        "src": "servers"
+      },
+      "executor": {
+        "kind": "builtin",
+        "ref": "event"
+      },
+      "capabilities": [
+        "trigger.servers"
+      ],
+      "changes_state": false,
+      "side_effects": false
+    },
+    {
+      "id": "event.server.recovered",
+      "version": 1,
+      "category": "event",
+      "flow": "event",
+      "icon": "server",
+      "name": {
+        "ru": "Сервер снова доступен",
+        "en": "Server recovered"
+      },
+      "description": {
+        "ru": "Срабатывает, когда сервер, переставший отвечать, снова отвечает. Берётся из журнала событий раздела «Серверы» (только чтение).",
+        "en": "Fires when a server that stopped responding answers again. It comes from the event log of the Servers section (read-only)."
+      },
+      "example": {
+        "ru": "Сервер поднялся → уведомление.",
+        "en": "Server is back → notification."
+      },
+      "inputs": [
+        {
+          "id": "server_filter",
+          "type": "text",
+          "label": {
+            "ru": "Сервер (имя или id)",
+            "en": "Server (name or id)"
+          },
+          "default": "",
+          "literal": true
+        }
+      ],
+      "outputs": [
+        {
+          "id": "exec",
+          "type": "exec",
+          "label": {
+            "ru": "Запуск",
+            "en": "Start"
+          }
+        },
+        {
+          "id": "server",
+          "type": "text",
+          "label": {
+            "ru": "Идентификатор",
+            "en": "Id"
+          },
+          "default": ""
+        },
+        {
+          "id": "server_name",
+          "type": "text",
+          "label": {
+            "ru": "Сервер",
+            "en": "Server"
+          },
+          "default": ""
+        },
+        {
+          "id": "reason",
+          "type": "text",
+          "label": {
+            "ru": "Пояснение",
+            "en": "Note"
+          },
+          "default": ""
+        }
+      ],
+      "source": {
+        "emits": "server.recovered",
+        "src": "servers"
+      },
+      "executor": {
+        "kind": "builtin",
+        "ref": "event"
+      },
+      "capabilities": [
+        "trigger.servers"
+      ],
+      "changes_state": false,
+      "side_effects": false
+    },
+    {
+      "id": "event.wifi.connected",
+      "version": 1,
+      "category": "event",
+      "flow": "event",
+      "icon": "wifi",
+      "name": {
+        "ru": "Wi-Fi подключён",
+        "en": "Wi-Fi connected"
+      },
+      "description": {
+        "ru": "Срабатывает, когда компьютер подключается к Wi-Fi сети (можно указать имя сети). Источник — NetworkManager (nmcli monitor), только чтение: сети не включаются и не сканируются.",
+        "en": "Fires when the computer connects to a Wi-Fi network (a network name can be given). The source is NetworkManager (nmcli monitor), read-only: nothing is switched on or scanned."
+      },
+      "example": {
+        "ru": "Подключились к домашней сети → включить звук.",
+        "en": "Connected to the home network → turn the sound on."
+      },
+      "inputs": [
+        {
+          "id": "ssid_filter",
+          "type": "text",
+          "label": {
+            "ru": "Имя сети",
+            "en": "Network name"
+          },
+          "default": "",
+          "literal": true
+        }
+      ],
+      "outputs": [
+        {
+          "id": "exec",
+          "type": "exec",
+          "label": {
+            "ru": "Запуск",
+            "en": "Start"
+          }
+        },
+        {
+          "id": "ssid",
+          "type": "text",
+          "label": {
+            "ru": "Сеть",
+            "en": "Network"
+          },
+          "default": ""
+        }
+      ],
+      "source": {
+        "emits": "wifi.connected",
+        "src": "wifi"
+      },
+      "executor": {
+        "kind": "builtin",
+        "ref": "event"
+      },
+      "capabilities": [
+        "trigger.network"
+      ],
+      "changes_state": false,
+      "side_effects": false
+    },
+    {
+      "id": "event.usb.connected",
+      "version": 1,
+      "category": "event",
+      "flow": "event",
+      "icon": "usb",
+      "name": {
+        "ru": "USB-устройство подключено",
+        "en": "USB device connected"
+      },
+      "description": {
+        "ru": "Срабатывает, когда подключается USB-устройство: по умолчанию накопитель с файловой системой (флешка, диск), можно выбрать «другое» или «любое». Источник — udev (udevadm monitor), только чтение.",
+        "en": "Fires when a USB device is plugged in: by default a storage drive with a filesystem (flash drive, disk); \"other\" or \"any\" can be chosen. The source is udev (udevadm monitor), read-only."
+      },
+      "example": {
+        "ru": "Подключили флешку → открыть её.",
+        "en": "A flash drive was plugged in → open it."
+      },
+      "inputs": [
+        {
+          "id": "kind_filter",
+          "type": "text",
+          "label": {
+            "ru": "Что",
+            "en": "What"
+          },
+          "default": "storage",
+          "literal": true,
+          "choices": [
+            "storage",
+            "other",
+            "any"
+          ],
+          "choice_labels": {
+            "ru": {
+              "storage": "накопитель",
+              "other": "другое",
+              "any": "любое"
+            },
+            "en": {
+              "storage": "storage",
+              "other": "other",
+              "any": "any"
+            }
+          }
+        },
+        {
+          "id": "label_filter",
+          "type": "text",
+          "label": {
+            "ru": "Метка или название",
+            "en": "Label or name"
+          },
+          "default": "",
+          "literal": true
+        }
+      ],
+      "outputs": [
+        {
+          "id": "exec",
+          "type": "exec",
+          "label": {
+            "ru": "Запуск",
+            "en": "Start"
+          }
+        },
+        {
+          "id": "label",
+          "type": "text",
+          "label": {
+            "ru": "Метка",
+            "en": "Label"
+          },
+          "default": ""
+        },
+        {
+          "id": "device",
+          "type": "text",
+          "label": {
+            "ru": "Устройство",
+            "en": "Device"
+          },
+          "default": ""
+        },
+        {
+          "id": "kind",
+          "type": "text",
+          "label": {
+            "ru": "Вид (storage или other)",
+            "en": "Kind (storage or other)"
+          },
+          "default": ""
+        }
+      ],
+      "source": {
+        "emits": "usb.connected",
+        "src": "usb"
+      },
+      "executor": {
+        "kind": "builtin",
+        "ref": "event"
+      },
+      "capabilities": [
+        "trigger.usb"
+      ],
+      "changes_state": false,
+      "side_effects": false
+    },
+    {
+      "id": "event.notification.received",
+      "version": 1,
+      "category": "event",
+      "flow": "event",
+      "icon": "bell",
+      "name": {
+        "ru": "Пришло уведомление",
+        "en": "Notification received"
+      },
+      "description": {
+        "ru": "Срабатывает, когда какое-то приложение показывает уведомление (можно указать приложение). Это ОТДЕЛЬНОЕ право: оболочка подсматривает за сообщениями уведомлений на шине сеанса. Заголовок и текст достаются только этой команде и нигде не сохраняются; в журнал попадает лишь имя приложения. Свои уведомления («Serpantinum») и обновления прежних уведомлений пропускаются.",
+        "en": "Fires when an application shows a notification (an application can be given). This is a SEPARATE right: the shell observes notification messages on the session bus. The title and text go only to this command and are never stored; only the application name is logged. Notifications from \"Serpantinum\" itself and updates of earlier notifications are skipped."
+      },
+      "example": {
+        "ru": "Пришло уведомление от Telegram → мигнуть подсветкой.",
+        "en": "A Telegram notification arrived → flash a light."
+      },
+      "inputs": [
+        {
+          "id": "app_filter",
+          "type": "text",
+          "label": {
+            "ru": "Приложение",
+            "en": "Application"
+          },
+          "default": "",
+          "literal": true
+        }
+      ],
+      "outputs": [
+        {
+          "id": "exec",
+          "type": "exec",
+          "label": {
+            "ru": "Запуск",
+            "en": "Start"
+          }
+        },
+        {
+          "id": "app",
+          "type": "text",
+          "label": {
+            "ru": "Приложение",
+            "en": "Application"
+          },
+          "default": ""
+        },
+        {
+          "id": "title",
+          "type": "text",
+          "label": {
+            "ru": "Заголовок",
+            "en": "Title"
+          },
+          "default": "",
+          "log": "length"
+        },
+        {
+          "id": "body",
+          "type": "text",
+          "label": {
+            "ru": "Текст",
+            "en": "Body"
+          },
+          "default": "",
+          "log": "length"
+        }
+      ],
+      "source": {
+        "emits": "notification.received",
+        "src": "notifications"
+      },
+      "executor": {
+        "kind": "builtin",
+        "ref": "event"
+      },
+      "capabilities": [
+        "trigger.notifications"
+      ],
+      "changes_state": false,
+      "side_effects": false
+    }
+  ]
+}

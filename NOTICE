@@ -1,0 +1,29 @@
+serp-x: modified build of Serpantinum
+
+Based on Serpantinum by ilyamiro (https://github.com/ilyamiro/serpantinum), licensed under
+AGPL-3.0-or-later (see LICENSE.md). This is a modified build; it is not the upstream project.
+
+Files of the upstream project that this build changes (everything else is added on top of it):
+
+  bin/serpantinum                                   +3 lines: `serpantinum run "Name"` hands over to serpantinum-x (serp-x hook)
+  src/quickshell/Shell.qml                          import "custom" + XTools {} (serp-x hook)
+  src/quickshell/guide/GuidePopup.qml               update button -> XUpdate, "updates" tab, GuideExtensions (serp-x hook)
+  src/quickshell/guide/AboutTab.qml                 update button leads to the Updates tab (serp-x hook)
+  src/quickshell/screenshot/ScreenshotOverlay.qml   XOcrButton (serp-x hook)
+  CHANGELOG-serp-x.md                                 changes of this build (2.2.4-sN); upstream CHANGELOG.md is not modified
+  src/scripts/updater.py                            +4 lines: with serpantinum-x present the upstream update check is skipped (serp-x hook)
+
+  install/install.sh                                telemetry calls removed
+  install/modules/ui.sh                             telemetry menu item and flag removed, menu renumbered
+  install/modules/version.sh                        telemetry id/flag functions and state keys removed
+  install/modules/telemetry.sh                      deleted
+  src/assets/languages/*.json                       "installer.ui.menu_telemetry" string removed (11 files)
+
+Telemetry: the upstream installer reported an anonymous install ping to a remote worker. This build
+contains no telemetry of any kind: no code, no flag, no identifier is written to the state file
+(an old TELEMETRY_ID / ENABLE_TELEMETRY is deleted by `serpantinum-x migrate`).
+tests/scrub_test.sh guards against it coming back.
+
+Installer (serp-x build): installer/ is a separate Go program (serp-installer, AGPL-3.0-or-later) that installs and
+removes the optional modules of this build. It changes no upstream file by itself; the shell only starts it from the
+Updates tab (src/quickshell/custom/XInstaller.qml) and from `serpantinum-x backup`.

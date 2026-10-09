@@ -1,0 +1,155 @@
+{
+ "format": 1,
+ "id": "gallery-color-clipboard",
+ "name": "Цвет из буфера",
+ "description": "Скопировали цвет (#rrggbb, rgb(), hsl()): показывает окошко с HEX и RGB.",
+ "enabled": false,
+ "nodes": [
+  {
+   "id": "n1",
+   "type": "event.clipboard.color@1",
+   "pos": [
+    0,
+    100
+   ],
+   "props": {}
+  },
+  {
+   "id": "n2",
+   "type": "data.format@1",
+   "pos": [
+    340,
+    380
+   ],
+   "props": {
+    "template": "HEX: {a}\nRGB: {b}"
+   }
+  },
+  {
+   "id": "n3",
+   "type": "ui.show_result@1",
+   "pos": [
+    680,
+    100
+   ],
+   "props": {
+    "title": "Цвет из буфера"
+   }
+  }
+ ],
+ "wires": [
+  {
+   "from": [
+    "n1",
+    "exec"
+   ],
+   "to": [
+    "n3",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n1",
+    "hex"
+   ],
+   "to": [
+    "n2",
+    "a"
+   ]
+  },
+  {
+   "from": [
+    "n1",
+    "rgb"
+   ],
+   "to": [
+    "n2",
+    "b"
+   ]
+  },
+  {
+   "from": [
+    "n2",
+    "text"
+   ],
+   "to": [
+    "n3",
+    "value"
+   ]
+  }
+ ],
+ "variables": [],
+ "comments": [
+  {
+   "id": "c1",
+   "x": 0,
+   "y": -100,
+   "w": 300,
+   "h": 160,
+   "title": {
+    "ru": "Скопирован цвет",
+    "en": "Colour copied"
+   },
+   "text": {
+    "ru": "Срабатывает, когда в буфере только цвет: #rgb, #rrggbb, rgb(…) или hsl(…). Нужно право «слежение за буфером обмена»: содержимое получает только эта команда и нигде не сохраняется.",
+    "en": "Fires when the clipboard holds just a colour: #rgb, #rrggbb, rgb(...) or hsl(...). Needs the \"watch the clipboard\" right: only this command gets the content and it is never stored."
+   },
+   "color": "#f9e2af"
+  },
+  {
+   "id": "c2",
+   "x": 340,
+   "y": 560,
+   "w": 300,
+   "h": 100,
+   "title": {
+    "ru": "Собираем текст",
+    "en": "Build the text"
+   },
+   "text": {
+    "ru": "«Подставить в шаблон» складывает HEX и RGB в две строки.",
+    "en": "\"Format text\" puts HEX and RGB on two lines."
+   },
+   "color": "#f9e2af"
+  },
+  {
+   "id": "c3",
+   "x": 680,
+   "y": -100,
+   "w": 300,
+   "h": 100,
+   "title": {
+    "ru": "Окошко с результатом",
+    "en": "Result popup"
+   },
+   "text": {
+    "ru": "Показывает цвет в виде HEX и RGB. Окошко остаётся, пока вы его не закроете.",
+    "en": "Shows the colour as HEX and RGB. The popup stays until you close it."
+   },
+   "color": "#f9e2af"
+  }
+ ],
+ "gallery": {
+  "name": {
+   "ru": "Цвет из буфера",
+   "en": "Colour from the clipboard"
+  },
+  "description": {
+   "ru": "Скопировали цвет (#rrggbb, rgb(), hsl()): показывает окошко с HEX и RGB.",
+   "en": "Copy a colour (#rrggbb, rgb(), hsl()): shows a popup with HEX and RGB."
+  },
+  "category": "screen",
+  "tags": {
+   "ru": [
+    "цвет",
+    "буфер"
+   ],
+   "en": [
+    "colour",
+    "clipboard"
+   ]
+  },
+  "packages": []
+ }
+}

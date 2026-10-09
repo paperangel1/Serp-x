@@ -1,0 +1,11 @@
+id = "ocr"
+schema = 1
+order = 50
+group = "build"
+presets = ["full"]
+name = { ru = "Распознавание текста", en = "OCR" }
+desc = { ru = "Кнопка распознавания текста в скриншотере (русский и английский).", en = "Text recognition button in the screenshot tool (Russian and English)." }
+requires = ["core"]
+enhances = ["tools"]
+packages = ["tesseract", "tesseract-data-rus", "tesseract-data-eng"]
+estimate = { download_mib = 18, disk_mib = 60, install_s = 10 }

@@ -1,0 +1,115 @@
+{
+  "format": 1,
+  "kind": "function",
+  "id": "average",
+  "name": "Среднее",
+  "description": "Среднее арифметическое двух чисел.",
+  "icon": "calculator",
+  "exec": false,
+  "inputs": [
+    {
+      "id": "x",
+      "type": "float",
+      "label": "x"
+    },
+    {
+      "id": "y",
+      "type": "float",
+      "label": "y"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "avg",
+      "type": "float",
+      "label": "avg"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "fn_in",
+      "type": "function.input@1",
+      "pos": [
+        40,
+        60
+      ],
+      "props": {}
+    },
+    {
+      "id": "fn_out",
+      "type": "function.output@1",
+      "pos": [
+        780,
+        60
+      ],
+      "props": {}
+    },
+    {
+      "id": "s",
+      "type": "data.math@1",
+      "pos": [
+        280,
+        40
+      ],
+      "props": {
+        "op": "+"
+      }
+    },
+    {
+      "id": "d",
+      "type": "data.math@1",
+      "pos": [
+        520,
+        40
+      ],
+      "props": {
+        "op": "/",
+        "b": 2
+      }
+    }
+  ],
+  "wires": [
+    {
+      "from": [
+        "fn_in",
+        "x"
+      ],
+      "to": [
+        "s",
+        "a"
+      ]
+    },
+    {
+      "from": [
+        "fn_in",
+        "y"
+      ],
+      "to": [
+        "s",
+        "b"
+      ]
+    },
+    {
+      "from": [
+        "s",
+        "result"
+      ],
+      "to": [
+        "d",
+        "a"
+      ]
+    },
+    {
+      "from": [
+        "d",
+        "result"
+      ],
+      "to": [
+        "fn_out",
+        "avg"
+      ]
+    }
+  ],
+  "variables": [],
+  "comments": []
+}

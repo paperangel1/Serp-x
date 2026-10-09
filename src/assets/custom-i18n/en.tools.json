@@ -1,0 +1,79 @@
+{
+  "tools": {
+    "ocr": {
+      "working": "Recognising text…",
+      "failed": "Could not recognise text",
+      "copied": "Text copied to clipboard",
+      "empty": "No text found",
+      "empty_sub": "The selected area has no recognisable text"
+    },
+    "picker": {
+      "hint": "LMB — copy {kind}  ·  Shift — {alt}  ·  Esc — cancel",
+      "copied": "Colour copied: {value}",
+      "added": "added to history"
+    },
+    "history": {
+      "title": "Colour history",
+      "empty": "Nothing yet — pick a colour with the eyedropper",
+      "sub": "{n} of {max}  ·  click — copy, Shift+click — other format",
+      "new": "new",
+      "copy_hex": "Copy HEX",
+      "copy_rgb": "Copy RGB",
+      "clear": "Clear"
+    },
+    "notes": {
+      "today": "today, {time}",
+      "yesterday": "yesterday, {time}",
+      "count": "{n} notes",
+      "none": "No notes yet",
+      "none_sub": "click to create the first one",
+      "card_hint": "keep hovering or click — the editor opens",
+      "untitled": "New note",
+      "edit": "Edit",
+      "preview": "Preview",
+      "placeholder": "Start writing…",
+      "saving": "Autosave · saving…",
+      "saved": "Autosave · saved at {time}",
+      "saved_idle": "Autosave is on",
+      "keys": "Esc — collapse  ·  Ctrl+N — new",
+      "delete": "Delete note",
+      "stats": "Markdown  ·  {words} words"
+    },
+    "tab": {
+      "sec_notes": "QUICK NOTES",
+      "notes_enabled": "Hot corner",
+      "notes_enabled_d": "Move the cursor into the corner to see the latest note",
+      "corner": "Screen corner",
+      "corner_d": "Where to wait for the cursor (top right is taken by the bar)",
+      "corner_br": "Bottom right",
+      "corner_tr": "Top right",
+      "corner_bl": "Bottom left",
+      "corner_tl": "Top left",
+      "delay": "Delay",
+      "delay_d": "Show the card / expand the editor, ms",
+      "ms": "ms",
+      "no_fullscreen": "Ignore in fullscreen",
+      "no_fullscreen_d": "Games and videos will not open notes by accident",
+      "no_drag": "Ignore while dragging",
+      "no_drag_d": "While a mouse button is held (window, file, selection)",
+      "hotkey": "Fallback hotkey",
+      "hotkey_d": "Open the note without the mouse. Assigned in the Hotkeys tab",
+      "hotkey_none": "not assigned",
+      "configure": "Configure",
+      "sec_picker": "COLOUR PICKER",
+      "format": "Copy format",
+      "format_d": "What goes to the clipboard on click. Shift — the other format",
+      "history": "Colour history",
+      "history_d": "Keep the last {n} picked colours",
+      "open": "Open",
+      "sec_ocr": "TEXT RECOGNITION",
+      "langs": "Languages",
+      "langs_d": "Which languages to look for in the screenshot",
+      "lang_both": "Russian + English",
+      "lang_rus": "Russian",
+      "lang_eng": "English",
+      "join": "Join line breaks",
+      "join_d": "Turn broken lines into a continuous paragraph"
+    }
+  }
+}

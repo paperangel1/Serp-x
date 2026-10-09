@@ -1,0 +1,17 @@
+id = "emoji"
+schema = 1
+order = 30
+group = "build"
+presets = ["full", "minimal"]
+name = { ru = "Цветные эмодзи", en = "Color emoji" }
+desc = { ru = "Шрифт Noto Color Emoji: эмодзи в цвете во всей оболочке.", en = "Noto Color Emoji font: emoji in color across the whole shell." }
+requires = ["core"]
+packages = ["noto-fonts-emoji"]
+estimate = { download_mib = 9, disk_mib = 11, install_s = 5 }
+
+[[steps]]
+id = "emoji.cache"
+kind = "script"
+title = { ru = "Эмодзи: обновление кэша шрифтов", en = "Emoji: refresh font cache" }
+args = { cmd = ["fc-cache", "-f"] }
+estimate_s = 5

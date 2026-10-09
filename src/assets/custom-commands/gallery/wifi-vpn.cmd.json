@@ -1,0 +1,304 @@
+{
+ "format": 1,
+ "id": "gallery-wifi-vpn",
+ "name": "Незнакомый Wi-Fi → включить VPN",
+ "description": "Подключились к Wi-Fi, которого нет в вашем списке доверенных: включает VPN; при отключении от сети выключает.",
+ "enabled": false,
+ "nodes": [
+  {
+   "id": "n1",
+   "type": "event.wifi.connected@1",
+   "pos": [
+    0,
+    100
+   ],
+   "props": {}
+  },
+  {
+   "id": "n2",
+   "type": "data.format@1",
+   "pos": [
+    340,
+    380
+   ],
+   "props": {
+    "template": ",{a},"
+   }
+  },
+  {
+   "id": "n3",
+   "type": "data.compare_text@1",
+   "pos": [
+    680,
+    380
+   ],
+   "props": {
+    "a": ",Дом,Работа,",
+    "op": "contains",
+    "ignore_case": true
+   }
+  },
+  {
+   "id": "n4",
+   "type": "data.not@1",
+   "pos": [
+    1020,
+    380
+   ],
+   "props": {}
+  },
+  {
+   "id": "n5",
+   "type": "logic.if@1",
+   "pos": [
+    1020,
+    100
+   ],
+   "props": {}
+  },
+  {
+   "id": "n6",
+   "type": "action.vpn.set@1",
+   "pos": [
+    1360,
+    100
+   ],
+   "props": {
+    "mode": "on",
+    "restore": "off"
+   }
+  },
+  {
+   "id": "n7",
+   "type": "event.wifi.disconnected@1",
+   "pos": [
+    0,
+    640
+   ],
+   "props": {}
+  },
+  {
+   "id": "n8",
+   "type": "action.vpn.set@1",
+   "pos": [
+    340,
+    640
+   ],
+   "props": {
+    "mode": "off",
+    "restore": "off"
+   }
+  }
+ ],
+ "wires": [
+  {
+   "from": [
+    "n1",
+    "exec"
+   ],
+   "to": [
+    "n5",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n1",
+    "ssid"
+   ],
+   "to": [
+    "n2",
+    "a"
+   ]
+  },
+  {
+   "from": [
+    "n2",
+    "text"
+   ],
+   "to": [
+    "n3",
+    "b"
+   ]
+  },
+  {
+   "from": [
+    "n3",
+    "result"
+   ],
+   "to": [
+    "n4",
+    "value"
+   ]
+  },
+  {
+   "from": [
+    "n4",
+    "result"
+   ],
+   "to": [
+    "n5",
+    "condition"
+   ]
+  },
+  {
+   "from": [
+    "n5",
+    "then"
+   ],
+   "to": [
+    "n6",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n7",
+    "exec"
+   ],
+   "to": [
+    "n8",
+    "exec_in"
+   ]
+  }
+ ],
+ "variables": [],
+ "comments": [
+  {
+   "id": "c1",
+   "x": 0,
+   "y": -100,
+   "w": 300,
+   "h": 100,
+   "title": {
+    "ru": "Подключились к Wi-Fi",
+    "en": "Connected to Wi-Fi"
+   },
+   "text": {
+    "ru": "Событие приходит от NetworkManager (только чтение). Без имени сети срабатывает на любую.",
+    "en": "The event comes from NetworkManager (read-only). Without a network name it fires on any network."
+   },
+   "color": "#f9e2af"
+  },
+  {
+   "id": "c2",
+   "x": 340,
+   "y": 560,
+   "w": 300,
+   "h": 100,
+   "title": {
+    "ru": "Ваш список доверенных",
+    "en": "Your trusted list"
+   },
+   "text": {
+    "ru": "Имя сети оборачивается в запятые: «,Сеть,».",
+    "en": "The network name is wrapped in commas: \",Network,\"."
+   },
+   "color": "#f9e2af"
+  },
+  {
+   "id": "c3",
+   "x": 680,
+   "y": 560,
+   "w": 300,
+   "h": 140,
+   "title": {
+    "ru": "РЕДАКТИРУЙТЕ СПИСОК ЗДЕСЬ",
+    "en": "EDIT THE LIST HERE"
+   },
+   "text": {
+    "ru": "В поле «Текст A» через запятую, без пробелов, между запятыми по краям: «,Дом,Работа,». Сеть из списка — VPN не нужен.",
+    "en": "In the \"Text A\" field, comma separated, no spaces, with commas at both ends: \",Home,Work,\". A network from the list does not need the VPN."
+   },
+   "color": "#f9e2af"
+  },
+  {
+   "id": "c4",
+   "x": 1020,
+   "y": 560,
+   "w": 300,
+   "h": 100,
+   "title": {
+    "ru": "Не в списке?",
+    "en": "Not in the list?"
+   },
+   "text": {
+    "ru": "«Не» переворачивает ответ: ветка «Да» идёт только для незнакомых сетей.",
+    "en": "\"Not\" flips the answer: the \"then\" branch runs only for unknown networks."
+   },
+   "color": "#f9e2af"
+  },
+  {
+   "id": "c5",
+   "x": 1360,
+   "y": -100,
+   "w": 300,
+   "h": 140,
+   "title": {
+    "ru": "Включить VPN",
+    "en": "Turn the VPN on"
+   },
+   "text": {
+    "ru": "Через оболочку. Пока работает Happ, наш VPN не включится (будет понятная ошибка), Happ команда не трогает. Нужно право «управление VPN».",
+    "en": "Through the shell. While Happ is running our VPN will not turn on (a clear error) and the command never touches Happ. Needs the \"VPN control\" right."
+   },
+   "color": "#f9e2af"
+  },
+  {
+   "id": "c6",
+   "x": 0,
+   "y": 820,
+   "w": 340,
+   "h": 160,
+   "title": {
+    "ru": "Отключились от сети",
+    "en": "Left the network"
+   },
+   "text": {
+    "ru": "Вторая цепочка — «откат» по отключению: когда вы уходите из сети, VPN выключается. Если VPN был включён вами раньше, он тоже выключится: уберите эту цепочку, если не нужно.",
+    "en": "The second chain is the \"undo\" on disconnect: when you leave the network the VPN turns off. If you had turned it on yourself earlier it also turns off: remove this chain if you do not want that."
+   },
+   "color": "#f9e2af"
+  },
+  {
+   "id": "c7",
+   "x": 340,
+   "y": 820,
+   "w": 300,
+   "h": 100,
+   "title": {
+    "ru": "Выключить VPN",
+    "en": "Turn the VPN off"
+   },
+   "text": {
+    "ru": "Если VPN уже выключен, ничего не происходит.",
+    "en": "Nothing happens if the VPN is already off."
+   },
+   "color": "#f9e2af"
+  }
+ ],
+ "gallery": {
+  "name": {
+   "ru": "Незнакомый Wi-Fi → включить VPN",
+   "en": "Unknown Wi-Fi → turn the VPN on"
+  },
+  "description": {
+   "ru": "Подключились к Wi-Fi, которого нет в вашем списке доверенных: включает VPN; при отключении от сети выключает.",
+   "en": "Connected to a Wi-Fi network that is not in your trusted list: turns the VPN on, and off again when you leave the network."
+  },
+  "category": "servers",
+  "tags": {
+   "ru": [
+    "wi-fi",
+    "vpn",
+    "безопасность"
+   ],
+   "en": [
+    "wi-fi",
+    "vpn",
+    "security"
+   ]
+  },
+  "packages": []
+ }
+}

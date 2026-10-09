@@ -1,0 +1,32 @@
+* Serpantinum - serp-x build   installer v2.2.4-s3                             language  RU  EN   F2
+                                                                                                    
++ Check -- + Mode -- + Modules -- + Settings -- + Summary -- * Install  -- o Done                   
+                                                                                                    
+Step 4 of 14  -  Hotkeys menu: install                                                              
+                                                                                                    
+███████████████████████████████████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  56%   
+elapsed 05:17   left ~ 7 min  (the estimate improves with the network speed)                        
+                                                                                                    
+┌─ Steps ─────────────────────────────────────────┐  ┌─ Now ───────────────────────────────────────┐
+│ + Backup of your data                      0:03 │  │                                             │
+│ + pacman keys                              0:03 │  │ Hotkeys menu: install...                    │
+│ + Shell programs (63 packages)             0:03 │  │                                             │
+│ | Hotkeys menu: install                         │  │ Downloaded 412 of 961 MiB                   │
+│ o Color emoji: install                   ~ 0:10 │  │ █████████████████░░░░░░░░░░░░░░░░░░░░░░░░   │
+│ o Color picker & notes: install          ~ 0:10 │  │ Speed 11.2 MB/s                             │
+│ o OCR: install                           ~ 0:10 │  │ File pipewire-1:1.6.2-1-x86_64              │
+│ o AI: Gemini: install                    ~ 0:10 │  │                                             │
+│ o Servers widget: install                ~ 0:10 │  │ You can step away: there will be no more    │
+│ o VPN (Xray): install                    ~ 0:10 │  │ questions. If the power goes out - run      │
+│ o Commands: install                      ~ 0:10 │  │ again, it continues from this step.         │
+│ o Video examples (yt-dlp): install       ~ 0:10 │  │ Log:                                        │
+└─────────────────────────────────────────────────┘  └─────────────────────────────────────────────┘
+┌─ Log  (L - hide, arrows - scroll) ───────────────────────────────────────────────────────────────┐
+│ 19:09:12 engine  (24/63) checking keys in keyring                                                │
+│ 19:09:13 pacman  qt6-declarative-6.10.1-1-x86_64   12.4 MiB  11.6 MiB/s 00:01 [####] 100%        │
+│ 19:09:14 pacman  pipewire-1:1.6.2-1-x86_64   2.1 MiB  11.4 MiB/s 00:00 [####] 100%               │
+│ 19:09:15 engine  eta: download 441 MiB / 11.5 MB/s = 38 s                                        │
+│ 19:09:16 pacman  pipewire-pulse-1:1.6.2-1-x86_64   18.3 KiB   ...                                │
+│                                                                                                  │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+ L  hide log   Tab  focus   p  pause   q  abort (safe)                                              

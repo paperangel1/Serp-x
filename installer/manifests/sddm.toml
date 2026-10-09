@@ -1,0 +1,27 @@
+id = "sddm"
+schema = 1
+order = 120
+group = "system"
+name = { ru = "Экран входа SDDM", en = "SDDM login screen" }
+desc = { ru = "Экран входа SDDM с темой Serpantinum.", en = "SDDM login screen with the Serpantinum theme." }
+notes = { ru = "Если уже включён другой менеджер входа, он будет заменён — установщик предупредит.", en = "If another display manager is enabled it will be replaced - the installer will warn you." }
+requires = ["core"]
+packages = ["sddm", "qt6-declarative", "qt6-svg"]
+root_files = ["/etc/sddm.conf.d/10-material-you.conf", "/usr/share/sddm/themes/material-you", "/etc/sddm.conf.d", "/etc/sddm.conf", "/usr/share/fonts/TTF"]
+systemd_system = ["sddm.service"]
+estimate = { download_mib = 2, disk_mib = 25, install_s = 10 }
+
+[[steps]]
+id = "sddm.theme"
+kind = "builtin"
+root = true
+title = { ru = "SDDM: тема и настройки", en = "SDDM: theme and settings" }
+estimate_s = 3
+
+[[steps]]
+id = "sddm.enable"
+kind = "builtin"
+root = true
+title = { ru = "SDDM: включение службы", en = "SDDM: enable the service" }
+after = ["sddm.theme"]
+estimate_s = 2

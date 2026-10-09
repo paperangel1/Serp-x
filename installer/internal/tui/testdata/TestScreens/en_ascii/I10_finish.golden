@@ -1,0 +1,32 @@
+* Serpantinum - serp-x build   installer v2.2.4-s3                             language  RU  EN   F2
+                                                                                                    
++ Check -- + Mode -- + Modules -- + Settings -- + Summary -- + Install -- * Done                    
+                                                                                                    
++ Done in 13 min 48 s   serp-x build 2.2.4-s3                                                       
+                                                                                                    
+┌─ Installed - 10 ───────────────────────────┐  ┌─ Please note ────────────────────────────────────┐
+│                                            │  │                                                  │
+│ + Shell + build base                       │  │ - VPN (Xray) skipped                             │
+│ + Hotkeys menu                             │  │   add it: serp-installer modules                 │
+│ + Color emoji                              │  │                                                  │
+│ + Color picker & notes                     │  │ o Set up later:                                  │
+│ + OCR                                      │  │   AI: Gemini, Servers widget, VPN (Xray)         │
+│ + AI: Gemini                               │  │                                                  │
+│ + Servers widget                           │  │ ~ Data restored                                  │
+│ + Commands                                 │  │   settings, 14 commands, 31 notes                │
+│ + Video examples (yt-dlp)                  │  │                                                  │
+│ + NVIDIA driver                            │  │ ! NVIDIA: a reboot is needed                     │
+│                                            │  │                                                  │
+└────────────────────────────────────────────┘  └──────────────────────────────────────────────────┘
+                                                                                                    
+┌─ Files ──────────────────────────────────────────────────────────────────────────────────────────┐
+│ Log     ~/.local/state/serpantinum-installer/logs/0712-1904.log                                  │
+│ Backup  ~/serpantinum-backups/serpantinum-backup-2026-10-07.tar.zst                              │
+│ Config  ~/serpantinum-backups/my-setup.toml  (for a quick reinstall)                             │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+                                                                                                    
+ Reboot (needed for NVIDIA)   Start Hyprland   Exit to the console                                  
+                                                                                                    
+                                                                                                    
+                                                                                                    
+ ^v  select   Enter  run   L  log   F2  language / язык                                             

@@ -1,0 +1,32 @@
+* Serpantinum - serp-x build   installer v2.2.4-s3                             language  RU  EN   F2
+                                                                                                    
++ Check -- + Mode -- + Modules -- + Settings -- + Summary -- * Install  -- o Done                   
+                                                                                                    
+Step 4 of 14  -  Hotkeys menu: install                                                              
+                                                                                                    
+███████████████████████████████████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  56%   
+elapsed 05:17   left ~ 7 min  (the estimate improves with the network speed)                        
+                                                                                                    
+┌─ Steps ─────────────────────────────────────────┐  ┌─ Now ───────────────────────────────────────┐
+│ + Backup of your data                      0:03 │  │                                             │
+│ + pacman keys                              0:03 │  │ Hotkeys menu: install...                    │
+│ + Shell programs (63 packages)             0:03 │  │                                             │
+│ | Hotkeys menu: install                         │  │ Downloaded 412 of 961 MiB                   │
+│ o Color emoji: install                   ~ 0:10 │  │ █████████████████░░░░░░░░░░░░░░░░░░░░░░░░   │
+│ o Color picker & notes: install          ~ 0:10 │  │ Speed 11.2 MB/s                             │
+│ o OCR: install                           ~ 0:10 │  │ File pipewire-1:1.6.2-1-x86_64              │
+│ o AI: Gemini: install                    ~ 0:10 │  │                                             │
+│ o Servers widget: install                ~ 0:10 │  │ You can step away: there will be no more    │
+│ o VPN (Xray): install                    ~ 0:10 │  │ questions. If the power goes out - run      │
+│ o Commands: install                      ~ 0:10 │  │ again, it continues from this step.         │
+│ o Video examples (yt-dlp): install       ~ 0:10 │  │                                             │
+│ o NVIDIA driver: install                 ~ 0:10 │  │                                             │
+│ o Check: is everything in place          ~ 0:10 │  │                                             │
+│                                                 │  │                                             │
+│                                                 │  │                                             │
+│                                                 │  │                                             │
+│                                                 │  │ Log:                                        │
+│                                                 │  │   ~/.local/state/serpantinum-               │
+│                                                 │  │   installer/logs/0712-1904.log              │
+└─────────────────────────────────────────────────┘  └─────────────────────────────────────────────┘
+ L  log   Tab  focus   p  pause   q  abort (safe)                                                   

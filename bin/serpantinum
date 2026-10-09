@@ -331,6 +331,9 @@ if [[ "$1" == "ipc" ]]; then
     exec quickshell -p "$SHELL_QML" ipc "$@"
 fi
 
+# serp-x hook: `serpantinum run "Name"` -> commands engine (bin/serpantinum-x)
+if [[ "$1" == "run" && -x "$BIN_DIR/serpantinum-x" ]]; then shift; exec "$BIN_DIR/serpantinum-x" run "$@"; fi
+
 ALLOWED_SCRIPTS=(
     "exit"
     "lock"

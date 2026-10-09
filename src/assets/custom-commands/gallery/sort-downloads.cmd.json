@@ -1,0 +1,374 @@
+{
+ "format": 1,
+ "id": "gallery-sort-downloads",
+ "name": "Сортировка загрузок",
+ "description": "Новые файлы в «Загрузках» раскладываются по папкам: изображения, документы, архивы.",
+ "enabled": false,
+ "nodes": [
+  {
+   "id": "n1",
+   "type": "event.folder.new_file@1",
+   "pos": [
+    0,
+    100
+   ],
+   "props": {
+    "folder": "~/Downloads"
+   }
+  },
+  {
+   "id": "n2",
+   "type": "data.file_kind@1",
+   "pos": [
+    340,
+    300
+   ],
+   "props": {}
+  },
+  {
+   "id": "n3",
+   "type": "data.compare_text@1",
+   "pos": [
+    680,
+    300
+   ],
+   "props": {
+    "op": "equals",
+    "b": "image"
+   }
+  },
+  {
+   "id": "n4",
+   "type": "logic.if@1",
+   "pos": [
+    680,
+    100
+   ],
+   "props": {}
+  },
+  {
+   "id": "n5",
+   "type": "action.file.move@1",
+   "pos": [
+    680,
+    560
+   ],
+   "props": {
+    "folder": "~/Pictures/Sorted"
+   }
+  },
+  {
+   "id": "n6",
+   "type": "data.compare_text@1",
+   "pos": [
+    1020,
+    300
+   ],
+   "props": {
+    "op": "equals",
+    "b": "document"
+   }
+  },
+  {
+   "id": "n7",
+   "type": "logic.if@1",
+   "pos": [
+    1020,
+    100
+   ],
+   "props": {}
+  },
+  {
+   "id": "n8",
+   "type": "action.file.move@1",
+   "pos": [
+    1020,
+    560
+   ],
+   "props": {
+    "folder": "~/Documents/Sorted"
+   }
+  },
+  {
+   "id": "n9",
+   "type": "data.compare_text@1",
+   "pos": [
+    1360,
+    300
+   ],
+   "props": {
+    "op": "equals",
+    "b": "archive"
+   }
+  },
+  {
+   "id": "n10",
+   "type": "logic.if@1",
+   "pos": [
+    1360,
+    100
+   ],
+   "props": {}
+  },
+  {
+   "id": "n11",
+   "type": "action.file.move@1",
+   "pos": [
+    1360,
+    560
+   ],
+   "props": {
+    "folder": "~/Downloads/Archives"
+   }
+  }
+ ],
+ "wires": [
+  {
+   "from": [
+    "n1",
+    "path"
+   ],
+   "to": [
+    "n2",
+    "path"
+   ]
+  },
+  {
+   "from": [
+    "n2",
+    "kind"
+   ],
+   "to": [
+    "n3",
+    "a"
+   ]
+  },
+  {
+   "from": [
+    "n3",
+    "result"
+   ],
+   "to": [
+    "n4",
+    "condition"
+   ]
+  },
+  {
+   "from": [
+    "n1",
+    "path"
+   ],
+   "to": [
+    "n5",
+    "path"
+   ]
+  },
+  {
+   "from": [
+    "n1",
+    "exec"
+   ],
+   "to": [
+    "n4",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n4",
+    "then"
+   ],
+   "to": [
+    "n5",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n2",
+    "kind"
+   ],
+   "to": [
+    "n6",
+    "a"
+   ]
+  },
+  {
+   "from": [
+    "n6",
+    "result"
+   ],
+   "to": [
+    "n7",
+    "condition"
+   ]
+  },
+  {
+   "from": [
+    "n1",
+    "path"
+   ],
+   "to": [
+    "n8",
+    "path"
+   ]
+  },
+  {
+   "from": [
+    "n4",
+    "else"
+   ],
+   "to": [
+    "n7",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n7",
+    "then"
+   ],
+   "to": [
+    "n8",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n2",
+    "kind"
+   ],
+   "to": [
+    "n9",
+    "a"
+   ]
+  },
+  {
+   "from": [
+    "n9",
+    "result"
+   ],
+   "to": [
+    "n10",
+    "condition"
+   ]
+  },
+  {
+   "from": [
+    "n1",
+    "path"
+   ],
+   "to": [
+    "n11",
+    "path"
+   ]
+  },
+  {
+   "from": [
+    "n7",
+    "else"
+   ],
+   "to": [
+    "n10",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n10",
+    "then"
+   ],
+   "to": [
+    "n11",
+    "exec_in"
+   ]
+  }
+ ],
+ "variables": [],
+ "comments": [
+  {
+   "id": "c1",
+   "x": 0,
+   "y": -100,
+   "w": 300,
+   "h": 100,
+   "title": {
+    "ru": "Событие",
+    "en": "Event"
+   },
+   "text": {
+    "ru": "Срабатывает на каждый новый файл в папке; недокачанные файлы пропускаются.",
+    "en": "Fires for each new file in the folder; partial downloads are skipped."
+   },
+   "color": "#f9e2af"
+  },
+  {
+   "id": "c2",
+   "x": 340,
+   "y": 420,
+   "w": 300,
+   "h": 80,
+   "title": {
+    "ru": "Тип файла",
+    "en": "File kind"
+   },
+   "text": {
+    "ru": "По расширению: картинка, документ, архив или другое.",
+    "en": "By extension: image, document, archive or other."
+   },
+   "color": "#f9e2af"
+  },
+  {
+   "id": "c3",
+   "x": 680,
+   "y": -100,
+   "w": 980,
+   "h": 100,
+   "title": {
+    "ru": "Ветвление",
+    "en": "Branching"
+   },
+   "text": {
+    "ru": "«Если» проверяет тип по очереди; ветка «иначе» идёт к следующей проверке.",
+    "en": "«If» checks the kind in turn; its «else» branch goes to the next check."
+   },
+   "color": "#f9e2af"
+  },
+  {
+   "id": "c4",
+   "x": 680,
+   "y": 700,
+   "w": 980,
+   "h": 70,
+   "title": {
+    "ru": "Перемещение",
+    "en": "Move"
+   },
+   "text": {
+    "ru": "Папки назначения можно поменять; перемещение просит подтверждения.",
+    "en": "Change the target folders as you like; moving asks for confirmation."
+   },
+   "color": "#f9e2af"
+  }
+ ],
+ "gallery": {
+  "name": {
+   "ru": "Сортировка загрузок",
+   "en": "Sort downloads"
+  },
+  "description": {
+   "ru": "Новые файлы в «Загрузках» раскладываются по папкам: изображения, документы, архивы.",
+   "en": "New files in Downloads are sorted into folders: images, documents, archives."
+  },
+  "category": "files",
+  "tags": {
+   "ru": [
+    "файлы"
+   ],
+   "en": [
+    "files"
+   ]
+  },
+  "packages": []
+ }
+}

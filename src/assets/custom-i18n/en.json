@@ -1,0 +1,13 @@
+{
+  "tabs": {
+    "hotkeys": "Hotkeys",
+    "updates": "Updates",
+    "tools": "Tools"
+  },
+  "placeholder": {
+    "soon": "This page is under construction"
+  },
+  "update": {
+    "sidebar_button": "Update {label}"
+  }
+}

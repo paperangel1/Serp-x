@@ -1,0 +1,10 @@
+#!/bin/sh
+echo "== Интерфейсы =="; ip -br addr 2>/dev/null || ifconfig 2>/dev/null
+echo; echo "== Маршрут по умолчанию =="; ip route show default 2>/dev/null
+echo; echo "== DNS =="; grep -E '^(nameserver|search)' /etc/resolv.conf 2>/dev/null
+echo; echo "== Проверка связи =="
+for h in 1.1.1.1 8.8.8.8; do
+    if ping -c 2 -W 2 "$h" >/dev/null 2>&1; then echo "ping $h: ok"; else echo "ping $h: нет ответа"; fi
+done
+if command -v getent >/dev/null 2>&1 && getent hosts example.com >/dev/null 2>&1; then echo "DNS: ok"; else echo "DNS: не разрешает example.com"; fi
+echo; echo "== Соединения =="; ss -s 2>/dev/null | head -n 4

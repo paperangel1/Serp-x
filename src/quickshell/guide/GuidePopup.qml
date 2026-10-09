@@ -8,6 +8,7 @@ import Quickshell.Io
 import "../"
 import "../reusables"
 import "../reusables/buttons"
+import "../custom"
 
 Item {
     id: root
@@ -2953,11 +2954,11 @@ Item {
                     }
 
                     ClickButton {
-                        visible: Updater.updateAvailable && !root.searchActive
+                        visible: (Updater.updateAvailable || XUpdate.updateAvailable) && !root.searchActive
                         Layout.fillWidth: true
                         implicitHeight: root.s(38)
                         cornerRadius: ThemeBackend.borderRadius
-                        buttonText: I18n.t("guide.update_available")
+                        buttonText: XUpdate.buttonText
                         buttonIcon: "󰚰"
                         iconFontSize: root.s(16)
                         textFontSize: root.s(13)
@@ -2966,7 +2967,7 @@ Item {
                         opacity: root.getTabOpacity(12)
                         transform: Translate { x: root.s(-24) * (1.0 - root.getTabProgress(12)) }
                         onClicked: {
-                            root.gotoTab("about");
+                            root.gotoTab("updates");
                         }
                     }
                 }
@@ -3128,4 +3129,5 @@ Item {
             }
         }
     }
+    GuideExtensions { guide: root; sidebarColumn: tabsCol; sidebarFlickable: tabsFlickable } // serp-x hook
 }

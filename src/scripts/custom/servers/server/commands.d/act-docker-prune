@@ -1,0 +1,7 @@
+#!/bin/sh
+# serp-timeout: 180
+command -v docker >/dev/null 2>&1 || { echo "docker не найден"; exit 1; }
+echo "Удаляю неиспользуемые образы и кэш сборки (тома и работающие контейнеры не затрагиваются)…"
+docker image prune -f 2>&1 | tail -n 3
+docker builder prune -f 2>&1 | tail -n 3
+echo; docker system df 2>/dev/null

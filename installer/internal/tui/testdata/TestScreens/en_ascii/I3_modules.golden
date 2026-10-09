@@ -1,0 +1,32 @@
+* Serpantinum - serp-x build   installer v2.2.4-s3                             language  RU  EN   F2
+                                                                                                    
++ Check -- + Mode -- * Modules  -- o Settings -- o Summary -- o Install -- o Done                   
+                                                                                                    
+Preset:  1 Full   2 Minimal   3 Custom                                                              
+                                                                                                    
+┌─ Modules ──────────────────────────────────────────────┐  ┌─ Video examples (yt-dlp) ────────────┐
+│ REQUIRED                                               │  │                                      │
+│ [#] Shell + build base                 1.07 GiB 13 min │  │ "Download video by link", "audio     │
+│ BUILD FEATURES                                         │  │ from a clip".                        │
+│ [x] Hotkeys menu                              -    2 s │  │                                      │
+│ [x] Color emoji                         9.0 MiB    5 s │  │ Packages: yt-dlp                     │
+│ [ ] Color picker & notes                      -    1 s │  │                                      │
+│ [ ] OCR                                  18 MiB   10 s │  │                                      │
+│ [ ] AI: Gemini                                -    1 s │  │                                      │
+│ [ ] Servers widget                      1.4 MiB    2 s │  └──────────────────────────────────────┘
+│ [ ] VPN (Xray)                           15 MiB   30 s │  ┌──────────────────────────────────────┐
+│ [x] Commands                                  -   auto │  │ Enabled automatically: Commands      │
+│   [x] ` Video examples (yt-dlp)         5.0 MiB    5 s │  │ (needed by your choice).             │
+│ UPSTREAM AND SYSTEM                                    │  │                                      │
+│ [ ] NVIDIA driver (GPU found)           350 MiB  3 min │  │                                      │
+│ [ ] SDDM login screen                   2.0 MiB   10 s │  │                                      │
+│ [ ] Full wallpaper pack                 300 MiB  2 min │  │                                      │
+│                                                        │  └──────────────────────────────────────┘
+│                                                        │  ┌─ Total ──────────────────────────────┐
+│                                                        │  │                                      │
+│                                                        │  │ Download 1.09 GiB                    │
+│                                                        │  │ On disk  3.16 GiB                    │
+│                                                        │  │ Time     ~ 15 min                    │
+│                                                        │  │ at 11 MB/s                           │
+└────────────────────────────────────────────────────────┘  └──────────────────────────────────────┘
+ ^v  select   Space  on/off   1 2 3  preset   Enter  next   Esc  back                               

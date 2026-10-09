@@ -1,0 +1,32 @@
+* Serpantinum - serp-x build   installer v2.2.4-s3                             language  RU  EN   F2
+                                                                                                    
++ Check -- + Mode -- + Modules -- * Settings  -- o Summary -- o Install -- o Done                   
+                                                                                                    
+Setting 4 of 6                                                                           * * * * o o
+Servers widget: panel and SSH key                                                                   
+                                                                                                    
+Remnawave panel address and API token. Stored in ~/.config/serpantinum/secrets/ (600). You can      
+skip it.                                                                                            
+                                                                                                    
+┌─ Servers widget ─────────────────────────────────────────────────────────────────────────────────┐
+│ Remnawave panel URL  https://panel.example.com                                                   │
+│   + format looks right                                                                           │
+│ Remnawave API token  ***************_                                                            │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+┌─ SSH key for the widget only ────────────────────────────────────────────────────────────────────┐
+│ + ed25519 key created: ~/.config/serpantinum/servers/id_serp  SHA256:Q3c.example                 │
+│ On every server add exactly this line to ~serp/.ssh/authorized_keys:                             │
+│ restrict,command="/usr/local/sbin/serp-run" ssh-ed25519                                          │
+│ AAAAC3NzaC1lZDI1NTE5AAAAIExampleKeyOnlyFakeFakeFakeFake0000 serpantinum                          │
+│ The key can only run allowed commands (allowlist), no shell, no forwarding:                      │
+│ status - diag-disk - diag-load - diag-logs - diag-net - diag-ports - diag-security               │
+│ act-restart-node - act-update-container - act-docker-prune - act-reboot                          │
+│ Easier: after the install press "Connect server" in the widget.                                  │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+                                                                                                    
+ Save the line to ~/serp-authorized_keys.txt   Skip - I will set it up later   Next ->              
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+ Tab  field   c  save the line to a file   Enter  next   Ctrl+S  skip   Esc  back                   

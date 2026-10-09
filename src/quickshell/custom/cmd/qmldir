@@ -1,0 +1,50 @@
+# Siblings of the Commands window: in the live qs:@ VFS a file only sees its own directory's qmldir plus the qmldir of
+# imported directories, so every component used by another file of this folder must be listed here.
+singleton CK 1.0 CK.qml
+CT 1.0 CT.qml
+CmdChip 1.0 CmdChip.qml
+CmdBtn 1.0 CmdBtn.qml
+PinDot 1.0 PinDot.qml
+NodeCard 1.0 NodeCard.qml
+GridBg 1.0 GridBg.qml
+GraphCanvas 1.0 GraphCanvas.qml
+MiniMap 1.0 MiniMap.qml
+NodeHelp 1.0 NodeHelp.qml
+GraphView 1.0 GraphView.qml
+MiniPreview 1.0 MiniPreview.qml
+CmdSidebar 1.0 CmdSidebar.qml
+CmdRow 1.0 CmdRow.qml
+CmdList 1.0 CmdList.qml
+FnLibrary 1.0 FnLibrary.qml
+CmdDetail 1.0 CmdDetail.qml
+CmdView 1.0 CmdView.qml
+CmdWindow 1.0 CmdWindow.qml
+singleton XEdit 1.0 XEdit.qml
+NodePalette 1.0 NodePalette.qml
+ValueEditor 1.0 ValueEditor.qml
+ProblemBubble 1.0 ProblemBubble.qml
+IssuesPanel 1.0 IssuesPanel.qml
+CmdDialogs 1.0 CmdDialogs.qml
+XCmdIdle 1.0 XCmdIdle.qml
+XCmdBridge 1.0 XCmdBridge.qml
+CmdAskDialog 1.0 CmdAskDialog.qml
+CmdResultPopup 1.0 CmdResultPopup.qml
+CmdAskView 1.0 CmdAskView.qml
+CmdResultView 1.0 CmdResultView.qml
+singleton XCmdDebug 1.0 XCmdDebug.qml
+TracePanel 1.0 TracePanel.qml
+singleton XCmdTutorial 1.0 XCmdTutorial.qml
+TutorialOverlay 1.0 TutorialOverlay.qml
+GalleryView 1.0 GalleryView.qml
+DocsView 1.0 DocsView.qml
+XCmdShell 1.0 XCmdShell.qml
+CmdPaletteView 1.0 CmdPaletteView.qml
+CmdPalette 1.0 CmdPalette.qml
+CmdMenuView 1.0 CmdMenuView.qml
+CmdMenu 1.0 CmdMenu.qml
+CmdFace 1.0 CmdFace.qml
+SideCmdFace 1.0 SideCmdFace.qml
+CmdWidgetView 1.0 CmdWidgetView.qml
+CmdWidgetCompact 1.0 CmdWidgetCompact.qml
+CmdWidgetDetailed 1.0 CmdWidgetDetailed.qml
+XCmdLaunchHost 1.0 XCmdLaunchHost.qml

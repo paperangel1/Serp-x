@@ -1,0 +1,13 @@
+{
+  "tabs": {
+    "hotkeys": "Горячие клавиши",
+    "updates": "Обновления",
+    "tools": "Инструменты"
+  },
+  "placeholder": {
+    "soon": "Эта страница в разработке"
+  },
+  "update": {
+    "sidebar_button": "Обновление {label}"
+  }
+}

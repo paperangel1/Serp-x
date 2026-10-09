@@ -1,0 +1,5 @@
+#!/bin/sh
+echo "== Нагрузка =="; uptime
+echo; echo "== Память =="; free -h 2>/dev/null
+echo; echo "== Топ процессов по CPU =="; ps -eo pid,pcpu,pmem,comm --sort=-pcpu 2>/dev/null | head -n 8
+echo; echo "== Топ процессов по памяти =="; ps -eo pid,pcpu,pmem,comm --sort=-pmem 2>/dev/null | head -n 6

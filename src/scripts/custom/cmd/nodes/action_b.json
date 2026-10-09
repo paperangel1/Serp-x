@@ -1,0 +1,567 @@
+{
+  "nodes": [
+    {
+      "id": "action.file.rename",
+      "version": 1,
+      "category": "action",
+      "flow": "action",
+      "icon": "edit",
+      "name": {
+        "ru": "Переименовать файл",
+        "en": "Rename file"
+      },
+      "description": {
+        "ru": "Меняет имя файла, оставляя его в той же папке. Файлы не затираются: при занятом имени добавляется « (1)», либо шаг пропускается, либо команда останавливается. Правила путей те же, что у «Переместить файл»: только домашняя папка, вне её нужно «Разрешить вне домашней папки» и право file.write.any. Откат возвращает прежнее имя.",
+        "en": "Changes the file name, keeping it in the same folder. Files are never overwritten: on a name clash \" (1)\" is added, or the step is skipped, or the command stops. The path rules are those of \"Move file\": the home folder only; outside it enable \"Allow outside home\" and the file.write.any right. Restore brings the old name back."
+      },
+      "example": {
+        "ru": "Переименовать в report-2026.pdf.",
+        "en": "Rename to report-2026.pdf."
+      },
+      "inputs": [
+        {
+          "id": "exec_in",
+          "type": "exec"
+        },
+        {
+          "id": "path",
+          "type": "text",
+          "label": {
+            "ru": "Файл",
+            "en": "File"
+          },
+          "required": true
+        },
+        {
+          "id": "name",
+          "type": "text",
+          "label": {
+            "ru": "Новое имя",
+            "en": "New name"
+          },
+          "required": true
+        },
+        {
+          "id": "on_exists",
+          "type": "text",
+          "label": {
+            "ru": "Если имя занято",
+            "en": "If the name is taken"
+          },
+          "default": "rename",
+          "choices": [
+            "rename",
+            "skip",
+            "fail"
+          ],
+          "choice_labels": {
+            "ru": {
+              "rename": "добавить (1)",
+              "skip": "пропустить",
+              "fail": "ошибка"
+            },
+            "en": {
+              "rename": "add (1)",
+              "skip": "skip",
+              "fail": "error"
+            }
+          }
+        },
+        {
+          "id": "allow_outside_home",
+          "type": "bool",
+          "label": {
+            "ru": "Разрешить вне домашней папки",
+            "en": "Allow outside home"
+          },
+          "default": false,
+          "literal": true
+        }
+      ],
+      "outputs": [
+        {
+          "id": "exec_out",
+          "type": "exec",
+          "label": {
+            "ru": "Готово",
+            "en": "Done"
+          }
+        },
+        {
+          "id": "new_path",
+          "type": "text",
+          "label": {
+            "ru": "Новый путь",
+            "en": "New path"
+          },
+          "default": ""
+        }
+      ],
+      "executor": {
+        "kind": "py",
+        "ref": "file_rename"
+      },
+      "capabilities": [
+        "file.write"
+      ],
+      "timeout_s": 10,
+      "danger": "none",
+      "side_effects": true,
+      "undo": {
+        "capture": "rename_capture",
+        "restore": "rename_restore",
+        "default": "off"
+      },
+      "changes_state": true,
+      "capabilities_if": {
+        "allow_outside_home": [
+          "file.write.any"
+        ]
+      }
+    },
+    {
+      "id": "action.file.archive",
+      "version": 1,
+      "category": "action",
+      "flow": "action",
+      "icon": "archive",
+      "name": {
+        "ru": "Архивировать",
+        "en": "Archive"
+      },
+      "description": {
+        "ru": "Упаковывает файлы и папки в архив zip (ссылки не разворачиваются). Архив кладётся в указанную папку или рядом с первым файлом; существующие архивы не затираются. Исходные файлы не меняются, поэтому откат не нужен. Предел: 20000 файлов и 4 ГБ.",
+        "en": "Packs files and folders into a zip archive (symbolic links are not followed). The archive goes into the given folder or next to the first file; existing archives are never overwritten. The source files are not changed, so no restore is needed. Limit: 20000 files and 4 GB."
+      },
+      "example": {
+        "ru": "Архив из выбранных файлов.",
+        "en": "An archive of the selected files."
+      },
+      "inputs": [
+        {
+          "id": "exec_in",
+          "type": "exec"
+        },
+        {
+          "id": "paths",
+          "type": "list<text>",
+          "label": {
+            "ru": "Файлы",
+            "en": "Files"
+          },
+          "required": true
+        },
+        {
+          "id": "name",
+          "type": "text",
+          "label": {
+            "ru": "Имя архива",
+            "en": "Archive name"
+          },
+          "default": "archive.zip"
+        },
+        {
+          "id": "folder",
+          "type": "text",
+          "label": {
+            "ru": "Папка архива",
+            "en": "Archive folder"
+          },
+          "default": ""
+        },
+        {
+          "id": "allow_outside_home",
+          "type": "bool",
+          "label": {
+            "ru": "Разрешить вне домашней папки",
+            "en": "Allow outside home"
+          },
+          "default": false,
+          "literal": true
+        }
+      ],
+      "outputs": [
+        {
+          "id": "exec_out",
+          "type": "exec",
+          "label": {
+            "ru": "Готово",
+            "en": "Done"
+          }
+        },
+        {
+          "id": "archive",
+          "type": "text",
+          "label": {
+            "ru": "Архив",
+            "en": "Archive"
+          },
+          "default": ""
+        },
+        {
+          "id": "count",
+          "type": "int",
+          "label": {
+            "ru": "Файлов в архиве",
+            "en": "Files packed"
+          },
+          "default": 0
+        }
+      ],
+      "executor": {
+        "kind": "py",
+        "ref": "file_archive"
+      },
+      "capabilities": [
+        "file.write"
+      ],
+      "timeout_s": 600,
+      "danger": "none",
+      "side_effects": true,
+      "changes_state": true,
+      "no_undo_reason": "создаётся новый архив, исходные файлы не меняются; удалять файлы команды не умеют",
+      "capabilities_if": {
+        "allow_outside_home": [
+          "file.write.any"
+        ]
+      }
+    },
+    {
+      "id": "action.http.request",
+      "version": 1,
+      "category": "action",
+      "flow": "latent",
+      "icon": "globe",
+      "name": {
+        "ru": "HTTP-запрос",
+        "en": "HTTP request"
+      },
+      "description": {
+        "ru": "Отправляет запрос GET или POST и отдаёт код ответа и текст (до 1 МБ). Есть время ожидания; перенаправления идут только на http и https. Заголовки пишутся строками «Имя: значение»; значение вида secret:имя берётся из ~/.config/serpantinum/secrets и в журнал не попадает. Адрес и тело в журнал не пишутся, только сайт и код. Нужно право net.http: команда сможет отправлять данные в сеть.",
+        "en": "Sends a GET or POST request and returns the status code and the text (up to 1 MB). There is a timeout; redirects only go to http and https. Headers are lines \"Name: value\"; a value like secret:name is read from ~/.config/serpantinum/secrets and never reaches the log. The URL and body are not logged, only the site and the status. Needs the net.http right: the command will be able to send data to the network."
+      },
+      "example": {
+        "ru": "GET https://example.com/api.",
+        "en": "GET https://example.com/api."
+      },
+      "inputs": [
+        {
+          "id": "exec_in",
+          "type": "exec"
+        },
+        {
+          "id": "url",
+          "type": "text",
+          "label": {
+            "ru": "Адрес",
+            "en": "URL"
+          },
+          "required": true,
+          "log": "length"
+        },
+        {
+          "id": "method",
+          "type": "text",
+          "label": {
+            "ru": "Метод",
+            "en": "Method"
+          },
+          "default": "GET",
+          "literal": true,
+          "choices": [
+            "GET",
+            "POST"
+          ]
+        },
+        {
+          "id": "headers",
+          "type": "text",
+          "label": {
+            "ru": "Заголовки",
+            "en": "Headers"
+          },
+          "default": "",
+          "log": "mask"
+        },
+        {
+          "id": "body",
+          "type": "text",
+          "label": {
+            "ru": "Тело",
+            "en": "Body"
+          },
+          "default": "",
+          "log": "length"
+        },
+        {
+          "id": "timeout",
+          "type": "int",
+          "label": {
+            "ru": "Время ожидания, с",
+            "en": "Timeout, s"
+          },
+          "default": 15,
+          "literal": true
+        }
+      ],
+      "outputs": [
+        {
+          "id": "exec_out",
+          "type": "exec",
+          "label": {
+            "ru": "Готово",
+            "en": "Done"
+          }
+        },
+        {
+          "id": "status",
+          "type": "int",
+          "label": {
+            "ru": "Код",
+            "en": "Status"
+          },
+          "default": 0
+        },
+        {
+          "id": "text",
+          "type": "text",
+          "label": {
+            "ru": "Ответ",
+            "en": "Response"
+          },
+          "default": ""
+        },
+        {
+          "id": "ok",
+          "type": "bool",
+          "label": {
+            "ru": "Успех (2xx)",
+            "en": "Success (2xx)"
+          },
+          "default": false
+        }
+      ],
+      "executor": {
+        "kind": "py",
+        "ref": "http_request"
+      },
+      "capabilities": [
+        "net.http"
+      ],
+      "timeout_s": 75,
+      "danger": "none",
+      "side_effects": true
+    },
+    {
+      "id": "action.ai.gemini",
+      "version": 1,
+      "category": "action",
+      "flow": "latent",
+      "icon": "spark",
+      "name": {
+        "ru": "Gemini",
+        "en": "Gemini"
+      },
+      "description": {
+        "ru": "Просит Gemini перевести, объяснить, сократить текст или выполнить свой запрос. ВНИМАНИЕ: текст отправляется в сервис Google. Ключ берётся из ~/.config/serpantinum/secrets/gemini_key, запрос идёт через прокси, если он задан в настройках (ai.proxy), с запасной моделью. Текст до 8000 символов. Текст и ответ в журнал не пишутся. Нужно право net.gemini.",
+        "en": "Asks Gemini to translate, explain or shorten a text, or to run your own prompt. NOTE: the text is sent to a Google service. The key is read from ~/.config/serpantinum/secrets/gemini_key and the request goes through a proxy if one is set in the settings (ai.proxy), with a fallback model. Text up to 8000 characters. The text and the answer are not logged. Needs the net.gemini right."
+      },
+      "example": {
+        "ru": "Объяснить выделенный текст по-русски.",
+        "en": "Explain the selected text in Russian."
+      },
+      "inputs": [
+        {
+          "id": "exec_in",
+          "type": "exec"
+        },
+        {
+          "id": "mode",
+          "type": "text",
+          "label": {
+            "ru": "Что сделать",
+            "en": "Task"
+          },
+          "default": "explain",
+          "choices": [
+            "translate",
+            "explain",
+            "shorten",
+            "custom"
+          ],
+          "choice_labels": {
+            "ru": {
+              "translate": "перевести",
+              "explain": "объяснить",
+              "shorten": "сократить",
+              "custom": "свой запрос"
+            },
+            "en": {
+              "translate": "translate",
+              "explain": "explain",
+              "shorten": "shorten",
+              "custom": "custom prompt"
+            }
+          }
+        },
+        {
+          "id": "text",
+          "type": "text",
+          "label": {
+            "ru": "Текст",
+            "en": "Text"
+          },
+          "required": true,
+          "log": "length"
+        },
+        {
+          "id": "language",
+          "type": "text",
+          "label": {
+            "ru": "Язык ответа",
+            "en": "Answer language"
+          },
+          "default": "ru"
+        },
+        {
+          "id": "prompt",
+          "type": "text",
+          "label": {
+            "ru": "Запрос (для «свой запрос»)",
+            "en": "Prompt (for \"custom prompt\")"
+          },
+          "default": "",
+          "log": "length"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "exec_out",
+          "type": "exec",
+          "label": {
+            "ru": "Готово",
+            "en": "Done"
+          }
+        },
+        {
+          "id": "result",
+          "type": "text",
+          "label": {
+            "ru": "Результат",
+            "en": "Result"
+          },
+          "default": "",
+          "log": "length"
+        }
+      ],
+      "executor": {
+        "kind": "py",
+        "ref": "ai_gemini"
+      },
+      "capabilities": [
+        "net.gemini"
+      ],
+      "timeout_s": 100,
+      "danger": "none",
+      "side_effects": true
+    },
+    {
+      "id": "action.server.run",
+      "version": 1,
+      "category": "action",
+      "flow": "latent",
+      "icon": "server",
+      "name": {
+        "ru": "Команда на сервере",
+        "en": "Server command"
+      },
+      "description": {
+        "ru": "Запускает разрешённую команду на сервере из раздела «Серверы» (по имени или id) и отдаёт вывод. Опасные команды (перезапуск, обновление) просят подтверждение в момент запуска; нет ответа за минуту — команда не запускается. Команды с вводом имени сервера (перезагрузка) из автоматизации не запускаются, пока не включить «Разрешить самые опасные» и не подтвердить право servers.run.typed. Вывод в журнал не пишется. Откат невозможен.",
+        "en": "Runs an allowed command on a server from the Servers section (by name or id) and returns its output. Dangerous commands (restart, update) ask for confirmation at run time; no answer in a minute means the command is not run. Commands that need the server name typed (reboot) are refused from automations unless \"Allow the most dangerous\" is on and the servers.run.typed right is approved. The output is not logged. It cannot be undone."
+      },
+      "example": {
+        "ru": "Сервер vps: перезапустить узел.",
+        "en": "Server vps: restart the node."
+      },
+      "inputs": [
+        {
+          "id": "exec_in",
+          "type": "exec"
+        },
+        {
+          "id": "server",
+          "type": "text",
+          "label": {
+            "ru": "Сервер (имя или id)",
+            "en": "Server (name or id)"
+          },
+          "required": true
+        },
+        {
+          "id": "command",
+          "type": "text",
+          "label": {
+            "ru": "Команда (id, например act-restart-node)",
+            "en": "Command (id, e.g. act-restart-node)"
+          },
+          "required": true
+        },
+        {
+          "id": "allow_typed",
+          "type": "bool",
+          "label": {
+            "ru": "Разрешить самые опасные",
+            "en": "Allow the most dangerous"
+          },
+          "default": false,
+          "literal": true
+        }
+      ],
+      "outputs": [
+        {
+          "id": "exec_out",
+          "type": "exec",
+          "label": {
+            "ru": "Готово",
+            "en": "Done"
+          }
+        },
+        {
+          "id": "output",
+          "type": "text",
+          "label": {
+            "ru": "Вывод",
+            "en": "Output"
+          },
+          "default": ""
+        },
+        {
+          "id": "exit_code",
+          "type": "int",
+          "label": {
+            "ru": "Код выхода",
+            "en": "Exit code"
+          },
+          "default": 0
+        }
+      ],
+      "executor": {
+        "kind": "py",
+        "ref": "server_run"
+      },
+      "capabilities": [
+        "servers.run"
+      ],
+      "timeout_s": 700,
+      "danger": "none",
+      "side_effects": true,
+      "changes_state": true,
+      "no_undo_reason": "команду на сервере нельзя откатить отсюда",
+      "capabilities_if": {
+        "allow_typed": [
+          "servers.run.typed"
+        ]
+      }
+    }
+  ]
+}

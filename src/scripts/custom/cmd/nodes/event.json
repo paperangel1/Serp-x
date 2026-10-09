@@ -1,0 +1,24 @@
+{
+  "nodes": [
+    {
+      "id": "event.manual", "version": 1, "category": "event", "flow": "event", "icon": "play",
+      "name": {"ru": "Вручную", "en": "Manually"},
+      "description": {
+        "ru": "Запускает команду вручную: из палитры команд, по горячей клавише или командой serpantinum-x run. Если в команде есть любое другое событие, она становится автоматизацией.",
+        "en": "Starts the command by hand: from the command palette, a hotkey or `serpantinum-x run`. Any other event in the command makes it an automation."
+      },
+      "example": {
+        "ru": "Вручную → Уведомление «Привет».",
+        "en": "Manually → Notification \"Hello\"."
+      },
+      "inputs": [],
+      "outputs": [
+        {"id": "exec", "type": "exec", "label": {"ru": "Запуск", "en": "Start"}},
+        {"id": "arg", "type": "text", "label": {"ru": "Аргумент", "en": "Argument"}, "default": ""}
+      ],
+      "source": {"emits": "manual"},
+      "executor": {"kind": "builtin", "ref": "event"},
+      "capabilities": [], "changes_state": false, "side_effects": false
+    }
+  ]
+}

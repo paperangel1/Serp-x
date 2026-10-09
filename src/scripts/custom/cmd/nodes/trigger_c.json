@@ -1,0 +1,411 @@
+{
+  "nodes": [
+    {
+      "id": "event.clipboard.color",
+      "version": 1,
+      "category": "event",
+      "flow": "event",
+      "icon": "palette",
+      "name": {
+        "ru": "Скопирован цвет",
+        "en": "Colour copied"
+      },
+      "description": {
+        "ru": "Срабатывает, когда в буфер скопирован цвет: «#rgb», «#rrggbb», «rgb(12, 34, 56)» или «hsl(200, 50%, 40%)» (весь буфер — только цвет). Отдаёт цвет в виде HEX и RGB. Это ТО ЖЕ отдельное право «слежение за буфером обмена», что и у «Скопирована ссылка»: оболочка читает буфер, пока команда включена. Содержимое получает только эта команда и нигде не сохраняется; в журнал попадает лишь вид и длина. Копирование самой командой («Положить в буфер») не считается.",
+        "en": "Fires when a colour is copied: \"#rgb\", \"#rrggbb\", \"rgb(12, 34, 56)\" or \"hsl(200, 50%, 40%)\" (the whole clipboard is just the colour). Gives the colour as HEX and RGB. This is the SAME separate \"watch the clipboard\" right as \"Link copied\": the shell reads the clipboard while the command is enabled. Only this command gets the content and it is never stored; only the kind and the length are logged. Copies made by a command (\"Put in clipboard\") are ignored."
+      },
+      "example": {
+        "ru": "Скопировали «#3b82f6» → показать HEX и RGB.",
+        "en": "Copied \"#3b82f6\" → show HEX and RGB."
+      },
+      "inputs": [],
+      "outputs": [
+        {
+          "id": "exec",
+          "type": "exec",
+          "label": {
+            "ru": "Запуск",
+            "en": "Start"
+          }
+        },
+        {
+          "id": "hex",
+          "type": "text",
+          "label": {
+            "ru": "HEX",
+            "en": "HEX"
+          },
+          "default": "",
+          "log": "length"
+        },
+        {
+          "id": "rgb",
+          "type": "text",
+          "label": {
+            "ru": "RGB",
+            "en": "RGB"
+          },
+          "default": "",
+          "log": "length"
+        }
+      ],
+      "source": {
+        "emits": "clipboard.color",
+        "src": "clipboard"
+      },
+      "executor": {
+        "kind": "builtin",
+        "ref": "event"
+      },
+      "capabilities": [
+        "trigger.clipboard"
+      ],
+      "changes_state": false,
+      "side_effects": false
+    },
+    {
+      "id": "event.clipboard.phone",
+      "version": 1,
+      "category": "event",
+      "flow": "event",
+      "icon": "phone",
+      "name": {
+        "ru": "Скопирован телефон",
+        "en": "Phone number copied"
+      },
+      "description": {
+        "ru": "Срабатывает, когда в буфер скопирован номер телефона (весь буфер — 7–15 цифр, при желании с «+», пробелами, скобками и дефисами; даты и IP-адреса не считаются). Отдаёт цифры и номер в виде, близком к E.164 («+7…» для российских 8… и 10-значных номеров). Это ТО ЖЕ отдельное право «слежение за буфером обмена», что и у «Скопирована ссылка»: оболочка читает буфер, пока команда включена. Содержимое получает только эта команда и нигде не сохраняется; в журнал попадает лишь вид и длина. Копирование самой командой («Положить в буфер») не считается.",
+        "en": "Fires when a phone number is copied (the whole clipboard is 7-15 digits, optionally with \"+\", spaces, brackets and dashes; dates and IP addresses do not count). Gives the digits and an E.164-like number (\"+7…\" for Russian 8… and 10-digit numbers). This is the SAME separate \"watch the clipboard\" right as \"Link copied\": the shell reads the clipboard while the command is enabled. Only this command gets the content and it is never stored; only the kind and the length are logged. Copies made by a command (\"Put in clipboard\") are ignored."
+      },
+      "example": {
+        "ru": "Скопировали номер → предложить позвонить или сохранить.",
+        "en": "Copied a number → offer to call or save it."
+      },
+      "inputs": [],
+      "outputs": [
+        {
+          "id": "exec",
+          "type": "exec",
+          "label": {
+            "ru": "Запуск",
+            "en": "Start"
+          }
+        },
+        {
+          "id": "digits",
+          "type": "text",
+          "label": {
+            "ru": "Цифры",
+            "en": "Digits"
+          },
+          "default": "",
+          "log": "length"
+        },
+        {
+          "id": "e164",
+          "type": "text",
+          "label": {
+            "ru": "Номер (E.164)",
+            "en": "Number (E.164)"
+          },
+          "default": "",
+          "log": "length"
+        }
+      ],
+      "source": {
+        "emits": "clipboard.phone",
+        "src": "clipboard"
+      },
+      "executor": {
+        "kind": "builtin",
+        "ref": "event"
+      },
+      "capabilities": [
+        "trigger.clipboard"
+      ],
+      "changes_state": false,
+      "side_effects": false
+    },
+    {
+      "id": "event.bluetooth.device",
+      "version": 1,
+      "category": "event",
+      "flow": "event",
+      "icon": "bluetooth",
+      "name": {
+        "ru": "Bluetooth-устройство",
+        "en": "Bluetooth device"
+      },
+      "description": {
+        "ru": "Срабатывает, когда устройство Bluetooth подключается или отключается (наушники, клавиатура, мышь…). Можно ограничить именем или MAC-адресом (часть текста или re:выражение) и выбрать событие. Источник — BlueZ по D-Bus (dbus-monitor), только чтение: ничего не подключается и не ищется.",
+        "en": "Fires when a Bluetooth device connects or disconnects (headphones, keyboard, mouse...). It can be limited by name or MAC address (part of the text or re:regex) and by the event. The source is BlueZ over D-Bus (dbus-monitor), read-only: nothing is connected or scanned."
+      },
+      "example": {
+        "ru": "Подключились наушники → включить музыку.",
+        "en": "Headphones connected → start music."
+      },
+      "inputs": [
+        {
+          "id": "name_filter",
+          "type": "text",
+          "label": {
+            "ru": "Имя или MAC",
+            "en": "Name or MAC"
+          },
+          "default": "",
+          "literal": true
+        },
+        {
+          "id": "change",
+          "type": "text",
+          "label": {
+            "ru": "Событие",
+            "en": "Event"
+          },
+          "default": "connected",
+          "literal": true,
+          "choices": [
+            "any",
+            "connected",
+            "disconnected"
+          ],
+          "choice_labels": {
+            "ru": {
+              "any": "любое",
+              "connected": "подключено",
+              "disconnected": "отключено"
+            },
+            "en": {
+              "any": "any",
+              "connected": "connected",
+              "disconnected": "disconnected"
+            }
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "id": "exec",
+          "type": "exec",
+          "label": {
+            "ru": "Запуск",
+            "en": "Start"
+          }
+        },
+        {
+          "id": "name",
+          "type": "text",
+          "label": {
+            "ru": "Имя",
+            "en": "Name"
+          },
+          "default": ""
+        },
+        {
+          "id": "kind",
+          "type": "text",
+          "label": {
+            "ru": "Вид (audio, input, other)",
+            "en": "Kind (audio, input, other)"
+          },
+          "default": ""
+        },
+        {
+          "id": "connected",
+          "type": "bool",
+          "label": {
+            "ru": "Подключено",
+            "en": "Connected"
+          },
+          "default": false
+        }
+      ],
+      "source": {
+        "emits": "bluetooth.device",
+        "src": "bluetooth"
+      },
+      "executor": {
+        "kind": "builtin",
+        "ref": "event"
+      },
+      "capabilities": [
+        "trigger.bluetooth"
+      ],
+      "changes_state": false,
+      "side_effects": false
+    },
+    {
+      "id": "event.vpn.changed",
+      "version": 1,
+      "category": "event",
+      "flow": "event",
+      "icon": "shield",
+      "name": {
+        "ru": "VPN изменился",
+        "en": "VPN changed"
+      },
+      "description": {
+        "ru": "Срабатывает, когда наш VPN включился, выключился, сменил узел или не смог включиться (источник — журнал событий модуля VPN, только чтение; сетей и службы он не касается). Отдаёт состояние, имя узла и причину отказа.",
+        "en": "Fires when our VPN turned on, turned off, changed node or failed to turn on (the source is the VPN module's event log, read-only; it touches neither the network nor the service). Gives the state, the node name and the failure reason."
+      },
+      "example": {
+        "ru": "VPN упал → показать уведомление.",
+        "en": "VPN failed → show a notification."
+      },
+      "inputs": [
+        {
+          "id": "state_filter",
+          "type": "text",
+          "label": {
+            "ru": "Состояние",
+            "en": "State"
+          },
+          "default": "any",
+          "literal": true,
+          "choices": [
+            "any",
+            "connected",
+            "disconnected",
+            "failed"
+          ],
+          "choice_labels": {
+            "ru": {
+              "any": "любое",
+              "connected": "включился",
+              "disconnected": "выключился",
+              "failed": "ошибка"
+            },
+            "en": {
+              "any": "any",
+              "connected": "connected",
+              "disconnected": "disconnected",
+              "failed": "failed"
+            }
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "id": "exec",
+          "type": "exec",
+          "label": {
+            "ru": "Запуск",
+            "en": "Start"
+          }
+        },
+        {
+          "id": "state",
+          "type": "text",
+          "label": {
+            "ru": "Состояние",
+            "en": "State"
+          },
+          "default": ""
+        },
+        {
+          "id": "node",
+          "type": "text",
+          "label": {
+            "ru": "Узел",
+            "en": "Node"
+          },
+          "default": ""
+        },
+        {
+          "id": "connected",
+          "type": "bool",
+          "label": {
+            "ru": "VPN включён",
+            "en": "VPN on"
+          },
+          "default": false
+        },
+        {
+          "id": "reason",
+          "type": "text",
+          "label": {
+            "ru": "Причина",
+            "en": "Reason"
+          },
+          "default": ""
+        }
+      ],
+      "source": {
+        "emits": "vpn.changed",
+        "src": "vpn"
+      },
+      "executor": {
+        "kind": "builtin",
+        "ref": "event"
+      },
+      "capabilities": [
+        "trigger.vpn"
+      ],
+      "changes_state": false,
+      "side_effects": false
+    },
+    {
+      "id": "event.wifi.disconnected",
+      "version": 1,
+      "category": "event",
+      "flow": "event",
+      "icon": "wifi",
+      "name": {
+        "ru": "Wi-Fi отключён",
+        "en": "Wi-Fi disconnected"
+      },
+      "description": {
+        "ru": "Срабатывает, когда компьютер отключается от Wi-Fi сети (можно указать имя сети). Источник — NetworkManager (nmcli monitor), только чтение. Пара к «Wi-Fi подключён».",
+        "en": "Fires when the computer disconnects from a Wi-Fi network (a network name can be given). The source is NetworkManager (nmcli monitor), read-only. The counterpart of \"Wi-Fi connected\"."
+      },
+      "example": {
+        "ru": "Отключились от рабочей сети → выключить VPN.",
+        "en": "Left the work network → turn the VPN off."
+      },
+      "inputs": [
+        {
+          "id": "ssid_filter",
+          "type": "text",
+          "label": {
+            "ru": "Имя сети",
+            "en": "Network name"
+          },
+          "default": "",
+          "literal": true
+        }
+      ],
+      "outputs": [
+        {
+          "id": "exec",
+          "type": "exec",
+          "label": {
+            "ru": "Запуск",
+            "en": "Start"
+          }
+        },
+        {
+          "id": "ssid",
+          "type": "text",
+          "label": {
+            "ru": "Сеть",
+            "en": "Network"
+          },
+          "default": ""
+        }
+      ],
+      "source": {
+        "emits": "wifi.disconnected",
+        "src": "wifi"
+      },
+      "executor": {
+        "kind": "builtin",
+        "ref": "event"
+      },
+      "capabilities": [
+        "trigger.network"
+      ],
+      "changes_state": false,
+      "side_effects": false
+    }
+  ]
+}

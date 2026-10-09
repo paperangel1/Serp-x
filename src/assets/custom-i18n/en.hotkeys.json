@@ -1,0 +1,173 @@
+{
+  "hotkeys": {
+    "unsupported": "Hotkey editing is only available on Hyprland",
+    "header": {
+      "desc": "View, change and add key combinations. Changes apply immediately.",
+      "add": "Add"
+    },
+    "apply": {
+      "ok": "Applied",
+      "running": "Applying…"
+    },
+    "notice": {
+      "imported": "Kept hotkeys that were missing from the settings: {list}"
+    },
+    "warn": {
+      "not_linked": "Your hotkeys are not connected to Hyprland",
+      "not_linked_desc": "hyprland.lua does not load user_keybinds.lua, so changes have no effect. \"Fix\" adds one line to hyprland.lua (a backup is made first).",
+      "apply_failed": "Could not apply the hotkeys",
+      "fix": "Fix"
+    },
+    "search": {
+      "placeholder": "Search: action, app or key…"
+    },
+    "stats": "Total: {total} · changed: {changed} · own: {own}",
+    "empty": "No hotkeys found",
+    "group": {
+      "mine": {
+        "title": "My hotkeys",
+        "desc": "Yours and the ones you changed"
+      },
+      "windows": {
+        "title": "Windows & workspaces",
+        "desc": "Close, move, switch"
+      },
+      "media": {
+        "title": "Media & sound",
+        "desc": "Playback, volume, brightness"
+      },
+      "system": {
+        "title": "System & screenshots",
+        "desc": "Lock, screenshots, power"
+      },
+      "apps": {
+        "title": "Applications",
+        "desc": "Files, terminal, browser"
+      },
+      "shell": {
+        "title": "Serpantinum shell",
+        "desc": "Launcher, clipboard, panels"
+      }
+    },
+    "badge": {
+      "own": "own",
+      "changed": "changed"
+    },
+    "type": {
+      "app": "Launch app",
+      "command": "Run command",
+      "shell": "Shell action",
+      "window": "Window / workspace",
+      "system": "System action",
+      "run": "Run a command…"
+    },
+    "builtin": {
+      "launcher": "Launcher",
+      "clipboard": "Clipboard",
+      "network": "Network",
+      "volume": "Volume",
+      "calendar": "Calendar",
+      "music": "Music",
+      "system": "System panel",
+      "wallpaper": "Wallpaper",
+      "guide": "Settings",
+      "autohide": "Panel auto-hide",
+      "lock": "Lock screen",
+      "screenshot": "Screenshot",
+      "screenshot_edit": "Screenshot (edit)",
+      "screenshot_full": "Full-screen screenshot",
+      "screenshot_full_edit": "Full-screen screenshot (edit)",
+      "vol_raise": "Volume up",
+      "vol_lower": "Volume down",
+      "vol_mute": "Mute",
+      "mic_mute": "Mute microphone",
+      "brightness_raise": "Brightness up",
+      "brightness_lower": "Brightness down",
+      "reload": "Restart the shell",
+      "workspace": "Go to workspace {n}",
+      "workspace_move": "Move window to workspace {n}",
+      "xpick": "Colour picker",
+      "xcolors": "Colour history",
+      "xnotes": "Quick notes",
+      "xnote_new": "New quick note"
+    },
+    "media": {
+      "play_pause": "Play / pause",
+      "next": "Next track",
+      "previous": "Previous track"
+    },
+    "dir": {
+      "left": "left",
+      "right": "right",
+      "up": "up",
+      "down": "down"
+    },
+    "dsp": {
+      "exec_cmd": "Run command",
+      "focus": "Focus",
+      "window_move": "Move window",
+      "window_resize": "Resize window",
+      "window_resize_mouse": "Resize window (mouse)",
+      "window_drag": "Drag window (mouse)",
+      "window_close": "Close window",
+      "window_float": "Floating mode",
+      "window_fullscreen": "Fullscreen",
+      "submap": "Switch mode",
+      "exit": "Exit Hyprland"
+    },
+    "combo": {
+      "placeholder": "Click to record",
+      "capture_hint": "Press the new combination  ·  Esc — cancel  ·  Backspace — clear",
+      "taken": "This combination is already taken",
+      "will_replace": "Will take over from: {name}",
+      "free": "Combination is free",
+      "modifiers": "Modifiers",
+      "info": "Hold the modifiers and press the main key, it is recorded automatically"
+    },
+    "conflict": {
+      "title": "This combination is already in use",
+      "desc": "If you replace it, the action below loses its keys; you can assign it a new combination later.",
+      "own": "your hotkey",
+      "system": "system hotkey",
+      "replace": "Replace",
+      "other": "Choose another"
+    },
+    "editor": {
+      "action": "Action",
+      "program": "Program",
+      "command": "Command",
+      "shell_action": "Shell action",
+      "window_action": "Action",
+      "what": "Does",
+      "pick_app": "Pick an app",
+      "name": "Name",
+      "name_placeholder": "Name",
+      "combo": "Combination",
+      "reset": "Reset to default ({name} · {combo})",
+      "delete": "Delete",
+      "cancel": "Cancel",
+      "save": "Save"
+    },
+    "add": {
+      "title": "New hotkey",
+      "desc": "Choose what to run, then press the keys",
+      "step1": "What to do",
+      "step2_app": "Pick an app",
+      "step2_command": "Enter the command",
+      "step2_action": "Pick an action",
+      "step3": "Press the combination",
+      "search_app": "Find an app…",
+      "no_apps": "Nothing found",
+      "confirm": "Add",
+      "step2_run": "Pick a command",
+      "search_cmd": "Find a command…",
+      "cmd_loading": "Loading commands…",
+      "cmd_none_found": "Nothing found",
+      "cmd_none": "No commands yet: create one in the Commands app",
+      "run_name": "Run: {name}"
+    },
+    "row": {
+      "blocked": "Combination is taken by: {name}"
+    }
+  }
+}

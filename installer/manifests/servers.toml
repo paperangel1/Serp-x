@@ -1,0 +1,55 @@
+id = "servers"
+schema = 1
+order = 70
+group = "build"
+presets = ["full"]
+name = { ru = "Виджет серверов", en = "Servers widget" }
+desc = { ru = "Состояние серверов из Remnawave и команды по SSH.", en = "Server status from Remnawave and SSH commands." }
+requires = ["core"]
+packages = ["openssh"]
+user_files = [
+  "~/.config/serpantinum/secrets/remnawave_url", "~/.config/serpantinum/secrets/remnawave_token",
+  "~/.config/serpantinum/servers/id_serp", "~/.config/serpantinum/servers/id_serp.pub",
+  "~/.config/serpantinum/servers/servers.toml",
+]
+estimate = { download_mib = 1.4, disk_mib = 5, install_s = 2 }
+
+[uninstall]
+keep_data = ["~/.config/serpantinum/servers", "~/.config/serpantinum/secrets"]
+
+[[config]]
+key = "servers.remnawave_url"
+kind = "secret"
+skippable = true
+store = "secrets/remnawave_url"
+validate = "^https://"
+label = { ru = "Адрес панели Remnawave", en = "Remnawave panel URL" }
+
+[[config]]
+key = "servers.remnawave_token"
+kind = "secret"
+skippable = true
+store = "secrets/remnawave_token"
+label = { ru = "API-токен Remnawave", en = "Remnawave API token" }
+
+[[config]]
+key = "servers.generate_key"
+kind = "bool"
+default = true
+label = { ru = "Создать SSH-ключ для серверов", en = "Generate an SSH key for servers" }
+
+[[steps]]
+id = "servers.secrets"
+kind = "secret"
+title = { ru = "Серверы: сохранение адреса и токена", en = "Servers: store URL and token" }
+args = { keys = ["servers.remnawave_url", "servers.remnawave_token"] }
+estimate_s = 1
+
+[[steps]]
+id = "servers.sshkey"
+kind = "script"
+title = { ru = "Серверы: SSH-ключ id_serp", en = "Servers: id_serp SSH key" }
+args = { mkdir = "~/.config/serpantinum/servers", cmd = ["ssh-keygen", "-t", "ed25519", "-N", "", "-C", "serpantinum", "-f", "~/.config/serpantinum/servers/id_serp"] }
+check = ["test", "-f", "~/.config/serpantinum/servers/id_serp"]
+after = ["servers.secrets"]
+estimate_s = 1

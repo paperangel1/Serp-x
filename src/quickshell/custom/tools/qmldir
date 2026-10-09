@@ -1,0 +1,14 @@
+ToolToast 1.0 ToolToast.qml
+ToolToastView 1.0 ToolToastView.qml
+PickerOverlay 1.0 PickerOverlay.qml
+PickerView 1.0 PickerView.qml
+ColorHistory 1.0 ColorHistory.qml
+ColorHistoryView 1.0 ColorHistoryView.qml
+NoteCard 1.0 NoteCard.qml
+NoteCardView 1.0 NoteCardView.qml
+NoteEditor 1.0 NoteEditor.qml
+NoteEditorView 1.0 NoteEditorView.qml
+NotesCorner 1.0 NotesCorner.qml
+XOcrButton 1.0 XOcrButton.qml
+XTools 1.0 XTools.qml
+ToolsTab 1.0 ToolsTab.qml

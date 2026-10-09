@@ -1,0 +1,165 @@
+{
+ "format": 1,
+ "id": "gallery-explain",
+ "name": "Объяснить",
+ "description": "Выделили текст, нажали хоткей: Gemini объяснит его во всплывающем окне.",
+ "enabled": false,
+ "nodes": [
+  {
+   "id": "n1",
+   "type": "event.manual@1",
+   "pos": [
+    0,
+    100
+   ],
+   "props": {}
+  },
+  {
+   "id": "n2",
+   "type": "data.selected_text@1",
+   "pos": [
+    340,
+    300
+   ],
+   "props": {}
+  },
+  {
+   "id": "n3",
+   "type": "action.ai.gemini@1",
+   "pos": [
+    340,
+    100
+   ],
+   "props": {
+    "mode": "explain",
+    "language": "ru"
+   }
+  },
+  {
+   "id": "n4",
+   "type": "ui.show_result@1",
+   "pos": [
+    680,
+    100
+   ],
+   "props": {
+    "title": "Объяснение"
+   }
+  }
+ ],
+ "wires": [
+  {
+   "from": [
+    "n1",
+    "exec"
+   ],
+   "to": [
+    "n3",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n2",
+    "text"
+   ],
+   "to": [
+    "n3",
+    "text"
+   ]
+  },
+  {
+   "from": [
+    "n3",
+    "exec_out"
+   ],
+   "to": [
+    "n4",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n3",
+    "result"
+   ],
+   "to": [
+    "n4",
+    "value"
+   ]
+  }
+ ],
+ "variables": [],
+ "comments": [
+  {
+   "id": "c1",
+   "x": 0,
+   "y": -100,
+   "w": 300,
+   "h": 100,
+   "title": {
+    "ru": "Запуск",
+    "en": "Start"
+   },
+   "text": {
+    "ru": "Назначьте команде горячую клавишу в меню «Горячие клавиши».",
+    "en": "Give the command a hotkey in the Hotkeys menu."
+   },
+   "color": "#f9e2af"
+  },
+  {
+   "id": "c2",
+   "x": 340,
+   "y": -100,
+   "w": 640,
+   "h": 100,
+   "title": {
+    "ru": "Выделенный текст",
+    "en": "Selected text"
+   },
+   "text": {
+    "ru": "Узел данных отдаёт текст, выделенный в приложении. Режим можно сменить на «Перевести» или «Сократить».",
+    "en": "The data node supplies the selected text. Switch the mode to «Translate» or «Shorten»."
+   },
+   "color": "#f9e2af"
+  },
+  {
+   "id": "c3",
+   "x": 340,
+   "y": 480,
+   "w": 300,
+   "h": 70,
+   "title": {
+    "ru": "Приватность",
+    "en": "Privacy"
+   },
+   "text": {
+    "ru": "Текст уходит в Google. В журнал попадает только его длина.",
+    "en": "The text goes to Google. Only its length reaches the log."
+   },
+   "color": "#f9e2af"
+  }
+ ],
+ "gallery": {
+  "name": {
+   "ru": "Объяснить",
+   "en": "Explain"
+  },
+  "description": {
+   "ru": "Выделили текст, нажали хоткей: Gemini объяснит его во всплывающем окне.",
+   "en": "Select text, press a hotkey: Gemini explains it in a popup."
+  },
+  "category": "gemini",
+  "tags": {
+   "ru": [
+    "Gemini",
+    "буфер"
+   ],
+   "en": [
+    "Gemini",
+    "clipboard"
+   ]
+  },
+  "packages": []
+ }
+}

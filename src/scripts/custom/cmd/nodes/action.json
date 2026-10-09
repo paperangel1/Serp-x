@@ -1,0 +1,393 @@
+{
+  "nodes": [
+    {
+      "id": "action.notify", "version": 1, "category": "action", "flow": "action", "icon": "bell",
+      "name": {"ru": "Уведомление", "en": "Notification"},
+      "description": {
+        "ru": "Показывает системное уведомление с заголовком и текстом.",
+        "en": "Shows a desktop notification with a title and a body."
+      },
+      "example": {
+        "ru": "Уведомление: «Готово», «Файлы отсортированы».",
+        "en": "Notification: \"Done\", \"Files sorted\"."
+      },
+      "inputs": [
+        {"id": "exec_in", "type": "exec"},
+        {"id": "title", "type": "text", "required": true, "label": {"ru": "Заголовок", "en": "Title"}},
+        {"id": "body", "type": "text", "default": "", "label": {"ru": "Текст", "en": "Body"}}
+      ],
+      "outputs": [{"id": "exec_out", "type": "exec", "label": {"ru": "Готово", "en": "Done"}}],
+      "executor": {"kind": "py", "ref": "notify"},
+      "capabilities": ["notify.show"], "timeout_s": 10, "changes_state": false, "side_effects": true
+    },
+    {
+      "id": "action.clipboard_set", "version": 1, "category": "action", "flow": "action", "icon": "clipboard",
+      "name": {"ru": "Записать в буфер обмена", "en": "Set clipboard"},
+      "description": {
+        "ru": "Кладёт текст в буфер обмена. Может вернуть прежнее содержимое, когда команда закончится (свойство «Вернуть»).",
+        "en": "Puts text into the clipboard. It can restore the previous content when the command ends (the \"restore\" property)."
+      },
+      "example": {
+        "ru": "Записать в буфер «https://example.org», потом показать уведомление.",
+        "en": "Set clipboard to \"https://example.org\", then show a notification."
+      },
+      "inputs": [
+        {"id": "exec_in", "type": "exec"},
+        {"id": "text", "type": "text", "required": true, "log": "length", "label": {"ru": "Текст", "en": "Text"}}
+      ],
+      "outputs": [{"id": "exec_out", "type": "exec", "label": {"ru": "Готово", "en": "Done"}}],
+      "executor": {"kind": "py", "ref": "clipboard_set"},
+      "undo": {"capture": "clipboard_capture", "restore": "clipboard_restore", "default": "off"},
+      "capabilities": ["clipboard.write"], "timeout_s": 5, "changes_state": true, "side_effects": true
+    },
+    {
+      "id": "action.shell", "version": 1, "category": "action", "flow": "action", "icon": "terminal",
+      "name": {"ru": "Выполнить команду оболочки", "en": "Run shell command"},
+      "description": {
+        "ru": "Запускает команду в bash отдельным процессом с таймаутом и урезанным окружением (без секретов). Требует подтверждения при каждом запуске: даже у автоматизации; нет ответа — запуск отменяется. Нечто произвольное откатить нельзя.",
+        "en": "Runs a command in bash as a separate process with a timeout and a trimmed environment (no secrets). Asks for confirmation on every run, even in automations; no answer cancels the run. Arbitrary commands cannot be rolled back."
+      },
+      "example": {
+        "ru": "Выполнить «date +%H:%M», показать вывод.",
+        "en": "Run \"date +%H:%M\", show the output."
+      },
+      "inputs": [
+        {"id": "exec_in", "type": "exec"},
+        {"id": "command", "type": "text", "required": true, "label": {"ru": "Команда", "en": "Command"}},
+        {"id": "timeout", "type": "float", "default": 10, "min": 1, "max": 300, "label": {"ru": "Таймаут, с", "en": "Timeout, s"}},
+        {"id": "arg", "type": "text", "default": "", "log": "length", "label": {"ru": "Аргумент $1", "en": "Argument $1"},
+         "description": {"ru": "Значение, которое скрипт получит как $1. Так безопаснее, чем вставлять чужой текст прямо в команду.",
+                         "en": "A value the script receives as $1. Safer than pasting untrusted text into the command itself."}}
+      ],
+      "outputs": [
+        {"id": "exec_out", "type": "exec", "label": {"ru": "Готово", "en": "Done"}},
+        {"id": "stdout", "type": "text", "label": {"ru": "Вывод", "en": "Output"}, "default": ""},
+        {"id": "exit_code", "type": "int", "label": {"ru": "Код выхода", "en": "Exit code"}, "default": 0}
+      ],
+      "executor": {"kind": "py", "ref": "shell"},
+      "capabilities": ["exec.script"], "danger": "confirm", "timeout_s": 300, "changes_state": true, "side_effects": true,
+      "no_undo_reason": "произвольный скрипт нельзя откатить"
+    },
+    {
+      "id": "action.shell.dnd", "version": 1, "category": "action", "flow": "action", "icon": "moon",
+      "name": {"ru": "Не беспокоить", "en": "Do not disturb"},
+      "description": {
+        "ru": "Включает или выключает режим «Не беспокоить» оболочки (тот же переключатель, что в панели уведомлений): всплывашки и звук отключаются, срочные уведомления проходят, а сами уведомления остаются в центре уведомлений. Выполняется через собственный IPC-таргет xcmd.",
+        "en": "Turns the shell's do-not-disturb mode on or off (the same switch as in the notification panel): popups and sound are muted, urgent notifications still show, and notifications still land in the notification centre. Goes through the shell's own `xcmd` IPC target."
+      },
+      "example": {
+        "ru": "Не беспокоить: включить (вернуть при завершении).",
+        "en": "Do not disturb: on (restore at the end)."
+      },
+      "inputs": [
+        {"id": "exec_in", "type": "exec"},
+        {"id": "enabled", "type": "bool", "required": true, "label": {"ru": "Включить", "en": "Enable"}}
+      ],
+      "outputs": [
+        {"id": "exec_out", "type": "exec", "label": {"ru": "Готово", "en": "Done"}}
+      ],
+      "executor": {"kind": "ipc", "target": "xcmd", "fn": "setDnd"},
+      "undo": {"capture": "getDnd", "restore": "setDnd", "default": "end"},
+      "capabilities": ["shell.dnd"], "timeout_s": 10, "changes_state": true, "side_effects": true
+    },
+    {
+      "id": "action.shell.theme", "version": 1, "category": "action", "flow": "action", "icon": "palette",
+      "name": {"ru": "Тёмная или светлая тема", "en": "Dark or light theme"},
+      "description": {
+        "ru": "Переключает тёмную или светлую тему оболочки (режим «toggle» меняет на противоположный) и при желании схему цветов Matugen. Цвета пересчитываются по текущим обоям, поэтому смена занимает пару секунд. Работает, когда выбрана тема Matugen; для готовых палитр сохраняется только режим.",
+        "en": "Switches the shell between dark and light theme (\"toggle\" flips it) and optionally the Matugen colour scheme. Colours are regenerated from the current wallpaper, so it takes a couple of seconds. Fully works with the Matugen theme; with a fixed palette only the mode is saved."
+      },
+      "example": {
+        "ru": "Тема: тёмная (вернуть при завершении).",
+        "en": "Theme: dark (restore at the end)."
+      },
+      "inputs": [
+        {"id": "exec_in", "type": "exec"},
+        {"id": "mode", "type": "text", "required": true, "choices": ["dark", "light", "toggle"], "default": "dark", "label": {"ru": "Тема", "en": "Theme"}},
+        {"id": "scheme", "type": "text", "choices": ["keep", "tonal-spot", "content", "expressive", "fidelity", "fruit-salad", "monochrome", "neutral", "rainbow", "vibrant"], "default": "keep", "label": {"ru": "Схема цветов", "en": "Colour scheme"}}
+      ],
+      "outputs": [
+        {"id": "exec_out", "type": "exec", "label": {"ru": "Готово", "en": "Done"}}
+      ],
+      "executor": {"kind": "py", "ref": "shell_theme"},
+      "undo": {"capture": "theme_capture", "restore": "theme_restore", "default": "end"},
+      "capabilities": ["shell.theme"], "timeout_s": 15, "changes_state": true, "side_effects": true
+    },
+    {
+      "id": "action.shell.wallpaper", "version": 1, "category": "action", "flow": "action", "icon": "image",
+      "name": {"ru": "Сменить обои", "en": "Set wallpaper"},
+      "description": {
+        "ru": "Ставит обои на все мониторы. Если указан файл, ставится он; если указана папка, выбирается случайная картинка из неё. Прежние обои можно вернуть при завершении команды (свойство «Вернуть»).",
+        "en": "Sets the wallpaper on all monitors. A file is used as is; for a folder a random picture from it is picked. The previous wallpaper can be restored when the command ends (the \"restore\" property)."
+      },
+      "example": {
+        "ru": "Сменить обои: папка ~/Pictures/Wallpapers (случайная).",
+        "en": "Set wallpaper: folder ~/Pictures/Wallpapers (random)."
+      },
+      "inputs": [
+        {"id": "exec_in", "type": "exec"},
+        {"id": "path", "type": "text", "required": true, "label": {"ru": "Файл или папка", "en": "File or folder"}}
+      ],
+      "outputs": [
+        {"id": "exec_out", "type": "exec", "label": {"ru": "Готово", "en": "Done"}},
+        {"id": "chosen", "type": "text", "default": "", "label": {"ru": "Выбранный файл", "en": "Chosen file"}}
+      ],
+      "executor": {"kind": "py", "ref": "shell_wallpaper"},
+      "undo": {"capture": "wallpaper_capture", "restore": "wallpaper_restore", "default": "off"},
+      "capabilities": ["shell.wallpaper"], "timeout_s": 10, "changes_state": true, "side_effects": true
+    },
+    {
+      "id": "action.shell.night_filter", "version": 1, "category": "action", "flow": "action", "icon": "moon",
+      "name": {"ru": "Ночной фильтр", "en": "Night filter"},
+      "description": {
+        "ru": "Включает или выключает ночной фильтр (тёплый цвет экрана, тот же, что в настройках оболочки). Температура в кельвинах (1000-10000); 0 оставляет сохранённую в настройках.",
+        "en": "Turns the night filter (warm screen colour, the same as in the shell settings) on or off. Temperature in kelvin (1000-10000); 0 keeps the one saved in the settings."
+      },
+      "example": {
+        "ru": "Ночной фильтр: включить, 4000 К.",
+        "en": "Night filter: on, 4000 K."
+      },
+      "inputs": [
+        {"id": "exec_in", "type": "exec"},
+        {"id": "enabled", "type": "bool", "required": true, "label": {"ru": "Включить", "en": "Enable"}},
+        {"id": "temperature", "type": "int", "default": 0, "min": 0, "max": 10000, "label": {"ru": "Температура, К", "en": "Temperature, K"}}
+      ],
+      "outputs": [
+        {"id": "exec_out", "type": "exec", "label": {"ru": "Готово", "en": "Done"}}
+      ],
+      "executor": {"kind": "py", "ref": "shell_night_filter"},
+      "undo": {"capture": "night_capture", "restore": "night_restore", "default": "off"},
+      "capabilities": ["screen.control"], "timeout_s": 10, "changes_state": true, "side_effects": true
+    },
+    {
+      "id": "action.shell.brightness", "version": 1, "category": "action", "flow": "action", "icon": "sun",
+      "name": {"ru": "Яркость экрана", "en": "Screen brightness"},
+      "description": {
+        "ru": "Задаёт яркость экрана в процентах («set») или меняет её на заданное число процентов («delta»). Используется скрипт яркости оболочки (подсветка или DDC). Ниже 1% не опускается, чтобы экран не погас совсем.",
+        "en": "Sets the screen brightness in percent (\"set\") or changes it by a number of percent (\"delta\"). Uses the shell's brightness script (backlight or DDC). Never goes below 1% so the screen cannot go fully dark."
+      },
+      "example": {
+        "ru": "Яркость: 30%.",
+        "en": "Brightness: 30%."
+      },
+      "inputs": [
+        {"id": "exec_in", "type": "exec"},
+        {"id": "mode", "type": "text", "choices": ["set", "delta"], "default": "set", "label": {"ru": "Режим", "en": "Mode"}},
+        {"id": "percent", "type": "int", "default": 50, "min": 0, "max": 100, "required": true, "label": {"ru": "Процентов", "en": "Percent"}},
+        {"id": "delta", "type": "int", "default": 10, "min": -100, "max": 100, "label": {"ru": "Изменить на, %", "en": "Change by, %"}}
+      ],
+      "outputs": [
+        {"id": "exec_out", "type": "exec", "label": {"ru": "Готово", "en": "Done"}},
+        {"id": "result", "type": "int", "default": 0, "label": {"ru": "Стало, %", "en": "Result, %"}}
+      ],
+      "executor": {"kind": "py", "ref": "shell_brightness"},
+      "undo": {"capture": "brightness_capture", "restore": "brightness_restore", "default": "off"},
+      "capabilities": ["screen.control"], "timeout_s": 10, "changes_state": true, "side_effects": true
+    },
+    {
+      "id": "action.audio.set_volume", "version": 1, "category": "action", "flow": "action", "icon": "volume",
+      "name": {"ru": "Громкость", "en": "Volume"},
+      "description": {
+        "ru": "Меняет громкость выхода по умолчанию: задать значение 0-100% («set»), изменить на число процентов («change») или управлять звуком («mute», «unmute», «toggle_mute»). Выше 100% не поднимается.",
+        "en": "Changes the default output's volume: set 0-100% (\"set\"), change by a number of percent (\"change\"), or mute control (\"mute\", \"unmute\", \"toggle_mute\"). Never goes above 100%."
+      },
+      "example": {
+        "ru": "Громкость: 30%.",
+        "en": "Volume: 30%."
+      },
+      "inputs": [
+        {"id": "exec_in", "type": "exec"},
+        {"id": "mode", "type": "text", "choices": ["set", "change", "mute", "unmute", "toggle_mute"], "default": "set", "label": {"ru": "Режим", "en": "Mode"}},
+        {"id": "volume", "type": "int", "default": 40, "min": 0, "max": 100, "required": true, "label": {"ru": "Громкость, %", "en": "Volume, %"}},
+        {"id": "delta", "type": "int", "default": 5, "min": -100, "max": 100, "label": {"ru": "Изменить на, %", "en": "Change by, %"}}
+      ],
+      "outputs": [
+        {"id": "exec_out", "type": "exec", "label": {"ru": "Готово", "en": "Done"}},
+        {"id": "level", "type": "int", "default": 0, "label": {"ru": "Стало, %", "en": "Result, %"}},
+        {"id": "muted", "type": "bool", "default": false, "label": {"ru": "Без звука", "en": "Muted"}}
+      ],
+      "executor": {"kind": "py", "ref": "audio_volume"},
+      "undo": {"capture": "volume_capture", "restore": "volume_restore", "default": "off"},
+      "capabilities": ["audio.volume"], "timeout_s": 10, "changes_state": true, "side_effects": true
+    },
+    {
+      "id": "action.audio.set_output", "version": 1, "category": "action", "flow": "action", "icon": "speaker",
+      "name": {"ru": "Устройство вывода звука", "en": "Audio output"},
+      "description": {
+        "ru": "Делает устройство вывода звука основным. Устройство ищется по имени или описанию (часть слова подходит, регистр не важен). Если не нашлось, в ошибке будет список доступных.",
+        "en": "Makes an audio output device the default. The device is matched by name or description (a part of a word is enough, case does not matter). If none matches the error lists the available ones."
+      },
+      "example": {
+        "ru": "Выход звука: «наушники».",
+        "en": "Audio output: \"headphones\"."
+      },
+      "inputs": [
+        {"id": "exec_in", "type": "exec"},
+        {"id": "device", "type": "text", "default": "headphones", "required": true, "label": {"ru": "Устройство", "en": "Device"}}
+      ],
+      "outputs": [
+        {"id": "exec_out", "type": "exec", "label": {"ru": "Готово", "en": "Done"}},
+        {"id": "name", "type": "text", "default": "", "label": {"ru": "Имя устройства", "en": "Device name"}}
+      ],
+      "executor": {"kind": "py", "ref": "audio_output"},
+      "undo": {"capture": "output_capture", "restore": "output_restore", "default": "off"},
+      "capabilities": ["audio.output"], "timeout_s": 10, "changes_state": true, "side_effects": true
+    },
+    {
+      "id": "action.audio.mic_mute", "version": 1, "category": "action", "flow": "action", "icon": "mic",
+      "name": {"ru": "Микрофон", "en": "Microphone"},
+      "description": {
+        "ru": "Выключает или включает звук микрофона по умолчанию. В режиме «toggle» переключает на противоположное.",
+        "en": "Mutes or unmutes the default microphone. \"toggle\" flips the current state."
+      },
+      "example": {
+        "ru": "Микрофон: выключить (вернуть при завершении).",
+        "en": "Microphone: mute (restore at the end)."
+      },
+      "inputs": [
+        {"id": "exec_in", "type": "exec"},
+        {"id": "mode", "type": "text", "choices": ["set", "toggle"], "default": "set", "label": {"ru": "Режим", "en": "Mode"}},
+        {"id": "muted", "type": "bool", "required": true, "label": {"ru": "Выключить звук", "en": "Mute"}}
+      ],
+      "outputs": [
+        {"id": "exec_out", "type": "exec", "label": {"ru": "Готово", "en": "Done"}},
+        {"id": "is_muted", "type": "bool", "default": false, "label": {"ru": "Без звука", "en": "Muted"}}
+      ],
+      "executor": {"kind": "py", "ref": "audio_mic"},
+      "undo": {"capture": "mic_capture", "restore": "mic_restore", "default": "off"},
+      "capabilities": ["audio.mic"], "timeout_s": 10, "changes_state": true, "side_effects": true
+    },
+    {
+      "id": "action.media.control", "version": 1, "category": "action", "flow": "action", "icon": "play",
+      "name": {"ru": "Управление плеером", "en": "Media control"},
+      "description": {
+        "ru": "Управляет проигрывателем (любой плеер с MPRIS: Spotify, браузер, mpv): играть, пауза, переключить, следующий, предыдущий, стоп. Нет плеера: это не ошибка, состояние будет «none». Вернуть при завершении: прежнее состояние играет/пауза (для «next»/«previous» не откатывается).",
+        "en": "Controls the media player (any MPRIS player: Spotify, a browser, mpv): play, pause, toggle, next, previous, stop. No player is not an error, the state is then \"none\". Restore at the end brings back the previous playing/paused state (not for next/previous)."
+      },
+      "example": {
+        "ru": "Плеер: пауза (вернуть при завершении).",
+        "en": "Media: pause (restore at the end)."
+      },
+      "inputs": [
+        {"id": "exec_in", "type": "exec"},
+        {"id": "command", "type": "text", "choices": ["play", "pause", "toggle", "next", "previous", "stop"], "default": "pause", "label": {"ru": "Действие", "en": "Action"}},
+        {"id": "player", "type": "text", "default": "", "label": {"ru": "Плеер", "en": "Player"}}
+      ],
+      "outputs": [
+        {"id": "exec_out", "type": "exec", "label": {"ru": "Готово", "en": "Done"}},
+        {"id": "state", "type": "text", "default": "", "label": {"ru": "Состояние", "en": "State"}},
+        {"id": "title", "type": "text", "default": "", "label": {"ru": "Трек", "en": "Track"}}
+      ],
+      "executor": {"kind": "py", "ref": "media_control"},
+      "undo": {"capture": "media_capture", "restore": "media_restore", "default": "off"},
+      "capabilities": ["media.control"], "timeout_s": 10, "changes_state": true, "side_effects": true
+    },
+    {
+      "id": "action.window.open_app", "version": 1, "category": "action", "flow": "action", "icon": "window",
+      "name": {"ru": "Открыть приложение", "en": "Open app"},
+      "description": {
+        "ru": "Запускает приложение на выбранном рабочем столе, не переключая на него экран. Приложение задаётся именем ярлыка (например org.telegram.desktop) или командой (firefox, code). Если такого приложения нет, будет понятная ошибка. Можно дождаться появления окна.",
+        "en": "Starts an app on the chosen workspace without switching to it. The app is a desktop entry id (for example org.telegram.desktop) or a command (firefox, code). A missing app gives a clear error. It can wait for the window to appear."
+      },
+      "example": {
+        "ru": "Открыть «firefox» на рабочем столе 2.",
+        "en": "Open \"firefox\" on workspace 2."
+      },
+      "inputs": [
+        {"id": "exec_in", "type": "exec"},
+        {"id": "app", "type": "text", "required": true, "label": {"ru": "Приложение", "en": "App"}},
+        {"id": "workspace", "type": "int", "default": 1, "min": 1, "max": 20, "label": {"ru": "Рабочий стол", "en": "Workspace"}},
+        {"id": "wait", "type": "int", "default": 0, "min": 0, "max": 60, "label": {"ru": "Ждать окно, с", "en": "Wait for window, s"}}
+      ],
+      "outputs": [
+        {"id": "exec_out", "type": "exec", "label": {"ru": "Готово", "en": "Done"}},
+        {"id": "address", "type": "text", "default": "", "label": {"ru": "Окно", "en": "Window"}}
+      ],
+      "executor": {"kind": "py", "ref": "window_open_app"},
+      "capabilities": ["window.manage"], "timeout_s": 75, "changes_state": false, "side_effects": true
+    },
+    {
+      "id": "action.window.arrange", "version": 1, "category": "action", "flow": "action", "icon": "layout",
+      "name": {"ru": "Расставить окна", "en": "Arrange windows"},
+      "description": {
+        "ru": "Расставляет открытые окна. «by_monitor»: перенести окна на рабочий стол выбранного монитора; «workspaces»: по списку «приложение:номер»; «tile»: собрать окна на одном рабочем столе, два первых встанут слева и справа; «stack»: собрать на одном рабочем столе. Приложения (классы окон) перечисляются через запятую, пусто = все окна. Откат возвращает окна на прежние рабочие столы.",
+        "en": "Arranges open windows. \"by_monitor\": move windows to the chosen monitor's workspace; \"workspaces\": by an \"app:number\" list; \"tile\": gather windows on one workspace, the first two go left and right; \"stack\": gather on one workspace. Apps (window classes) are comma-separated, empty = all windows. Restore moves windows back to their old workspaces."
+      },
+      "example": {
+        "ru": "Расставить: окна firefox и code на монитор HDMI-A-1.",
+        "en": "Arrange: firefox and code windows to monitor HDMI-A-1."
+      },
+      "inputs": [
+        {"id": "exec_in", "type": "exec"},
+        {"id": "layout", "type": "text", "default": "by_monitor", "choices": ["by_monitor", "tile", "stack", "workspaces"], "label": {"ru": "Схема", "en": "Layout"}},
+        {"id": "monitor", "type": "text", "default": "", "label": {"ru": "Монитор", "en": "Monitor"}},
+        {"id": "apps", "type": "text", "default": "", "label": {"ru": "Приложения", "en": "Apps"}},
+        {"id": "workspace", "type": "int", "default": 0, "min": 0, "max": 20, "label": {"ru": "Рабочий стол (0 = текущий)", "en": "Workspace (0 = current)"}}
+      ],
+      "outputs": [
+        {"id": "exec_out", "type": "exec", "label": {"ru": "Готово", "en": "Done"}},
+        {"id": "moved", "type": "int", "default": 0, "label": {"ru": "Перенесено окон", "en": "Windows moved"}}
+      ],
+      "executor": {"kind": "py", "ref": "window_arrange"},
+      "undo": {"capture": "arrange_capture", "restore": "arrange_restore", "default": "off"},
+      "capabilities": ["window.manage"], "timeout_s": 10, "changes_state": true, "side_effects": true
+    },
+    {
+      "id": "action.file.move", "version": 1, "category": "action", "flow": "action", "icon": "folder",
+      "name": {"ru": "Переместить или копировать файл", "en": "Move or copy file"},
+      "description": {
+        "ru": "Перемещает или копирует файл в папку (папка создаётся при необходимости). Файлы никогда не затираются: при совпадении имени добавляется « (1)», либо файл пропускается, либо команда останавливается с ошибкой. Работает только внутри домашней папки; вне её нужно включить «Разрешить вне домашней папки» и подтвердить право file.write.any. Откат возвращает перемещённый файл на место (копию не удаляет).",
+        "en": "Moves or copies a file into a folder (created when needed). Files are never overwritten: on a name clash \" (1)\" is added, or the file is skipped, or the command stops with an error. Works only inside the home folder; outside it, enable \"Allow outside home\" and approve the file.write.any right. Restore moves a moved file back (a copy is not deleted)."
+      },
+      "example": {
+        "ru": "Переместить загрузку в ~/Pictures/Sorted.",
+        "en": "Move a download into ~/Pictures/Sorted."
+      },
+      "inputs": [
+        {"id": "exec_in", "type": "exec"},
+        {"id": "path", "type": "text", "required": true, "label": {"ru": "Файл", "en": "File"}},
+        {"id": "folder", "type": "text", "required": true, "label": {"ru": "Папка", "en": "Folder"}},
+        {"id": "mode", "type": "text", "choices": ["move", "copy"], "default": "move", "label": {"ru": "Режим", "en": "Mode"}},
+        {"id": "on_exists", "type": "text", "choices": ["rename", "skip", "fail"], "default": "rename", "label": {"ru": "Если имя занято", "en": "If the name is taken"}},
+        {"id": "create_folder", "type": "bool", "default": true, "label": {"ru": "Создать папку", "en": "Create folder"}},
+        {"id": "allow_outside_home", "type": "bool", "default": false, "literal": true, "label": {"ru": "Разрешить вне домашней папки", "en": "Allow outside home"}}
+      ],
+      "outputs": [
+        {"id": "exec_out", "type": "exec", "label": {"ru": "Готово", "en": "Done"}},
+        {"id": "new_path", "type": "text", "default": "", "label": {"ru": "Новый путь", "en": "New path"}}
+      ],
+      "executor": {"kind": "py", "ref": "file_move"},
+      "undo": {"capture": "move_capture", "restore": "move_restore", "default": "off"},
+      "capabilities": ["file.write"], "timeout_s": 60, "changes_state": true, "side_effects": true, "capabilities_if": {"allow_outside_home": ["file.write.any"]}
+    },
+    {
+      "id": "action.file.convert_image", "version": 1, "category": "action", "flow": "action", "icon": "image",
+      "name": {"ru": "Конвертировать картинки", "en": "Convert images"},
+      "description": {
+        "ru": "Конвертирует картинки через ImageMagick в webp, png или jpg с уменьшением (только вниз) и качеством. Результат кладётся рядом с исходным файлом или в указанную папку, исходные файлы не трогаются и ничего не затирается. Принимает один файл или список файлов и возвращает список результатов.",
+        "en": "Converts pictures with ImageMagick to webp, png or jpg with optional downscaling (never upscaling) and quality. The result is written next to the source or into the given folder; sources are untouched and nothing is overwritten. Takes one file or a list and returns the list of results."
+      },
+      "example": {
+        "ru": "Конвертировать выбранные картинки в webp, 1600 пикселей.",
+        "en": "Convert the selected pictures to webp, 1600 pixels."
+      },
+      "inputs": [
+        {"id": "exec_in", "type": "exec"},
+        {"id": "path", "type": "text", "default": "", "label": {"ru": "Файл", "en": "File"}},
+        {"id": "paths", "type": "list<text>", "default": [], "label": {"ru": "Файлы (список)", "en": "Files (list)"}},
+        {"id": "format", "type": "text", "default": "webp", "choices": ["webp", "png", "jpg"], "label": {"ru": "Формат", "en": "Format"}},
+        {"id": "max_width", "type": "int", "default": 1600, "min": 16, "max": 16000, "label": {"ru": "Макс. ширина", "en": "Max width"}},
+        {"id": "quality", "type": "int", "default": 85, "min": 1, "max": 100, "label": {"ru": "Качество", "en": "Quality"}},
+        {"id": "folder", "type": "text", "default": "", "label": {"ru": "Папка результата", "en": "Output folder"}},
+        {"id": "allow_outside_home", "type": "bool", "default": false, "literal": true, "label": {"ru": "Разрешить вне домашней папки", "en": "Allow outside home"}}
+      ],
+      "outputs": [
+        {"id": "exec_out", "type": "exec", "label": {"ru": "Готово", "en": "Done"}},
+        {"id": "new_path", "type": "text", "default": "", "label": {"ru": "Результат", "en": "Result"}},
+        {"id": "new_paths", "type": "list<text>", "default": [], "label": {"ru": "Результаты", "en": "Results"}}
+      ],
+      "executor": {"kind": "py", "ref": "file_convert_image"},
+      "capabilities": ["image.convert", "file.write"], "timeout_s": 600, "changes_state": true, "side_effects": true, "no_undo_reason": "создаётся новый файл, исходный не меняется; удалять файлы команды не умеют", "capabilities_if": {"allow_outside_home": ["file.write.any"]}
+    }
+  ]
+}

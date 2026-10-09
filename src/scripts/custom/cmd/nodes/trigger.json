@@ -1,0 +1,905 @@
+{
+ "nodes": [
+  {
+   "id": "event.time_at",
+   "version": 1,
+   "category": "event",
+   "flow": "event",
+   "icon": "clock",
+   "name": {
+    "ru": "В заданное время",
+    "en": "At a given time"
+   },
+   "description": {
+    "ru": "Запускает команду каждый день (или по выбранным дням) в указанное время. Если компьютер спал в это время, поведение задаёт «Пропущенный запуск».",
+    "en": "Starts the command every day (or on the chosen days) at the given time. If the computer was asleep, «Missed run» decides what happens."
+   },
+   "example": {
+    "ru": "В 08:00 по будням → уведомление «Планёрка».",
+    "en": "At 08:00 on weekdays → notification \"Stand-up\"."
+   },
+   "inputs": [
+    {
+     "id": "at",
+     "type": "time",
+     "label": {
+      "ru": "Время",
+      "en": "Time"
+     },
+     "default": "08:00",
+     "literal": true
+    },
+    {
+     "id": "days",
+     "type": "text",
+     "label": {
+      "ru": "Дни",
+      "en": "Days"
+     },
+     "default": "daily",
+     "literal": true,
+     "choices": [
+      "daily",
+      "weekdays",
+      "weekends",
+      "mon",
+      "tue",
+      "wed",
+      "thu",
+      "fri",
+      "sat",
+      "sun"
+     ],
+     "choice_labels": {
+      "ru": {
+       "daily": "каждый день",
+       "weekdays": "по будням",
+       "weekends": "по выходным",
+       "mon": "понедельник",
+       "tue": "вторник",
+       "wed": "среда",
+       "thu": "четверг",
+       "fri": "пятница",
+       "sat": "суббота",
+       "sun": "воскресенье"
+      },
+      "en": {
+       "daily": "every day",
+       "weekdays": "weekdays",
+       "weekends": "weekends",
+       "mon": "Monday",
+       "tue": "Tuesday",
+       "wed": "Wednesday",
+       "thu": "Thursday",
+       "fri": "Friday",
+       "sat": "Saturday",
+       "sun": "Sunday"
+      }
+     }
+    },
+    {
+     "id": "missed",
+     "type": "text",
+     "label": {
+      "ru": "Пропущенный запуск",
+      "en": "Missed run"
+     },
+     "default": "skip",
+     "literal": true,
+     "choices": [
+      "skip",
+      "run_once"
+     ],
+     "choice_labels": {
+      "ru": {
+       "skip": "пропустить",
+       "run_once": "выполнить один раз"
+      },
+      "en": {
+       "skip": "skip",
+       "run_once": "run once"
+      }
+     }
+    }
+   ],
+   "outputs": [
+    {
+     "id": "exec",
+     "type": "exec",
+     "label": {
+      "ru": "Запуск",
+      "en": "Start"
+     }
+    },
+    {
+     "id": "time",
+     "type": "time",
+     "label": {
+      "ru": "Время",
+      "en": "Time"
+     },
+     "default": "00:00"
+    },
+    {
+     "id": "weekday",
+     "type": "text",
+     "label": {
+      "ru": "День недели",
+      "en": "Weekday"
+     },
+     "default": ""
+    }
+   ],
+   "source": {
+    "emits": "time.at",
+    "src": "time"
+   },
+   "executor": {
+    "kind": "builtin",
+    "ref": "event"
+   },
+   "capabilities": [
+    "trigger.time"
+   ],
+   "changes_state": false,
+   "side_effects": false
+  },
+  {
+   "id": "event.interval",
+   "version": 1,
+   "category": "event",
+   "flow": "event",
+   "icon": "timer",
+   "name": {
+    "ru": "Каждые N минут",
+    "en": "Every N minutes"
+   },
+   "description": {
+    "ru": "Запускает команду регулярно через заданное число минут, пока включена автоматизация.",
+    "en": "Starts the command regularly every given number of minutes while the automation is enabled."
+   },
+   "example": {
+    "ru": "Каждые 30 минут → напоминание размяться.",
+    "en": "Every 30 minutes → stretch reminder."
+   },
+   "inputs": [
+    {
+     "id": "minutes",
+     "type": "int",
+     "label": {
+      "ru": "Минуты",
+      "en": "Minutes"
+     },
+     "default": 30,
+     "literal": true,
+     "min": 1,
+     "max": 1440
+    }
+   ],
+   "outputs": [
+    {
+     "id": "exec",
+     "type": "exec",
+     "label": {
+      "ru": "Запуск",
+      "en": "Start"
+     }
+    },
+    {
+     "id": "time",
+     "type": "time",
+     "label": {
+      "ru": "Время",
+      "en": "Time"
+     },
+     "default": "00:00"
+    }
+   ],
+   "source": {
+    "emits": "time.every",
+    "src": "time"
+   },
+   "executor": {
+    "kind": "builtin",
+    "ref": "event"
+   },
+   "capabilities": [
+    "trigger.time"
+   ],
+   "changes_state": false,
+   "side_effects": false
+  },
+  {
+   "id": "event.sun",
+   "version": 1,
+   "category": "event",
+   "flow": "event",
+   "icon": "sunset",
+   "name": {
+    "ru": "Рассвет или закат",
+    "en": "Sunrise or sunset"
+   },
+   "description": {
+    "ru": "Запускает команду на рассвете или закате (со сдвигом в минутах). Координаты берутся из настроек места оболочки.",
+    "en": "Starts the command at sunrise or sunset (with an offset in minutes). Coordinates come from the shell's location settings."
+   },
+   "example": {
+    "ru": "За 15 минут до заката → ночной фильтр.",
+    "en": "15 minutes before sunset → night filter."
+   },
+   "inputs": [
+    {
+     "id": "kind",
+     "type": "text",
+     "label": {
+      "ru": "Что",
+      "en": "Event"
+     },
+     "default": "sunset",
+     "literal": true,
+     "choices": [
+      "sunrise",
+      "sunset"
+     ],
+     "choice_labels": {
+      "ru": {
+       "sunrise": "рассвет",
+       "sunset": "закат"
+      },
+      "en": {
+       "sunrise": "sunrise",
+       "sunset": "sunset"
+      }
+     }
+    },
+    {
+     "id": "offset",
+     "type": "int",
+     "label": {
+      "ru": "Сдвиг, мин",
+      "en": "Offset, min"
+     },
+     "default": 0,
+     "literal": true,
+     "min": -180,
+     "max": 180
+    }
+   ],
+   "outputs": [
+    {
+     "id": "exec",
+     "type": "exec",
+     "label": {
+      "ru": "Запуск",
+      "en": "Start"
+     }
+    },
+    {
+     "id": "time",
+     "type": "time",
+     "label": {
+      "ru": "Время",
+      "en": "Time"
+     },
+     "default": "00:00"
+    }
+   ],
+   "source": {
+    "emits": "sun",
+    "src": "time"
+   },
+   "executor": {
+    "kind": "builtin",
+    "ref": "event"
+   },
+   "capabilities": [
+    "trigger.time"
+   ],
+   "changes_state": false,
+   "side_effects": false
+  },
+  {
+   "id": "event.app_opened",
+   "version": 1,
+   "category": "event",
+   "flow": "event",
+   "icon": "window",
+   "name": {
+    "ru": "Приложение открыто",
+    "en": "App opened"
+   },
+   "description": {
+    "ru": "Запускает команду, когда открывается окно приложения. Фильтры по классу и заголовку необязательны (подстрока без учёта регистра; «re:» в начале — регулярное выражение).",
+    "en": "Starts the command when an application window opens. Class and title filters are optional (case-insensitive substring; a leading «re:» means a regular expression)."
+   },
+   "example": {
+    "ru": "Открыт Steam → переключить звук на колонки.",
+    "en": "Steam opened → switch audio to the speakers."
+   },
+   "inputs": [
+    {
+     "id": "class_filter",
+     "type": "text",
+     "label": {
+      "ru": "Класс окна",
+      "en": "Window class"
+     },
+     "default": "",
+     "literal": true
+    },
+    {
+     "id": "title_filter",
+     "type": "text",
+     "label": {
+      "ru": "Заголовок содержит",
+      "en": "Title contains"
+     },
+     "default": "",
+     "literal": true
+    }
+   ],
+   "outputs": [
+    {
+     "id": "exec",
+     "type": "exec",
+     "label": {
+      "ru": "Запуск",
+      "en": "Start"
+     }
+    },
+    {
+     "id": "class",
+     "type": "text",
+     "label": {
+      "ru": "Класс окна",
+      "en": "Window class"
+     },
+     "default": ""
+    },
+    {
+     "id": "title",
+     "type": "text",
+     "label": {
+      "ru": "Заголовок",
+      "en": "Title"
+     },
+     "default": ""
+    },
+    {
+     "id": "workspace",
+     "type": "text",
+     "label": {
+      "ru": "Рабочий стол",
+      "en": "Workspace"
+     },
+     "default": ""
+    }
+   ],
+   "source": {
+    "emits": "window.open",
+    "src": "hyprland"
+   },
+   "executor": {
+    "kind": "builtin",
+    "ref": "event"
+   },
+   "capabilities": [
+    "trigger.windows"
+   ],
+   "changes_state": false,
+   "side_effects": false
+  },
+  {
+   "id": "event.app_closed",
+   "version": 1,
+   "category": "event",
+   "flow": "event",
+   "icon": "appclose",
+   "name": {
+    "ru": "Приложение закрыто",
+    "en": "App closed"
+   },
+   "description": {
+    "ru": "Запускает команду, когда окно приложения закрывается. Класс и заголовок берутся из последнего известного состояния окна.",
+    "en": "Starts the command when an application window closes. Class and title come from the window's last known state."
+   },
+   "example": {
+    "ru": "Закрыт Steam → вернуть звук.",
+    "en": "Steam closed → restore audio."
+   },
+   "inputs": [
+    {
+     "id": "class_filter",
+     "type": "text",
+     "label": {
+      "ru": "Класс окна",
+      "en": "Window class"
+     },
+     "default": "",
+     "literal": true
+    },
+    {
+     "id": "title_filter",
+     "type": "text",
+     "label": {
+      "ru": "Заголовок содержит",
+      "en": "Title contains"
+     },
+     "default": "",
+     "literal": true
+    }
+   ],
+   "outputs": [
+    {
+     "id": "exec",
+     "type": "exec",
+     "label": {
+      "ru": "Запуск",
+      "en": "Start"
+     }
+    },
+    {
+     "id": "class",
+     "type": "text",
+     "label": {
+      "ru": "Класс окна",
+      "en": "Window class"
+     },
+     "default": ""
+    },
+    {
+     "id": "title",
+     "type": "text",
+     "label": {
+      "ru": "Заголовок",
+      "en": "Title"
+     },
+     "default": ""
+    }
+   ],
+   "source": {
+    "emits": "window.close",
+    "src": "hyprland"
+   },
+   "executor": {
+    "kind": "builtin",
+    "ref": "event"
+   },
+   "capabilities": [
+    "trigger.windows"
+   ],
+   "changes_state": false,
+   "side_effects": false
+  },
+  {
+   "id": "event.workspace",
+   "version": 1,
+   "category": "event",
+   "flow": "event",
+   "icon": "workspace",
+   "name": {
+    "ru": "Смена рабочего стола",
+    "en": "Workspace switched"
+   },
+   "description": {
+    "ru": "Запускает команду, когда вы переключаетесь на рабочий стол (можно указать конкретный).",
+    "en": "Starts the command when you switch to a workspace (a specific one can be chosen)."
+   },
+   "example": {
+    "ru": "Переход на стол 5 → тихий режим.",
+    "en": "Switch to workspace 5 → quiet mode."
+   },
+   "inputs": [
+    {
+     "id": "workspace_filter",
+     "type": "text",
+     "label": {
+      "ru": "Рабочий стол",
+      "en": "Workspace"
+     },
+     "default": "",
+     "literal": true
+    }
+   ],
+   "outputs": [
+    {
+     "id": "exec",
+     "type": "exec",
+     "label": {
+      "ru": "Запуск",
+      "en": "Start"
+     }
+    },
+    {
+     "id": "workspace",
+     "type": "text",
+     "label": {
+      "ru": "Рабочий стол",
+      "en": "Workspace"
+     },
+     "default": ""
+    }
+   ],
+   "source": {
+    "emits": "workspace",
+    "src": "hyprland"
+   },
+   "executor": {
+    "kind": "builtin",
+    "ref": "event"
+   },
+   "capabilities": [
+    "trigger.windows"
+   ],
+   "changes_state": false,
+   "side_effects": false
+  },
+  {
+   "id": "event.monitor_added",
+   "version": 1,
+   "category": "event",
+   "flow": "event",
+   "icon": "monitor",
+   "name": {
+    "ru": "Монитор подключён",
+    "en": "Monitor connected"
+   },
+   "description": {
+    "ru": "Запускает команду, когда подключается монитор (можно указать имя, например HDMI-A-1).",
+    "en": "Starts the command when a monitor is connected (a name such as HDMI-A-1 can be given)."
+   },
+   "example": {
+    "ru": "Подключён второй монитор → расставить окна.",
+    "en": "Second monitor connected → arrange windows."
+   },
+   "inputs": [
+    {
+     "id": "monitor_filter",
+     "type": "text",
+     "label": {
+      "ru": "Имя монитора",
+      "en": "Monitor name"
+     },
+     "default": "",
+     "literal": true
+    }
+   ],
+   "outputs": [
+    {
+     "id": "exec",
+     "type": "exec",
+     "label": {
+      "ru": "Запуск",
+      "en": "Start"
+     }
+    },
+    {
+     "id": "monitor",
+     "type": "text",
+     "label": {
+      "ru": "Монитор",
+      "en": "Monitor"
+     },
+     "default": ""
+    }
+   ],
+   "source": {
+    "emits": "monitor.added",
+    "src": "hyprland"
+   },
+   "executor": {
+    "kind": "builtin",
+    "ref": "event"
+   },
+   "capabilities": [
+    "trigger.windows"
+   ],
+   "changes_state": false,
+   "side_effects": false
+  },
+  {
+   "id": "event.monitor_removed",
+   "version": 1,
+   "category": "event",
+   "flow": "event",
+   "icon": "monitor",
+   "name": {
+    "ru": "Монитор отключён",
+    "en": "Monitor disconnected"
+   },
+   "description": {
+    "ru": "Запускает команду, когда монитор отключается.",
+    "en": "Starts the command when a monitor is disconnected."
+   },
+   "example": {
+    "ru": "Отключён второй монитор → вернуть обои.",
+    "en": "Second monitor disconnected → restore the wallpaper."
+   },
+   "inputs": [
+    {
+     "id": "monitor_filter",
+     "type": "text",
+     "label": {
+      "ru": "Имя монитора",
+      "en": "Monitor name"
+     },
+     "default": "",
+     "literal": true
+    }
+   ],
+   "outputs": [
+    {
+     "id": "exec",
+     "type": "exec",
+     "label": {
+      "ru": "Запуск",
+      "en": "Start"
+     }
+    },
+    {
+     "id": "monitor",
+     "type": "text",
+     "label": {
+      "ru": "Монитор",
+      "en": "Monitor"
+     },
+     "default": ""
+    }
+   ],
+   "source": {
+    "emits": "monitor.removed",
+    "src": "hyprland"
+   },
+   "executor": {
+    "kind": "builtin",
+    "ref": "event"
+   },
+   "capabilities": [
+    "trigger.windows"
+   ],
+   "changes_state": false,
+   "side_effects": false
+  },
+  {
+   "id": "event.idle",
+   "version": 1,
+   "category": "event",
+   "flow": "event",
+   "icon": "sleep",
+   "name": {
+    "ru": "Бездействие",
+    "en": "Idle"
+   },
+   "description": {
+    "ru": "Запускает команду, когда вы не касались мыши и клавиатуры заданное число минут.",
+    "en": "Starts the command when the mouse and keyboard have been untouched for the given number of minutes."
+   },
+   "example": {
+    "ru": "10 минут бездействия → пауза музыки.",
+    "en": "10 minutes idle → pause the music."
+   },
+   "inputs": [
+    {
+     "id": "minutes",
+     "type": "int",
+     "label": {
+      "ru": "Минуты",
+      "en": "Minutes"
+     },
+     "default": 10,
+     "literal": true,
+     "min": 1,
+     "max": 240
+    }
+   ],
+   "outputs": [
+    {
+     "id": "exec",
+     "type": "exec",
+     "label": {
+      "ru": "Запуск",
+      "en": "Start"
+     }
+    }
+   ],
+   "source": {
+    "emits": "idle.start",
+    "src": "idle"
+   },
+   "executor": {
+    "kind": "builtin",
+    "ref": "event"
+   },
+   "capabilities": [
+    "trigger.session"
+   ],
+   "changes_state": false,
+   "side_effects": false
+  },
+  {
+   "id": "event.idle_return",
+   "version": 1,
+   "category": "event",
+   "flow": "event",
+   "icon": "play",
+   "name": {
+    "ru": "Возвращение после бездействия",
+    "en": "Back from idle"
+   },
+   "description": {
+    "ru": "Запускает команду, когда вы вернулись после бездействия заданной длительности.",
+    "en": "Starts the command when you return after being idle for the given number of minutes."
+   },
+   "example": {
+    "ru": "Вернулись после 10 минут → продолжить музыку.",
+    "en": "Back after 10 minutes → resume the music."
+   },
+   "inputs": [
+    {
+     "id": "minutes",
+     "type": "int",
+     "label": {
+      "ru": "Минуты",
+      "en": "Minutes"
+     },
+     "default": 10,
+     "literal": true,
+     "min": 1,
+     "max": 240
+    }
+   ],
+   "outputs": [
+    {
+     "id": "exec",
+     "type": "exec",
+     "label": {
+      "ru": "Запуск",
+      "en": "Start"
+     }
+    }
+   ],
+   "source": {
+    "emits": "idle.stop",
+    "src": "idle"
+   },
+   "executor": {
+    "kind": "builtin",
+    "ref": "event"
+   },
+   "capabilities": [
+    "trigger.session"
+   ],
+   "changes_state": false,
+   "side_effects": false
+  },
+  {
+   "id": "event.lock",
+   "version": 1,
+   "category": "event",
+   "flow": "event",
+   "icon": "lock",
+   "name": {
+    "ru": "Экран заблокирован",
+    "en": "Screen locked"
+   },
+   "description": {
+    "ru": "Запускает команду при блокировке сеанса (сигнал systemd-logind).",
+    "en": "Starts the command when the session is locked (systemd-logind signal)."
+   },
+   "example": {
+    "ru": "Блокировка → пауза музыки и выключение микрофона.",
+    "en": "Lock → pause music and mute the microphone."
+   },
+   "inputs": [],
+   "outputs": [
+    {
+     "id": "exec",
+     "type": "exec",
+     "label": {
+      "ru": "Запуск",
+      "en": "Start"
+     }
+    }
+   ],
+   "source": {
+    "emits": "session.lock",
+    "src": "logind"
+   },
+   "executor": {
+    "kind": "builtin",
+    "ref": "event"
+   },
+   "capabilities": [
+    "trigger.session"
+   ],
+   "changes_state": false,
+   "side_effects": false
+  },
+  {
+   "id": "event.unlock",
+   "version": 1,
+   "category": "event",
+   "flow": "event",
+   "icon": "unlock",
+   "name": {
+    "ru": "Экран разблокирован",
+    "en": "Screen unlocked"
+   },
+   "description": {
+    "ru": "Запускает команду при разблокировке сеанса (сигнал systemd-logind).",
+    "en": "Starts the command when the session is unlocked (systemd-logind signal)."
+   },
+   "example": {
+    "ru": "Разблокировка → вернуть звук.",
+    "en": "Unlock → restore audio."
+   },
+   "inputs": [],
+   "outputs": [
+    {
+     "id": "exec",
+     "type": "exec",
+     "label": {
+      "ru": "Запуск",
+      "en": "Start"
+     }
+    }
+   ],
+   "source": {
+    "emits": "session.unlock",
+    "src": "logind"
+   },
+   "executor": {
+    "kind": "builtin",
+    "ref": "event"
+   },
+   "capabilities": [
+    "trigger.session"
+   ],
+   "changes_state": false,
+   "side_effects": false
+  },
+  {
+   "id": "event.login",
+   "version": 1,
+   "category": "event",
+   "flow": "event",
+   "icon": "login",
+   "name": {
+    "ru": "Вход в систему",
+    "en": "Login"
+   },
+   "description": {
+    "ru": "Запускает команду один раз после входа в графический сеанс.",
+    "en": "Starts the command once after the graphical session starts."
+   },
+   "example": {
+    "ru": "Вход → открыть почту и мессенджер.",
+    "en": "Login → open mail and messenger."
+   },
+   "inputs": [],
+   "outputs": [
+    {
+     "id": "exec",
+     "type": "exec",
+     "label": {
+      "ru": "Запуск",
+      "en": "Start"
+     }
+    }
+   ],
+   "source": {
+    "emits": "session.login",
+    "src": "login"
+   },
+   "executor": {
+    "kind": "builtin",
+    "ref": "event"
+   },
+   "capabilities": [
+    "trigger.session"
+   ],
+   "changes_state": false,
+   "side_effects": false
+  }
+ ]
+}

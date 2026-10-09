@@ -1,0 +1,32 @@
+* Serpantinum - serp-x build   installer v2.2.4-s3                             language  RU  EN   F2
+                                                                                                    
++ Check -- * Mode  -- o Modules -- o Settings -- o Summary -- o Install -- o Done                   
+                                                                                                    
+┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ * Installed build found: serp-x 2.2.4-s2 - installed 12.09.2026 - modules: 9                     │
+│   Your data (settings, commands, notes, keys) is safe: a backup is made before any change.       │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+                                                                                                    
+┌─ What to do? ─────────────────────────────────┐  ┌─ Repair / reinstall ──────────────────────────┐
+│                                               │  │                                               │
+│  │ Repair / reinstall                         │  │ What will happen:                             │
+│    checks files, hooks, services, packages    │  │                                               │
+│                                               │  │ 1. Data backup                                │
+│    Change modules                             │  │ 2. File check by hash                         │
+│    add or remove                              │  │ 3. Hooks in upstream files                    │
+│                                               │  │ 4. Services                                   │
+│    Uninstall                                  │  │ 5. Missing packages                           │
+│    shell and services; your data stays        │  │                                               │
+│                                               │  │ Takes a couple of minutes. No reboot.         │
+│    Clean install                              │  │                                               │
+│    like from scratch; backup + restore        │  │ Unfinished run? no                            │
+│                                               │  │                                               │
+│                                               │  │                                               │
+│                                               │  │                                               │
+│                                               │  │                                               │
+│                                               │  │                                               │
+│                                               │  │                                               │
+│                                               │  │                                               │
+│                                               │  │                                               │
+└───────────────────────────────────────────────┘  └───────────────────────────────────────────────┘
+ ^v  select   Enter  next   Esc  back   F2  language / язык   q  quit                               

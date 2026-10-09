@@ -1,0 +1,10 @@
+id = "commands-media"
+schema = 1
+order = 100
+group = "build"
+presets = ["full"]
+name = { ru = "Примеры с видео (yt-dlp)", en = "Video examples (yt-dlp)" }
+desc = { ru = "«Скачать видео по ссылке», «аудио из ролика».", en = "\"Download video by link\", \"audio from a clip\"." }
+requires = ["commands"]
+packages = ["yt-dlp"]
+estimate = { download_mib = 5, disk_mib = 25, install_s = 5 }

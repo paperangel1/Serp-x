@@ -1,0 +1,13 @@
+#!/bin/sh
+# serp-timeout: 90
+echo "== Неудачные входы по SSH за сутки =="
+if command -v journalctl >/dev/null 2>&1; then
+    journalctl -u ssh -u sshd --since "-24h" --no-pager 2>/dev/null | grep -ci "failed password\|invalid user" | sed 's/^/попыток: /'
+fi
+echo; echo "== Последние входы =="; last -n 8 2>/dev/null | head -n 8
+echo; echo "== Настройки sshd =="
+sshd -T 2>/dev/null | grep -E '^(permitrootlogin|passwordauthentication|pubkeyauthentication|port) ' || echo "sshd -T недоступен"
+echo; echo "== Fail2ban =="
+if command -v fail2ban-client >/dev/null 2>&1; then fail2ban-client status 2>/dev/null | head -n 6; else echo "не установлен"; fi
+echo; echo "== Обновления безопасности =="
+if command -v apt-get >/dev/null 2>&1; then apt-get -s upgrade 2>/dev/null | grep -c '^Inst' | sed 's/^/ожидают пакетов: /'; else echo "apt не найден"; fi

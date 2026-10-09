@@ -1,0 +1,13 @@
+KeyChip 1.0 KeyChip.qml
+ComboChips 1.0 ComboChips.qml
+KeyCaptureInput 1.0 KeyCaptureInput.qml
+AppIcon 1.0 AppIcon.qml
+ComboField 1.0 ComboField.qml
+ConflictCard 1.0 ConflictCard.qml
+AppPicker 1.0 AppPicker.qml
+HotkeyEditor 1.0 HotkeyEditor.qml
+HotkeyRow 1.0 HotkeyRow.qml
+HotkeyGroup 1.0 HotkeyGroup.qml
+AddPanel 1.0 AddPanel.qml
+HotkeysTab 1.0 HotkeysTab.qml
+CmdPicker 1.0 CmdPicker.qml

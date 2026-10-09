@@ -1,0 +1,44 @@
+# serpantinum-x core (skeleton owner)
+singleton XI18n 1.0 XI18n.qml
+singleton XUpdate 1.0 XUpdate.qml
+singleton XLog 1.0 XLog.qml
+singleton XUi 1.0 XUi.qml
+singleton XModules 1.0 XModules.qml
+singleton XInstaller 1.0 XInstaller.qml
+GuideExtensions 1.0 GuideExtensions.qml
+XSidebarTab 1.0 XSidebarTab.qml
+
+# hotkeys (append hotkeys components below this line only)
+singleton XHotkeys 1.0 XHotkeys.qml
+HotkeysTab 1.0 hotkeys/HotkeysTab.qml
+
+# update (append update components below this line only)
+UpdatesTab 1.0 update/UpdatesTab.qml
+XCard 1.0 update/XCard.qml
+ChangelogView 1.0 update/ChangelogView.qml
+ProgressView 1.0 update/ProgressView.qml
+VersionPicker 1.0 update/VersionPicker.qml
+
+# tools (append tools components below this line only)
+singleton XToolsConf 1.0 XToolsConf.qml
+XTools 1.0 tools/XTools.qml
+XOcrButton 1.0 tools/XOcrButton.qml
+ToolsTab 1.0 tools/ToolsTab.qml
+
+# vpn (append vpn components below this line only)
+singleton XVpn 1.0 vpn/XVpn.qml
+XVpnHost 1.0 vpn/XVpnHost.qml
+VpnFace 1.0 vpn/VpnFace.qml
+SideVpnFace 1.0 vpn/SideVpnFace.qml
+VpnPopup 1.0 vpn/VpnPopup.qml
+VpnPopupView 1.0 vpn/VpnPopupView.qml
+VpnTab 1.0 vpn/VpnTab.qml
+
+# servers (append servers components below this line only)
+singleton XServers 1.0 servers/XServers.qml
+XServersHost 1.0 servers/XServersHost.qml
+
+# cmd (Commands window; sibling components are listed in cmd/qmldir)
+singleton XCmd 1.0 cmd/XCmd.qml
+XCmdHost 1.0 cmd/XCmdHost.qml
+singleton XCmdLaunch 1.0 cmd/XCmdLaunch.qml

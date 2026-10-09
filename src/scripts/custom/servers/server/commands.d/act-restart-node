@@ -1,0 +1,5 @@
+#!/bin/sh
+NODE_CONTAINER=${NODE_CONTAINER:-remnanode}
+command -v docker >/dev/null 2>&1 || { echo "docker не найден"; exit 1; }
+echo "Перезапуск контейнера $NODE_CONTAINER…"
+docker restart "$NODE_CONTAINER" && sleep 2 && docker ps --filter "name=$NODE_CONTAINER" --format '{{.Names}}  {{.Status}}'

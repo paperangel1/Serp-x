@@ -1,0 +1,166 @@
+{
+ "format": 1,
+ "id": "gallery-second-monitor",
+ "name": "Второй монитор",
+ "description": "При подключении монитора расставляет окна и меняет обои второго экрана.",
+ "enabled": false,
+ "nodes": [
+  {
+   "id": "n1",
+   "type": "event.monitor_added@1",
+   "pos": [
+    0,
+    100
+   ],
+   "props": {}
+  },
+  {
+   "id": "n2",
+   "type": "action.window.arrange@1",
+   "pos": [
+    340,
+    100
+   ],
+   "props": {
+    "layout": "by_monitor"
+   }
+  },
+  {
+   "id": "n3",
+   "type": "action.shell.wallpaper@1",
+   "pos": [
+    680,
+    100
+   ],
+   "props": {
+    "path": "~/Pictures/second-monitor.jpg"
+   }
+  },
+  {
+   "id": "n4",
+   "type": "action.notify@1",
+   "pos": [
+    1020,
+    100
+   ],
+   "props": {
+    "title": "Монитор подключён"
+   }
+  }
+ ],
+ "wires": [
+  {
+   "from": [
+    "n1",
+    "exec"
+   ],
+   "to": [
+    "n2",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n2",
+    "exec_out"
+   ],
+   "to": [
+    "n3",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n3",
+    "exec_out"
+   ],
+   "to": [
+    "n4",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n1",
+    "monitor"
+   ],
+   "to": [
+    "n2",
+    "monitor"
+   ]
+  }
+ ],
+ "variables": [],
+ "comments": [
+  {
+   "id": "c1",
+   "x": 0,
+   "y": -100,
+   "w": 300,
+   "h": 100,
+   "title": {
+    "ru": "Событие",
+    "en": "Event"
+   },
+   "text": {
+    "ru": "Фильтр монитора можно оставить пустым: сработает на любой.",
+    "en": "Leave the monitor filter empty to react to any monitor."
+   },
+   "color": "#f9e2af"
+  },
+  {
+   "id": "c2",
+   "x": 340,
+   "y": -100,
+   "w": 300,
+   "h": 100,
+   "title": {
+    "ru": "Расстановка",
+    "en": "Layout"
+   },
+   "text": {
+    "ru": "Имя монитора из события идёт в узел расстановки.",
+    "en": "The monitor name from the event goes to the arrange node."
+   },
+   "color": "#f9e2af"
+  },
+  {
+   "id": "c3",
+   "x": 680,
+   "y": -100,
+   "w": 300,
+   "h": 100,
+   "title": {
+    "ru": "Обои",
+    "en": "Wallpaper"
+   },
+   "text": {
+    "ru": "Укажите свой файл картинки.",
+    "en": "Pick your own picture file."
+   },
+   "color": "#f9e2af"
+  }
+ ],
+ "gallery": {
+  "name": {
+   "ru": "Второй монитор",
+   "en": "Second monitor"
+  },
+  "description": {
+   "ru": "При подключении монитора расставляет окна и меняет обои второго экрана.",
+   "en": "When a monitor connects it arranges the windows and changes the wallpaper of the second screen."
+  },
+  "category": "windows",
+  "tags": {
+   "ru": [
+    "окна",
+    "обои"
+   ],
+   "en": [
+    "windows",
+    "wallpaper"
+   ]
+  },
+  "packages": []
+ }
+}

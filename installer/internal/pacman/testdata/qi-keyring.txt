@@ -1,0 +1,5 @@
+Name            : archlinux-keyring
+Version         : 20260901-1
+Build Date      : Tue 01 Sep 2026 10:00:00 AM UTC
+Install Date    : Wed 02 Sep 2026 08:00:00 AM UTC
+Required By     : pacman

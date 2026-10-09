@@ -1,0 +1,32 @@
+* Serpantinum - serp-x build   installer v2.2.4-s3                             language  RU  EN   F2
+                                                                                                    
++ Check -- + Mode -- + Modules -- + Settings -- + Summary -- * Install  -- o Done                   
+                                                                                                    
+Step 4 of 14  -  Hotkeys menu: install                                                              
+                                                                                                    
+███████████████████████████████████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  56%   
+elapsed 05:┌─ It did not work ──────────────────────────────────────────────────────────┐           
+           │                                                                            │           
+┌─ Steps ──│ x Step failed: VPN (Xray): install                                         │──────────┐
+│ + Backup │                                                                            │          │
+│ + pacman │ What I was doing: VPN (Xray): install.                                     │          │
+│ + Shell p│ What happened: no answer from the network. It looks like the network, not  │          │
+│ | Hotkeys│ a system error.                                                            │          │
+│ o Color e│                                                                            │░░░░░░░   │
+│ o Color p│ ==> Starting build()...                                                    │          │
+│ o OCR: in│ go: downloading github.com/xtls/reality v0.0.0-2026                        │          │
+│ o AI: Gem│ dial tcp: lookup proxy.golang.org: i/o timeout                             │          │
+│ o Servers│ ==> ERROR: A failure occurred in build(). Aborting...                      │o more    │
+│ x VPN (Xr│                                                                            │ run      │
+│ o Command│ Options:                                                                   │.         │
+│ o Video e│ Retry - once more (sometimes helps after a minute)                         │          │
+└──────────│ Skip VPN (Xray) - the rest is installed; add VPN (Xray) later              │──────────┘
+┌─ Log  (L │ Abort - nothing breaks, the next run continues                             │──────────┐
+│ 19:09:12 │                                                                            │          │
+│ 19:09:13 │  Retry   Skip VPN (Xray)   Abort     L  full log                           │0%        │
+│ 19:09:14 │                                                                            │          │
+│ 19:09:15 └────────────────────────────────────────────────────────────────────────────┘          │
+│ 19:09:16 pacman  pipewire-pulse-1:1.6.2-1-x86_64   18.3 KiB   ...                                │
+│ 19:09:17 engine  FAILED: dial tcp: lookup proxy.golang.org: i/o timeout                          │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+ Tab  choose a button   Enter  do it   L  full log                                                  

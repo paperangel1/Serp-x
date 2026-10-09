@@ -1,0 +1,27 @@
+id = "tools"
+schema = 1
+order = 40
+group = "build"
+presets = ["full"]
+name = { ru = "Пипетка и заметки", en = "Color picker & notes" }
+desc = { ru = "Пипетка с историей цветов и быстрые заметки в углу экрана.", en = "Color picker with history and quick notes in a screen corner." }
+requires = ["core"]
+packages = ["grim", "slurp", "wl-clipboard"]
+user_files = ["~/Notes"]
+estimate = { download_mib = 0, disk_mib = 0, install_s = 1 }
+
+[uninstall]
+keep_data = ["~/Notes", "~/.local/state/serpantinum/x_colors.json"]
+
+[[config]]
+key = "tools.notes_dir"
+kind = "path"
+default = "~/Notes"
+label = { ru = "Папка для заметок", en = "Notes folder" }
+
+[[steps]]
+id = "tools.notes"
+kind = "files"
+title = { ru = "Заметки: создание папки", en = "Notes: create the folder" }
+args = { dirs = ["~/Notes"], mode = "0700" }
+estimate_s = 1

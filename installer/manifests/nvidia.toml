@@ -1,0 +1,27 @@
+id = "nvidia"
+schema = 1
+order = 110
+group = "system"
+recommend_if = "gpu:nvidia"
+name = { ru = "Драйвер NVIDIA", en = "NVIDIA driver" }
+desc = { ru = "Открытый драйвер NVIDIA (DKMS) и настройки для Hyprland.", en = "Open NVIDIA driver (DKMS) and Hyprland settings." }
+notes = { ru = "Не проверено на реальном железе: Hyprland + NVIDIA, гибридная графика, старые карты (до Turing) — на свой риск.", en = "Not verified on real hardware: Hyprland + NVIDIA, hybrid graphics, pre-Turing cards - at your own risk." }
+requires = ["core"]
+packages = ["nvidia-open-dkms", "nvidia-utils", "egl-wayland", "linux-headers"]
+root_files = ["/etc/modprobe.d/serp-nvidia.conf"]
+estimate = { download_mib = 350, disk_mib = 1100, install_s = 180 }
+
+[[steps]]
+id = "nvidia.modprobe"
+kind = "root"
+title = { ru = "NVIDIA: включение modeset", en = "NVIDIA: enable modeset" }
+args = { dest = "/etc/modprobe.d/serp-nvidia.conf", content = "options nvidia_drm modeset=1\n" }
+estimate_s = 1
+
+[[steps]]
+id = "nvidia.hypr"
+kind = "hypr"
+title = { ru = "NVIDIA: переменные окружения Hyprland", en = "NVIDIA: Hyprland environment variables" }
+args = { env = { LIBVA_DRIVER_NAME = "nvidia", __GLX_VENDOR_LIBRARY_NAME = "nvidia", NVD_BACKEND = "direct" } }
+after = ["nvidia.modprobe"]
+estimate_s = 1

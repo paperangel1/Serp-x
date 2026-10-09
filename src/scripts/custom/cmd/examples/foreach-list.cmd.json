@@ -1,0 +1,24 @@
+{
+  "format": 1,
+  "id": "example-foreach-list",
+  "name": "Перебор списка",
+  "description": "Для каждого элемента списка показывает уведомление с его номером, в конце — итог.",
+  "enabled": true,
+  "nodes": [
+    {"id": "n1", "type": "event.manual@1", "pos": [40, 40], "props": {}},
+    {"id": "n2", "type": "logic.foreach@1", "pos": [320, 40], "props": {"list": ["яблоко", "груша", "слива"]}},
+    {"id": "n3", "type": "action.notify@1", "pos": [640, 40], "props": {}},
+    {"id": "n4", "type": "action.notify@1", "pos": [640, 260], "props": {"title": "Готово", "body": "Список закончился"}},
+    {"id": "n5", "type": "convert.to_text@1", "pos": [360, 240], "props": {}}
+  ],
+  "wires": [
+    {"from": ["n1", "exec"], "to": ["n2", "exec_in"]},
+    {"from": ["n2", "body"], "to": ["n3", "exec_in"]},
+    {"from": ["n2", "item"], "to": ["n3", "title"]},
+    {"from": ["n2", "index"], "to": ["n5", "value"]},
+    {"from": ["n5", "text"], "to": ["n3", "body"]},
+    {"from": ["n2", "completed"], "to": ["n4", "exec_in"]}
+  ],
+  "capabilities": ["notify.show"],
+  "approved_capabilities": ["notify.show"]
+}

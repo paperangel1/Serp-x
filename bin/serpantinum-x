@@ -1,0 +1,208 @@
+#!/usr/bin/env bash
+# serpantinum-x: own CLI for the customizations kept on top of upstream Serpantinum.
+# Never touches bin/serpantinum, so upstream updates cannot conflict with it.
+#
+#   serpantinum-x update <check|run|bootstrap|status|ack|backups|restore|repair-hooks> [...]
+#   serpantinum-x changelog <versions|get <version|latest|unreleased> [lang]>
+#   serpantinum-x doctor [--json]
+#   serpantinum-x migrate [--dry-run]     one-off moves of data from older builds (VPN dir, Gemini proxy, cmdd unit)
+#   serpantinum-x backup export [--out DIR] | import FILE   backup of settings/notes/commands (no secrets), via the installer
+#   serpantinum-x logs [module] [-n N] [--level warn] [--follow] | report [--out FILE]   module logs / shareable redacted bundle
+#   serpantinum-x keybinds <...>          (owned by the hotkeys feature)
+#   serpantinum-x pick | colors           colour picker / colour history
+#   serpantinum-x notes [toggle|new]      quick notes editor / new note
+#   serpantinum-x ocr [--geometry "x,y WxH"]   recognise text on screen into the clipboard
+#   serpantinum-x cmd <sub> | run "Name"  commands engine (visual programming): list validate run log docs status ...
+
+# Never leave bytecode inside the repo checkout: a stray __pycache__ makes the tree "dirty" and blocks updates.
+export PYTHONDONTWRITEBYTECODE=1
+
+BIN_DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
+if [ -z "$SERPANTINUM_DIR" ]; then
+    export SERPANTINUM_DIR="$(dirname "$BIN_DIR")/src"
+fi
+
+# Update channel + developer checkout. A normal (release) install has no checkout: FORK_DIR is
+# empty and everything runs from the install. A checkout is used only when SERPANTINUM_FORK_DIR
+# is set, or channel=dev in update.toml (keys: channel = release|dev, fork_dir, base_url, pubkey_fpr).
+# NOTE: the same few lines live in x_update.sh and x_changelog.sh (they must work standalone).
+X_UPDATE_CONF="${X_UPDATE_CONF:-${XDG_CONFIG_HOME:-$HOME/.config}/serpantinum-x/update.toml}"
+x_conf_get() {   # x_conf_get <key>
+    [ -f "$X_UPDATE_CONF" ] || return 0
+    awk -F= -v k="$1" '{ key=$1; gsub(/[ \t]/, "", key) } key == k { v=$0; sub(/^[^=]*=[ \t]*/, "", v); sub(/[ \t]*(#.*)?$/, "", v); gsub(/^"|"$/, "", v); print v; exit }' "$X_UPDATE_CONF"
+}
+UPDATE_CHANNEL="${SERPANTINUM_UPDATE_CHANNEL:-$(x_conf_get channel)}"
+[ -n "$UPDATE_CHANNEL" ] || { [ -n "${SERPANTINUM_FORK_DIR:-}" ] && UPDATE_CHANNEL=dev || UPDATE_CHANNEL=release; }
+[ "$UPDATE_CHANNEL" = git ] && UPDATE_CHANNEL=dev
+FORK_DIR="${SERPANTINUM_FORK_DIR:-}"
+if [ -z "$FORK_DIR" ] && [ "$UPDATE_CHANNEL" = dev ]; then
+    FORK_DIR="$(x_conf_get fork_dir)"; FORK_DIR="${FORK_DIR/#\~/$HOME}"; FORK_DIR="${FORK_DIR/#\$HOME/$HOME}"
+fi
+
+# The updater runs from the dev checkout when there is one (so a stale install copy can never
+# break updating), otherwise from the install.
+custom_script() {   # custom_script <name>
+    local s="$SERPANTINUM_DIR/scripts/custom/$1"
+    [ -n "$FORK_DIR" ] && [ -f "$FORK_DIR/src/scripts/custom/$1" ] && s="$FORK_DIR/src/scripts/custom/$1"
+    printf '%s' "$s"
+}
+
+# shared logging (xlog <module> <level> <msg>); a missing helper must never break the CLI
+# shellcheck disable=SC1090
+[ -f "$(custom_script xlog/xlog.sh)" ] && . "$(custom_script xlog/xlog.sh)" || xlog() { :; }
+
+cmd_doctor() {
+    local json=false fails=0 warns=0 out=() branch
+    [ "$1" = "--json" ] && json=true
+    local DL="${X_LANG:-$(jq -r '.general.language // empty' "${X_UPDATE_SETTINGS:-$HOME/.config/serpantinum/settings.json}" 2>/dev/null)}"
+    [ -n "$DL" ] || DL="${LC_ALL:-${LC_MESSAGES:-${LANG:-}}}"
+    case "$DL" in ru*) DL=ru ;; *) DL=en ;; esac
+    tr_() { [ "$DL" = ru ] && printf '%s' "$1" || printf '%s' "$2"; }   # tr_ <ru> <en>
+    local I="${SERPANTINUM_INSTALL_DIR:-$HOME/.local/share/serpantinum}"
+
+    add() {   # add <ok|warn|fail> <id> <message>
+        out+=("$1|$2|$3")
+        [ "$1" = fail ] && fails=$((fails + 1))
+        [ "$1" = warn ] && warns=$((warns + 1))
+        return 0
+    }
+
+    if [ -z "$FORK_DIR" ]; then
+        add ok repo "$(tr_ "канал обновлений: $UPDATE_CHANNEL (рабочей копии нет, работаем от установки)" "update channel: $UPDATE_CHANNEL (no checkout, running from the install)")"
+    elif git -C "$FORK_DIR" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+        branch="$(git -C "$FORK_DIR" rev-parse --abbrev-ref HEAD)"
+        [ "$branch" = "${SERPANTINUM_FORK_BRANCH:-serp-x}" ] && add ok repo_branch "$(tr_ "ветка $branch" "branch $branch")" || add fail repo_branch "$(tr_ "репозиторий на ветке $branch, ожидалась ${SERPANTINUM_FORK_BRANCH:-serp-x}" "repository is on branch $branch, expected ${SERPANTINUM_FORK_BRANCH:-serp-x}")"
+        [ -z "$(git -C "$FORK_DIR" status --porcelain --untracked-files=no)" ] && add ok repo_clean "$(tr_ "рабочее дерево чистое" "working tree is clean")" || add fail repo_clean "$(tr_ "в репозитории есть незакоммиченные изменения" "the repository has uncommitted changes")"
+        [ "$(git -C "$FORK_DIR" config --get rerere.enabled)" = "true" ] && add ok rerere "$(tr_ "git rerere включён" "git rerere is enabled")" || add warn rerere "$(tr_ "git rerere выключен: повторные конфликты придётся решать заново" "git rerere is off: repeated conflicts will have to be resolved again")"
+    else
+        add fail repo "$(tr_ "репозиторий $FORK_DIR не найден" "repository $FORK_DIR not found")"
+    fi
+
+    local gp="$I/src/quickshell/guide/GuidePopup.qml"
+    if grep -q 'serp-x hook' "$gp" 2>/dev/null && grep -q 'XUpdate.buttonText' "$gp" 2>/dev/null \
+        && grep -q 'serp-x hook' "$I/src/scripts/updater.py" 2>/dev/null; then add ok hooks "$(tr_ "хуки serpantinum-x на месте в установленной оболочке" "serpantinum-x hooks are in place in the installed shell")"
+    else add fail hooks "$(tr_ "в установленном GuidePopup.qml или updater.py нет хуков serpantinum-x" "the installed GuidePopup.qml or updater.py has no serpantinum-x hooks")"; fi
+
+    # serpantinum-x must be reachable from PATH: the installer links it into ~/.local/bin
+    local xl="${X_BIN_LINK:-$HOME/.local/bin/serpantinum-x}"
+    if [ -L "$xl" ] && [ -x "$xl" ]; then add ok x_symlink "$(tr_ "serpantinum-x доступен: $xl" "serpantinum-x is available: $xl")"
+    elif [ -e "$xl" ] && [ -x "$xl" ]; then add ok x_symlink "$(tr_ "serpantinum-x на месте: $xl (не симлинк)" "serpantinum-x is in place: $xl (not a symlink)")"
+    elif [ -L "$xl" ]; then add warn x_symlink "$(tr_ "симлинк $xl битый" "symlink $xl is broken")"
+    else add warn x_symlink "$(tr_ "нет $xl: команда serpantinum-x не будет найдена в PATH" "$xl is missing: the serpantinum-x command will not be found in PATH")"; fi
+
+    if [ -n "$FORK_DIR" ] && [ -d "$FORK_DIR/src" ] && [ -d "$I/src" ]; then
+        if diff -rq -x __pycache__ --no-dereference "$FORK_DIR/src" "$I/src" >/dev/null 2>&1; then add ok drift "$(tr_ "установка совпадает с репозиторием" "install matches the repository")"
+        else add warn drift "$(tr_ "установленные файлы отличаются от репозитория (обновление попросит подтверждение)" "installed files differ from the repository (the update will ask for confirmation)")"; fi
+    fi
+
+    local last
+    last="$(find "${X_UPDATE_BACKUP_ROOT:-$HOME/.local/share/serpantinum-backups}" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort | tail -1)"
+    [ -n "$last" ] && add ok backup "$(tr_ "последняя резервная копия: $(basename "$last")" "latest backup: $(basename "$last")")" || add warn backup "$(tr_ "резервных копий ещё нет" "no backups yet")"
+
+    if grep -q 'XTools {}' "$I/src/quickshell/Shell.qml" 2>/dev/null && grep -q 'XOcrButton' "$I/src/quickshell/screenshot/ScreenshotOverlay.qml" 2>/dev/null; then add ok tools_hook "$(tr_ "хуки инструментов (XTools, кнопка OCR) на месте в установленной оболочке" "tool hooks (XTools, OCR button) are in place in the installed shell")"
+    else add warn tools_hook "$(tr_ "в установленной оболочке нет хуков инструментов (пипетка, заметки, OCR)" "the installed shell has no tool hooks (colour picker, notes, OCR)")"; fi
+    if command -v tesseract >/dev/null 2>&1 && tesseract --list-langs 2>/dev/null | grep -qx rus; then add ok ocr_deps "$(tr_ "tesseract с русским языком установлен" "tesseract with Russian language data is installed")"
+    else add warn ocr_deps "$(tr_ "для OCR нужны пакеты tesseract tesseract-data-rus tesseract-data-eng" "OCR needs the packages tesseract tesseract-data-rus tesseract-data-eng")"; fi
+
+    fc-match emoji 2>/dev/null | grep -qi emoji && add ok emoji "$(tr_ "шрифт эмодзи установлен" "emoji font is installed")" || add warn emoji "$(tr_ "шрифт эмодзи не найден (noto-fonts-emoji)" "emoji font not found (noto-fonts-emoji)")"
+    [ -s "$HOME/.config/serpantinum/secrets/gemini_key" ] && add ok gemini_key "$(tr_ "ключ Gemini есть" "Gemini key is present")" || add warn gemini_key "$(tr_ "ключа Gemini нет: список изменений будет на английском" "no Gemini key: the changelog will stay in English")"
+    # proxy is optional: only checked when the user configured one (settings.json ai.proxy or X_GEMINI_PROXY)
+    local gp_url gp_hp
+    gp_url="${X_GEMINI_PROXY-$(jq -r '.ai.proxy // empty' "${X_UPDATE_SETTINGS:-$HOME/.config/serpantinum/settings.json}" 2>/dev/null)}"
+    if [ -n "$gp_url" ]; then
+        gp_hp="${gp_url#*://}"; gp_hp="${gp_hp%%/*}"
+        if timeout 1 bash -c "echo >/dev/tcp/${gp_hp%:*}/${gp_hp##*:}" 2>/dev/null; then add ok gemini_tunnel "$(tr_ "прокси для Gemini ($gp_hp) доступен" "Gemini proxy ($gp_hp) is reachable")"
+        else add warn gemini_tunnel "$(tr_ "прокси для Gemini ($gp_hp) не отвечает" "Gemini proxy ($gp_hp) is not responding")"; fi
+    fi
+
+    local hl="${X_UPDATE_HYPR_DIR:-$HOME/.config/hypr}/hyprland.lua"
+    if [ -f "$hl" ]; then
+        grep -q 'user_keybinds' "$hl" 2>/dev/null && add ok hypr_require "$(tr_ "hyprland.lua подключает user_keybinds" "hyprland.lua loads user_keybinds")" || add warn hypr_require "$(tr_ "hyprland.lua не подключает user_keybinds (кнопка «Исправить» в меню хоткеев)" "hyprland.lua does not load user_keybinds (use the Fix button in the hotkeys menu)")"
+    fi
+
+    # a module that was not installed (~/.config/serpantinum-x/modules.json, no file = all on) is not checked
+    modon() {
+        local mj="${X_MODULES_FILE:-${XDG_CONFIG_HOME:-$HOME/.config}/serpantinum-x/modules.json}"
+        [ -f "$mj" ] || return 0
+        jq -e --arg m "$1" '(.enabled // []) | index($m) != null' "$mj" >/dev/null 2>&1
+    }
+    # >>> servers doctor (owned by the servers feature)
+    local slvl smsg
+    modon servers && while IFS=$'\t' read -r slvl smsg; do
+        [ -n "$slvl" ] && add "$slvl" servers "$(tr_ Серверы Servers): ${smsg//|//}"
+    done < <(bash "$(custom_script servers/x_servers.sh)" doctor 2>/dev/null | jq -r '.checks[] | [.level, .text] | @tsv' 2>/dev/null)
+    # <<< servers doctor
+    # >>> vpn doctor (serp-x-vpn): rows come from `x_vpn.sh doctor` >>>
+    local vs vrows vr vlvl vkey vtext
+    vs="$(custom_script vpn/x_vpn.sh)"
+    if modon vpn && [ -f "$vs" ]; then
+        vrows="$(bash "$vs" doctor 2>/dev/null | jq -r 'if type=="array" then .[] | "\(.level)|vpn_\(.key)|\(.text)" else empty end' 2>/dev/null)"
+        while IFS= read -r vr; do
+            [ -n "$vr" ] || continue
+            IFS='|' read -r vlvl vkey vtext <<< "$vr"
+            add "$vlvl" "$vkey" "VPN: $vtext"
+        done <<< "$vrows"
+    fi
+    # <<< vpn doctor <<<
+    # >>> commands doctor (owned by the commands feature)
+    local clvl cmsg
+    modon commands && while IFS=$'\t' read -r clvl cmsg; do
+        [ -n "$clvl" ] && add "$clvl" commands "$(tr_ Команды Commands): ${cmsg}"
+    done < <(bash "$(custom_script cmd/x_cmd.sh)" doctor 2>/dev/null | jq -r '.checks[] | [.level, .text] | @tsv' 2>/dev/null)
+    # <<< commands doctor
+    # >>> logs doctor (owned by the logging layer)
+    local llvl lmsg
+    while IFS=$'\t' read -r llvl lmsg; do
+        [ -n "$llvl" ] && add "$llvl" logs "$(tr_ Логи Logs): ${lmsg}"
+    done < <(python3 "$(custom_script xlog/xlog.py)" doctor 2>/dev/null | jq -r '.checks[] | [.level, .text] | @tsv' 2>/dev/null)
+    # <<< logs doctor
+
+    if [ "$json" = true ]; then
+        printf '%s\n' "${out[@]}" | jq -Rn -c '[inputs | split("|") | {level: .[0], id: .[1], message: .[2]}]'
+    else
+        local row
+        for row in "${out[@]}"; do
+            IFS='|' read -r lvl id msg <<< "$row"
+            case "$lvl" in ok) printf '  ok    %s\n' "$msg" ;; warn) printf '  WARN  %s\n' "$msg" ;; fail) printf '  FAIL  %s\n' "$msg" ;; esac
+        done
+        echo "$(tr_ "итого: проблем $fails, предупреждений $warns" "total: $fails problems, $warns warnings")"
+    fi
+    xlog doctor "$([ "$fails" -eq 0 ] && echo info || echo error)" "doctor finished fails=$fails warns=$warns"
+    local drow
+    for drow in "${out[@]}"; do
+        case "$drow" in
+            fail\|*) drow="${drow#fail|}"; xlog doctor error "${drow/|/: }" ;;
+            warn\|*) drow="${drow#warn|}"; xlog doctor warn "${drow/|/: }" ;;
+        esac
+    done
+    [ "$fails" -eq 0 ]
+}
+
+case "${1:-}" in
+    _run)      shift; s="$(custom_script "$1")"; shift; exec bash "$s" "$@" ;;   # internal: QML entry (fork copy first)
+    update)    shift; exec bash "$(custom_script x_update.sh)" "$@" ;;
+    changelog) shift; exec bash "$(custom_script x_changelog.sh)" "$@" ;;
+    doctor)    shift; cmd_doctor "$@" ;;
+    migrate)   shift; exec python3 "$(custom_script x_migrate.py)" "$@" ;;
+    # keybinds: dispatched to the hotkeys feature script once it exists
+    keybinds)  shift; exec bash "$(custom_script x_keybinds.sh)" "$@" ;;
+    pick)      exec "$BIN_DIR/serpantinum" ipc call xtools pick ;;
+    colors)    exec "$BIN_DIR/serpantinum" ipc call xtools colors ;;
+    notes)     shift; case "${1:-toggle}" in new) exec "$BIN_DIR/serpantinum" ipc call xtools newNote ;; *) exec "$BIN_DIR/serpantinum" ipc call xtools notes ;; esac ;;
+    ocr)       shift; exec bash "$(custom_script x_ocr.sh)" "$@" ;;
+    backup)    shift; exec bash "$(custom_script x_backup.sh)" "$@" ;;
+    vpn)       shift; exec bash "$(custom_script vpn/x_vpn.sh)" "$@" ;;
+    servers)   shift; exec bash "$(custom_script servers/x_servers.sh)" "$@" ;;
+    # >>> commands dispatch (owned by the commands feature)
+    cmd)       shift; exec bash "$(custom_script cmd/x_cmd.sh)" "$@" ;;
+    run)       shift; exec bash "$(custom_script cmd/x_cmd.sh)" run "$@" ;;
+    # <<< commands dispatch
+    # >>> logging dispatch (owned by the logging layer)
+    logs)      shift; exec python3 "$(custom_script xlog/xlog.py)" logs "$@" ;;
+    report)    shift; SERPANTINUM_X="${BASH_SOURCE[0]}" XLOG_REPO="${FORK_DIR:-}" exec python3 "$(custom_script xlog/xlog.py)" report "$@" ;;
+    # <<< logging dispatch
+    ""|-h|--help)
+        sed -n '2,15p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
+        ;;
+    *) echo "serpantinum-x: unknown command '$1' (try --help)" >&2; exit 1 ;;
+esac

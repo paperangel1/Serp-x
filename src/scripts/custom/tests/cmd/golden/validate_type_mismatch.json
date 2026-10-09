@@ -1,0 +1,37 @@
+{
+  "capabilities": [
+    "notify.show"
+  ],
+  "errors": [
+    {
+      "code": "unknown_node",
+      "level": "error",
+      "message": "Узел «z» имеет неизвестный тип «action.nope@1»: он потерян, команда не запустится.",
+      "message_en": "Node «z» has unknown type «action.nope@1»: it is lost, the command will not run.",
+      "node": "z",
+      "pin": null
+    },
+    {
+      "code": "type_mismatch",
+      "fix": {
+        "kind": "insert_converter",
+        "label": "Вставить «Любое → Текст»",
+        "label_en": "Insert «Any → Text»",
+        "node_type": "convert.to_text@1",
+        "wire": [
+          "f",
+          "index",
+          "n",
+          "title"
+        ]
+      },
+      "level": "error",
+      "message": "Этому входу нужен текст, а подключено число. Вход «title» узла «Уведомление», источник — «Для каждого».",
+      "message_en": "This input needs text, but number is connected. Input «title» of node «Уведомление», source «Для каждого».",
+      "node": "n",
+      "pin": "title"
+    }
+  ],
+  "ok": false,
+  "warnings": []
+}

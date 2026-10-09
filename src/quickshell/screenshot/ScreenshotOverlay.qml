@@ -9,6 +9,7 @@ import Quickshell.Io
 import Quickshell.Services.Pipewire
 import "../reusables"
 import "../"
+import "../custom"  // serp-x hook
 
 PanelWindow {
     id: root
@@ -1194,6 +1195,8 @@ PanelWindow {
                     isShown: !root.isVideoMode; contentWidth: s(36)
                     IconButton { size: s(36); cornerRadius: ThemeBackend.borderRadius; buttonIcon: "⿻"; iconFontSize: s(18); accentColor: ThemeBackend.surface0; textColor: ThemeBackend.text; onClicked: root.performQrScan() }
                 }
+
+                XOcrButton { overlay: root }  // serp-x hook
 
                 AnimWrap {
                     isShown: !root.isVideoMode; contentWidth: s(36)

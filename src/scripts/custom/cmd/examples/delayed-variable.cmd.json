@@ -1,0 +1,25 @@
+{
+  "format": 1,
+  "id": "example-delayed-variable",
+  "name": "Приветствие с задержкой",
+  "description": "Записывает переменную, ждёт и показывает её значение в уведомлении.",
+  "enabled": true,
+  "variables": [
+    {"name": "greeting", "type": "text", "scope": "run", "initial": "Привет"}
+  ],
+  "nodes": [
+    {"id": "n1", "type": "event.manual@1", "pos": [40, 40], "props": {}},
+    {"id": "n2", "type": "logic.set_var@1", "pos": [320, 40], "props": {"name": "greeting", "value": "Здравствуйте"}},
+    {"id": "n3", "type": "logic.delay@1", "pos": [600, 40], "props": {"seconds": 0.2}},
+    {"id": "n4", "type": "action.notify@1", "pos": [880, 40], "props": {"body": "Прошла пауза"}},
+    {"id": "n5", "type": "data.get_var@1", "pos": [600, 220], "props": {"name": "greeting"}}
+  ],
+  "wires": [
+    {"from": ["n1", "exec"], "to": ["n2", "exec_in"]},
+    {"from": ["n2", "exec_out"], "to": ["n3", "exec_in"]},
+    {"from": ["n3", "exec_out"], "to": ["n4", "exec_in"]},
+    {"from": ["n5", "value"], "to": ["n4", "title"]}
+  ],
+  "capabilities": ["notify.show"],
+  "approved_capabilities": ["notify.show"]
+}

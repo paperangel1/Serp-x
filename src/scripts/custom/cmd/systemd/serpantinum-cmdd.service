@@ -1,0 +1,23 @@
+[Unit]
+Description=Serpantinum commands engine (serpantinum-cmdd)
+Documentation=file://@BIN_X@
+After=graphical-session.target
+StartLimitIntervalSec=120
+StartLimitBurst=10
+
+[Service]
+Type=simple
+ExecStart=@BIN_X@ cmd daemon
+Restart=on-failure
+RestartSec=3
+# The graphical session variables (Hyprland signature, Wayland display) may appear after the unit starts: the daemon
+# rediscovers them itself and its sources wait and retry, so no ExecStartPre gate is needed.
+TimeoutStopSec=15
+KillMode=mixed
+NoNewPrivileges=yes
+ProtectHome=read-only
+ReadWritePaths=%h/.config/serpantinum %h/.local/state/serpantinum %t/serpantinum
+Environment=PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1
+
+[Install]
+WantedBy=default.target

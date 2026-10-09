@@ -1,0 +1,32 @@
+◆ Serpantinum · serp-x build   installer v2.2.4-s3                             language  RU  EN   F2
+                                                                                                    
+✓ Check ── ✓ Mode ── ✓ Modules ── ✓ Settings ── ●Summary ── ○ Install ── ○ Done                   
+                                                                                                    
+Everything is ready to install. No more questions - you can step away.                              
+                                                                                                    
+╭─ Will be installed · 11 ───────────────────╮  ╭─ Settings ───────────────────────────────────────╮
+│                                            │  │                                                  │
+│ ✓ Shell + build base                       │  │ Language      English                            │
+│ ✓ Hotkeys menu                             │  │ Gemini        skipped                            │
+│ ✓ Color emoji                              │  │ Remnawave     skipped                            │
+│ ✓ Color picker & notes                     │  │ SSH key       none                               │
+│ ✓ OCR                                      │  │ VPN           skipped                            │
+│ ✓ AI: Gemini                               │  │ Notes         ~/Notes                            │
+│ ✓ Servers widget                           │  │ Commands      daemon + examples                  │
+│ ✓ VPN (Xray)                               │  │                                                  │
+│ ✓ Commands                                 │  │ Set up later:                                    │
+│ ✓ Video examples (yt-dlp)                  │  │   AI: Gemini, Servers widget, VPN (Xray)         │
+│ ✓ NVIDIA driver                            │  │                                                  │
+╰────────────────────────────────────────────╯  ╰──────────────────────────────────────────────────╯
+                                                                                                    
+╭─ With root rights (sudo) I will change ──────────────────────╮  ╭─ Total ──────────────────────╮  
+│                                                              │  │                              │  
+│ · pacman keys                                                │  │ Download 1.33 GiB            │  
+│ · Shell programs (63 packages)                               │  │ On disk  4.00 GiB            │  
+│                                                              │  │ Time     ≈ 4 min             │  
+│                                                              │  │                              │  
+╰──────────────────────────────────────────────────────────────╯  ╰──────────────────────────────╯  
+                                                                                                    
+ ← Back  Start the install                                                                        
+                                                                                                    
+ Enter  start   Esc  back and fix   e  save as my-setup.toml   F2  language / язык                  

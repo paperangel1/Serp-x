@@ -1,0 +1,26 @@
+id = "hotkeys"
+schema = 1
+order = 20
+group = "build"
+presets = ["full", "minimal"]
+name = { ru = "Горячие клавиши", en = "Hotkeys menu" }
+desc = { ru = "Меню горячих клавиш с поиском и своими сочетаниями.", en = "Hotkeys menu with search and your own bindings." }
+notes = { ru = "Нужен конфиг Hyprland в формате Lua (hyprland.lua).", en = "Needs a Lua-format Hyprland config (hyprland.lua)." }
+requires = ["core"]
+user_files = ["~/.config/hypr/hyprland.lua", "~/.config/hypr/config/user_keybinds.lua"]
+estimate = { download_mib = 0, disk_mib = 0, install_s = 2 }
+
+[[steps]]
+id = "hotkeys.require"
+kind = "hypr"
+title = { ru = "Горячие клавиши: подключение к Hyprland", en = "Hotkeys: hook into Hyprland" }
+args = { cmd = ["bash", "@SRC@/scripts/custom/x_keybinds.sh", "ensure-require"] }
+estimate_s = 1
+
+[[steps]]
+id = "hotkeys.generate"
+kind = "script"
+title = { ru = "Горячие клавиши: файл сочетаний", en = "Hotkeys: bindings file" }
+args = { cmd = ["bash", "@SRC@/scripts/custom/x_keybinds.sh", "generate"] }
+after = ["hotkeys.require"]
+estimate_s = 1

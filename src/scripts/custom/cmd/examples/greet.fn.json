@@ -1,0 +1,118 @@
+{
+  "format": 1,
+  "kind": "function",
+  "id": "greet",
+  "name": "Приветствие",
+  "description": "Показывает приветствие и возвращает его текст.",
+  "icon": "hand",
+  "exec": true,
+  "inputs": [
+    {
+      "id": "name",
+      "type": "text",
+      "label": "Имя",
+      "default": "мир"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "msg",
+      "type": "text",
+      "label": "Сообщение"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "fn_in",
+      "type": "function.input@1",
+      "pos": [
+        40,
+        80
+      ],
+      "props": {}
+    },
+    {
+      "id": "fn_out",
+      "type": "function.output@1",
+      "pos": [
+        760,
+        80
+      ],
+      "props": {}
+    },
+    {
+      "id": "t",
+      "type": "data.format@1",
+      "pos": [
+        300,
+        200
+      ],
+      "props": {
+        "template": "Привет, {a}!"
+      }
+    },
+    {
+      "id": "n",
+      "type": "action.notify@1",
+      "pos": [
+        420,
+        60
+      ],
+      "props": {}
+    }
+  ],
+  "wires": [
+    {
+      "from": [
+        "fn_in",
+        "exec"
+      ],
+      "to": [
+        "n",
+        "exec_in"
+      ]
+    },
+    {
+      "from": [
+        "fn_in",
+        "name"
+      ],
+      "to": [
+        "t",
+        "a"
+      ]
+    },
+    {
+      "from": [
+        "t",
+        "text"
+      ],
+      "to": [
+        "n",
+        "title"
+      ]
+    },
+    {
+      "from": [
+        "n",
+        "exec_out"
+      ],
+      "to": [
+        "fn_out",
+        "exec_in"
+      ]
+    },
+    {
+      "from": [
+        "t",
+        "text"
+      ],
+      "to": [
+        "fn_out",
+        "msg"
+      ]
+    }
+  ],
+  "variables": [],
+  "comments": []
+}

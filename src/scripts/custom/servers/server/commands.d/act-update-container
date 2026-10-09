@@ -1,0 +1,9 @@
+#!/bin/sh
+# serp-timeout: 600
+NODE_DIR=${NODE_DIR:-/opt/remnanode}
+command -v docker >/dev/null 2>&1 || { echo "docker не найден"; exit 1; }
+[ -d "$NODE_DIR" ] || { echo "каталог $NODE_DIR не найден (настройте NODE_DIR в /etc/serpantinum/serp.conf)"; exit 1; }
+cd "$NODE_DIR" || exit 1
+echo "Загрузка нового образа…"; docker compose pull 2>&1 | tail -n 12
+echo "Запуск…"; docker compose up -d 2>&1 | tail -n 12
+docker compose ps 2>&1 | head -n 10

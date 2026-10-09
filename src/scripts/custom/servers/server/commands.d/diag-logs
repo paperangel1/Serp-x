@@ -1,0 +1,8 @@
+#!/bin/sh
+NODE_CONTAINER=${NODE_CONTAINER:-remnanode}
+if command -v docker >/dev/null 2>&1 && docker inspect "$NODE_CONTAINER" >/dev/null 2>&1; then
+    echo "== Логи контейнера $NODE_CONTAINER (последние 60 строк) =="; docker logs --tail 60 "$NODE_CONTAINER" 2>&1
+fi
+if command -v journalctl >/dev/null 2>&1; then
+    echo; echo "== Ошибки системы за сутки (последние 40) =="; journalctl -p err --since "-24h" --no-pager -n 40 2>/dev/null
+fi

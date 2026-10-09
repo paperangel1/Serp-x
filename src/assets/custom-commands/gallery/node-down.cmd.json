@@ -1,0 +1,284 @@
+{
+ "format": 1,
+ "id": "gallery-node-down",
+ "name": "Узел упал",
+ "description": "Уведомит и предложит перезапустить узел одним нажатием.",
+ "enabled": false,
+ "nodes": [
+  {
+   "id": "n1",
+   "type": "event.server.unreachable@1",
+   "pos": [
+    0,
+    100
+   ],
+   "props": {}
+  },
+  {
+   "id": "n2",
+   "type": "action.notify@1",
+   "pos": [
+    340,
+    100
+   ],
+   "props": {
+    "title": "Сервер недоступен"
+   }
+  },
+  {
+   "id": "n3",
+   "type": "data.format@1",
+   "pos": [
+    340,
+    380
+   ],
+   "props": {
+    "template": "Сервер {a} не отвечает: {b}"
+   }
+  },
+  {
+   "id": "n4",
+   "type": "logic.ask@1",
+   "pos": [
+    680,
+    100
+   ],
+   "props": {
+    "mode": "confirm",
+    "title": "Перезапустить узел?"
+   }
+  },
+  {
+   "id": "n5",
+   "type": "logic.if@1",
+   "pos": [
+    1020,
+    100
+   ],
+   "props": {}
+  },
+  {
+   "id": "n6",
+   "type": "action.server.run@1",
+   "pos": [
+    1360,
+    100
+   ],
+   "props": {
+    "command": "act-restart-node"
+   }
+  },
+  {
+   "id": "n7",
+   "type": "ui.show_result@1",
+   "pos": [
+    1700,
+    100
+   ],
+   "props": {
+    "title": "Перезапуск"
+   }
+  }
+ ],
+ "wires": [
+  {
+   "from": [
+    "n1",
+    "exec"
+   ],
+   "to": [
+    "n2",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n1",
+    "server_name"
+   ],
+   "to": [
+    "n3",
+    "a"
+   ]
+  },
+  {
+   "from": [
+    "n1",
+    "reason"
+   ],
+   "to": [
+    "n3",
+    "b"
+   ]
+  },
+  {
+   "from": [
+    "n3",
+    "text"
+   ],
+   "to": [
+    "n2",
+    "body"
+   ]
+  },
+  {
+   "from": [
+    "n2",
+    "exec_out"
+   ],
+   "to": [
+    "n4",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n4",
+    "exec_out"
+   ],
+   "to": [
+    "n5",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n4",
+    "yes"
+   ],
+   "to": [
+    "n5",
+    "condition"
+   ]
+  },
+  {
+   "from": [
+    "n5",
+    "then"
+   ],
+   "to": [
+    "n6",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n1",
+    "server_name"
+   ],
+   "to": [
+    "n6",
+    "server"
+   ]
+  },
+  {
+   "from": [
+    "n6",
+    "exec_out"
+   ],
+   "to": [
+    "n7",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n6",
+    "output"
+   ],
+   "to": [
+    "n7",
+    "value"
+   ]
+  }
+ ],
+ "variables": [],
+ "comments": [
+  {
+   "id": "c1",
+   "x": 0,
+   "y": -100,
+   "w": 300,
+   "h": 100,
+   "title": {
+    "ru": "Событие",
+    "en": "Event"
+   },
+   "text": {
+    "ru": "Приходит из раздела «Серверы», когда сервер перестал отвечать.",
+    "en": "Comes from the Servers section when a server stops responding."
+   },
+   "color": "#f9e2af"
+  },
+  {
+   "id": "c2",
+   "x": 340,
+   "y": -100,
+   "w": 300,
+   "h": 100,
+   "title": {
+    "ru": "Уведомление",
+    "en": "Notification"
+   },
+   "text": {
+    "ru": "Текст собирается узлом «Форматировать» из данных события.",
+    "en": "The text is built by the Format node from the event data."
+   },
+   "color": "#f9e2af"
+  },
+  {
+   "id": "c3",
+   "x": 680,
+   "y": -100,
+   "w": 300,
+   "h": 100,
+   "title": {
+    "ru": "Вопрос",
+    "en": "Question"
+   },
+   "text": {
+    "ru": "Подтверждение: «Да» или «Нет». Если не ответить, ничего не произойдёт.",
+    "en": "Confirmation: Yes or No. With no answer nothing happens."
+   },
+   "color": "#f9e2af"
+  },
+  {
+   "id": "c4",
+   "x": 1360,
+   "y": -100,
+   "w": 640,
+   "h": 100,
+   "title": {
+    "ru": "Сервер",
+    "en": "Server"
+   },
+   "text": {
+    "ru": "Перезапуск — опасное действие: даже в автоматизации он ещё раз просит подтверждения.",
+    "en": "A restart is dangerous: even in an automation it asks for confirmation once more."
+   },
+   "color": "#f9e2af"
+  }
+ ],
+ "gallery": {
+  "name": {
+   "ru": "Узел упал",
+   "en": "Node down"
+  },
+  "description": {
+   "ru": "Уведомит и предложит перезапустить узел одним нажатием.",
+   "en": "Notifies you and offers to restart the node with one click."
+  },
+  "category": "servers",
+  "tags": {
+   "ru": [
+    "серверы",
+    "SSH"
+   ],
+   "en": [
+    "servers",
+    "SSH"
+   ]
+  },
+  "packages": []
+ }
+}

@@ -1,0 +1,12 @@
+#!/bin/sh
+# serp-timeout: 90
+echo "== Диски =="; df -h -x tmpfs -x devtmpfs -x squashfs 2>/dev/null
+echo; echo "== Inodes =="; df -i / 2>/dev/null | tail -n 1
+echo; echo "== Крупнейшие каталоги =="
+du -xh --max-depth=1 /var /opt /home 2>/dev/null | sort -rh | head -n 8
+if command -v docker >/dev/null 2>&1; then
+    echo; echo "== Docker =="; docker system df 2>/dev/null
+fi
+if command -v journalctl >/dev/null 2>&1; then
+    echo; echo "== Журнал systemd =="; journalctl --disk-usage 2>/dev/null
+fi

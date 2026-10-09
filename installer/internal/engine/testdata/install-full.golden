@@ -1,0 +1,55 @@
+sudo -n -v
+sudo install -m 644 $HOME/.local/state/serpantinum-installer/tmp/root-N /etc/pacman.conf
+sudo pacman -Sy --noconfirm
+pacman -Qq base-devel
+pacman -Qq base-devel
+sudo pacman -Sy --noconfirm --needed base-devel
+pacman -Qq quickshell-git
+pacman -Qi archlinux-keyring
+sudo pacman -Syyu --noconfirm
+pacman -T kitty cava zbar pavucontrol alsa-utils wl-clipboard fd qt6-multimedia qt6-5compat ripgrep cliphist jq socat inotify-tools pamixer brightnessctl ddcutil acpi iw bluez bluez-utils libnotify networkmanager lm_sensors bc matugen pipewire wireplumber pipewire-pulse pipewire-alsa libpulse python imagemagick wget file git psmisc ffmpeg fastfetch quickshell unzip python-websockets python-jeepney qt6-websockets grim playerctl satty xdg-desktop-portal-gtk slurp wmctrl power-profiles-daemon easyeffects lsp-plugins-lv2 nautilus qt5-wayland qt5-quickcontrols qt5-quickcontrols2 qt5-graphicaleffects qt6-wayland qt5ct qt6ct gpu-screen-recorder wf-recorder adw-gtk-theme curl lua zstd kbd noto-fonts-emoji tesseract tesseract-data-rus tesseract-data-eng openssh v2ray-geoip v2ray-domain-list-community yt-dlp hyprland
+pacman -T kitty cava zbar pavucontrol alsa-utils wl-clipboard fd qt6-multimedia qt6-5compat ripgrep cliphist jq socat inotify-tools pamixer brightnessctl ddcutil acpi iw bluez bluez-utils libnotify networkmanager lm_sensors bc matugen pipewire wireplumber pipewire-pulse pipewire-alsa libpulse python imagemagick wget file git psmisc ffmpeg fastfetch quickshell unzip python-websockets python-jeepney qt6-websockets grim playerctl satty xdg-desktop-portal-gtk slurp wmctrl power-profiles-daemon easyeffects lsp-plugins-lv2 nautilus qt5-wayland qt5-quickcontrols qt5-quickcontrols2 qt5-graphicaleffects qt6-wayland qt5ct qt6ct gpu-screen-recorder wf-recorder adw-gtk-theme curl lua zstd kbd noto-fonts-emoji tesseract tesseract-data-rus tesseract-data-eng openssh v2ray-geoip v2ray-domain-list-community yt-dlp hyprland
+pacman -Slq
+pacman -Qq
+pacman -Sp --needed --print-format %n %s kitty cava zbar pavucontrol alsa-utils wl-clipboard fd qt6-multimedia qt6-5compat ripgrep cliphist jq socat inotify-tools pamixer brightnessctl ddcutil acpi iw bluez bluez-utils libnotify networkmanager lm_sensors bc matugen pipewire wireplumber pipewire-pulse pipewire-alsa libpulse python imagemagick wget file git psmisc ffmpeg fastfetch quickshell unzip python-websockets python-jeepney qt6-websockets grim playerctl satty xdg-desktop-portal-gtk slurp wmctrl power-profiles-daemon easyeffects lsp-plugins-lv2 nautilus qt5-wayland qt5-quickcontrols qt5-quickcontrols2 qt5-graphicaleffects qt6-wayland qt5ct qt6ct gpu-screen-recorder wf-recorder adw-gtk-theme curl lua zstd kbd noto-fonts-emoji tesseract tesseract-data-rus tesseract-data-eng openssh v2ray-geoip v2ray-domain-list-community yt-dlp hyprland
+sudo pacman -S --noconfirm --needed kitty cava zbar pavucontrol alsa-utils wl-clipboard fd qt6-multimedia qt6-5compat ripgrep cliphist jq socat inotify-tools pamixer brightnessctl ddcutil acpi iw bluez bluez-utils libnotify networkmanager lm_sensors bc matugen pipewire wireplumber pipewire-pulse pipewire-alsa libpulse python imagemagick wget file git psmisc ffmpeg fastfetch quickshell unzip python-websockets python-jeepney qt6-websockets grim playerctl satty xdg-desktop-portal-gtk slurp wmctrl power-profiles-daemon easyeffects lsp-plugins-lv2 nautilus qt5-wayland qt5-quickcontrols qt5-quickcontrols2 qt5-graphicaleffects qt6-wayland qt5ct qt6ct gpu-screen-recorder wf-recorder adw-gtk-theme curl lua zstd kbd noto-fonts-emoji tesseract tesseract-data-rus tesseract-data-eng openssh v2ray-geoip v2ray-domain-list-community yt-dlp hyprland
+pacman -Qq
+pacman -T kitty cava zbar pavucontrol alsa-utils wl-clipboard fd qt6-multimedia qt6-5compat ripgrep cliphist jq socat inotify-tools pamixer brightnessctl ddcutil acpi iw bluez bluez-utils libnotify networkmanager lm_sensors bc matugen pipewire wireplumber pipewire-pulse pipewire-alsa libpulse python imagemagick wget file git psmisc ffmpeg fastfetch quickshell unzip python-websockets python-jeepney qt6-websockets grim playerctl satty xdg-desktop-portal-gtk slurp wmctrl power-profiles-daemon easyeffects lsp-plugins-lv2 nautilus qt5-wayland qt5-quickcontrols qt5-quickcontrols2 qt5-graphicaleffects qt6-wayland qt5ct qt6ct gpu-screen-recorder wf-recorder adw-gtk-theme curl lua zstd kbd noto-fonts-emoji tesseract tesseract-data-rus tesseract-data-eng openssh v2ray-geoip v2ray-domain-list-community yt-dlp hyprland
+pacman -Qq wl-gammarelay-rs
+pacman -Qq
+yay -S --noconfirm --needed wl-gammarelay-rs
+pacman -Qq
+pacman -Qq wl-gammarelay-rs
+pacman -Qq xray
+pacman -Qq xray-bin
+pacman -Qq xray
+pacman -Qq xray-bin
+sudo install -m 0755 $HOME/.local/state/serpantinum-installer/tmp/bin-xray/xray /usr/local/bin/xray
+pacman -Qq xray
+pacman -Qq xray-bin
+sudo install -d -m 755 /usr/share/fonts/IosevkaNerdFont
+sudo install -m 644 -t /usr/share/fonts/IosevkaNerdFont $HOME/.local/share/fonts/IosevkaNerdFont/IosevkaNerdFont-Regular.ttf
+fc-cache -f $HOME/.local/share/fonts
+bash $PAYLOAD/src/scripts/location.sh --refresh
+sudo ln -sf $HOME/.local/share/serpantinum/bin/serpantinum /usr/local/bin/serpantinum
+sudo ln -sf $HOME/.local/share/serpantinum/bin/serpantinumd /usr/local/bin/serpantinumd
+bash $HOME/.local/share/serpantinum/src/scripts/custom/x_keybinds.sh ensure-require
+bash $HOME/.local/share/serpantinum/src/scripts/custom/x_keybinds.sh generate
+fc-cache -f
+test -f $HOME/.config/serpantinum/servers/id_serp
+ssh-keygen -t ed25519 -N  -C serpantinum -f $HOME/.config/serpantinum/servers/id_serp
+test -f $HOME/.config/serpantinum/servers/id_serp
+bash $HOME/.local/share/serpantinum/src/scripts/custom/vpn/x_vpn.sh install --check
+bash $HOME/.local/share/serpantinum/src/scripts/custom/vpn/x_vpn.sh install --apply
+bash $HOME/.local/share/serpantinum/src/scripts/custom/vpn/x_vpn.sh install --check
+bash $HOME/.local/share/serpantinum/src/scripts/custom/vpn/x_vpn.sh geo-update
+$HOME/.local/bin/serpantinum-x cmd install --check
+$HOME/.local/bin/serpantinum-x cmd install
+$HOME/.local/bin/serpantinum-x cmd install --check
+systemctl is-enabled --quiet NetworkManager.service
+sudo systemctl --global enable pipewire wireplumber pipewire-pulse
+systemctl --user start pipewire wireplumber pipewire-pulse
+systemctl --user daemon-reload
+systemctl --user enable --now easyeffects.service
+sudo systemctl enable --now NetworkManager.service
+sudo systemctl enable --now power-profiles-daemon.service

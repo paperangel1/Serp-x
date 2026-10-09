@@ -1,0 +1,1136 @@
+{
+ "keywords": {
+  "action.notify": {
+   "ru": [
+    "всплывашка",
+    "сообщение",
+    "оповещение",
+    "тост"
+   ],
+   "en": [
+    "popup",
+    "toast",
+    "message",
+    "alert"
+   ]
+  },
+  "action.clipboard_set": {
+   "ru": [
+    "копировать",
+    "скопировать",
+    "буфер"
+   ],
+   "en": [
+    "copy",
+    "clipboard",
+    "paste"
+   ]
+  },
+  "action.shell": {
+   "ru": [
+    "скрипт",
+    "bash",
+    "терминал",
+    "консоль"
+   ],
+   "en": [
+    "script",
+    "bash",
+    "terminal",
+    "console"
+   ]
+  },
+  "action.shell.dnd": {
+   "ru": [
+    "тишина",
+    "DND",
+    "уведомления",
+    "выключить"
+   ],
+   "en": [
+    "silence",
+    "quiet",
+    "mute",
+    "notifications",
+    "focus"
+   ]
+  },
+  "action.shell.theme": {
+   "ru": [
+    "тема",
+    "тёмная",
+    "светлая",
+    "оформление"
+   ],
+   "en": [
+    "theme",
+    "dark",
+    "light",
+    "appearance"
+   ]
+  },
+  "data.get_var": {
+   "ru": [
+    "переменная",
+    "значение"
+   ],
+   "en": [
+    "variable",
+    "value",
+    "read"
+   ]
+  },
+  "convert.to_text": {
+   "ru": [
+    "в",
+    "текст",
+    "строка",
+    "преобразовать"
+   ],
+   "en": [
+    "to",
+    "text",
+    "string",
+    "convert"
+   ]
+  },
+  "convert.to_int": {
+   "ru": [
+    "в",
+    "число",
+    "целое",
+    "преобразовать"
+   ],
+   "en": [
+    "to",
+    "number",
+    "integer",
+    "parse",
+    "convert"
+   ]
+  },
+  "data.compare_number": {
+   "ru": [
+    "больше",
+    "меньше",
+    "равно",
+    "сравнение"
+   ],
+   "en": [
+    "greater",
+    "less",
+    "equal",
+    "compare"
+   ]
+  },
+  "data.compare_text": {
+   "ru": [
+    "содержит",
+    "равно",
+    "начинается",
+    "regex",
+    "сравнение"
+   ],
+   "en": [
+    "contains",
+    "equals",
+    "starts",
+    "regex",
+    "compare"
+   ]
+  },
+  "data.and": {
+   "ru": [
+    "логика",
+    "оба",
+    "условие"
+   ],
+   "en": [
+    "logic",
+    "both",
+    "condition"
+   ]
+  },
+  "data.or": {
+   "ru": [
+    "логика",
+    "любое",
+    "условие"
+   ],
+   "en": [
+    "logic",
+    "either",
+    "condition"
+   ]
+  },
+  "data.not": {
+   "ru": [
+    "отрицание",
+    "наоборот",
+    "инверсия"
+   ],
+   "en": [
+    "negate",
+    "invert",
+    "opposite"
+   ]
+  },
+  "data.concat": {
+   "ru": [
+    "склеить",
+    "объединить",
+    "строки"
+   ],
+   "en": [
+    "join",
+    "merge",
+    "strings"
+   ]
+  },
+  "data.format": {
+   "ru": [
+    "шаблон",
+    "форматировать",
+    "подставить"
+   ],
+   "en": [
+    "template",
+    "format",
+    "interpolate"
+   ]
+  },
+  "data.split": {
+   "ru": [
+    "разделить",
+    "разрезать",
+    "строка"
+   ],
+   "en": [
+    "split",
+    "cut",
+    "string"
+   ]
+  },
+  "data.join": {
+   "ru": [
+    "объединить",
+    "список",
+    "строка"
+   ],
+   "en": [
+    "join",
+    "list",
+    "string"
+   ]
+  },
+  "data.math": {
+   "ru": [
+    "плюс",
+    "минус",
+    "умножить",
+    "делить",
+    "посчитать"
+   ],
+   "en": [
+    "plus",
+    "minus",
+    "multiply",
+    "divide",
+    "calculate"
+   ]
+  },
+  "data.list_length": {
+   "ru": [
+    "количество",
+    "размер",
+    "сколько"
+   ],
+   "en": [
+    "count",
+    "size",
+    "how",
+    "many"
+   ]
+  },
+  "data.list_get": {
+   "ru": [
+    "взять",
+    "индекс",
+    "элемент",
+    "по",
+    "номеру"
+   ],
+   "en": [
+    "get",
+    "index",
+    "item",
+    "at"
+   ]
+  },
+  "data.range": {
+   "ru": [
+    "диапазон",
+    "последовательность",
+    "счёт"
+   ],
+   "en": [
+    "range",
+    "sequence",
+    "count"
+   ]
+  },
+  "event.manual": {
+   "ru": [
+    "запуск",
+    "кнопка",
+    "хоткей",
+    "палитра",
+    "старт"
+   ],
+   "en": [
+    "start",
+    "button",
+    "hotkey",
+    "palette",
+    "run"
+   ]
+  },
+  "logic.if": {
+   "ru": [
+    "условие",
+    "ветвление",
+    "иначе",
+    "проверка"
+   ],
+   "en": [
+    "condition",
+    "branch",
+    "else",
+    "check"
+   ]
+  },
+  "logic.foreach": {
+   "ru": [
+    "цикл",
+    "повторить",
+    "перебор",
+    "список"
+   ],
+   "en": [
+    "loop",
+    "repeat",
+    "iterate",
+    "list"
+   ]
+  },
+  "logic.delay": {
+   "ru": [
+    "пауза",
+    "ждать",
+    "таймер"
+   ],
+   "en": [
+    "pause",
+    "wait",
+    "timer",
+    "sleep"
+   ]
+  },
+  "logic.set_var": {
+   "ru": [
+    "переменная",
+    "записать",
+    "сохранить"
+   ],
+   "en": [
+    "variable",
+    "set",
+    "store"
+   ]
+  },
+  "logic.break": {
+   "ru": [
+    "выйти",
+    "стоп",
+    "цикл"
+   ],
+   "en": [
+    "exit",
+    "stop",
+    "loop"
+   ]
+  },
+  "logic.increment": {
+   "ru": [
+    "счётчик",
+    "плюс",
+    "один"
+   ],
+   "en": [
+    "counter",
+    "plus",
+    "one",
+    "add"
+   ]
+  },
+  "logic.wait_event": {
+   "ru": [
+    "ожидание",
+    "дождаться",
+    "окно"
+   ],
+   "en": [
+    "wait",
+    "until",
+    "window"
+   ]
+  },
+  "logic.ask": {
+   "ru": [
+    "вопрос",
+    "диалог",
+    "выбор",
+    "подтвердить"
+   ],
+   "en": [
+    "question",
+    "dialog",
+    "choice",
+    "confirm",
+    "prompt"
+   ]
+  },
+  "event.audio.headphones_connected": {
+   "ru": [
+    "наушники",
+    "блютуз",
+    "звук",
+    "подключили"
+   ],
+   "en": [
+    "headphones",
+    "bluetooth",
+    "sound",
+    "plugged"
+   ]
+  },
+  "event.audio.headphones_disconnected": {
+   "ru": [
+    "наушники",
+    "блютуз",
+    "отключили"
+   ],
+   "en": [
+    "headphones",
+    "bluetooth",
+    "unplugged"
+   ]
+  },
+  "event.clipboard.link": {
+   "ru": [
+    "буфер",
+    "ссылка",
+    "url",
+    "youtube"
+   ],
+   "en": [
+    "clipboard",
+    "link",
+    "url",
+    "youtube"
+   ]
+  },
+  "event.folder.new_file": {
+   "ru": [
+    "папка",
+    "файл",
+    "загрузки",
+    "появился"
+   ],
+   "en": [
+    "folder",
+    "file",
+    "downloads",
+    "appeared",
+    "watch"
+   ]
+  },
+  "event.wifi.connected": {
+   "ru": [
+    "вайфай",
+    "сеть",
+    "интернет"
+   ],
+   "en": [
+    "wifi",
+    "network",
+    "internet",
+    "ssid"
+   ]
+  },
+  "event.usb.connected": {
+   "ru": [
+    "флешка",
+    "диск",
+    "устройство"
+   ],
+   "en": [
+    "flash",
+    "drive",
+    "disk",
+    "device"
+   ]
+  },
+  "event.server.unreachable": {
+   "ru": [
+    "сервер",
+    "упал",
+    "недоступен",
+    "ssh"
+   ],
+   "en": [
+    "server",
+    "down",
+    "offline",
+    "ssh"
+   ]
+  },
+  "action.shell.wallpaper": {
+   "ru": [
+    "обои",
+    "фон",
+    "картинка",
+    "рабочий",
+    "стол"
+   ],
+   "en": [
+    "wallpaper",
+    "background",
+    "picture",
+    "desktop"
+   ]
+  },
+  "action.shell.night_filter": {
+   "ru": [
+    "ночной",
+    "режим",
+    "синий",
+    "свет",
+    "фильтр"
+   ],
+   "en": [
+    "night",
+    "mode",
+    "blue",
+    "light",
+    "filter"
+   ]
+  },
+  "action.shell.brightness": {
+   "ru": [
+    "яркость",
+    "экран",
+    "подсветка"
+   ],
+   "en": [
+    "brightness",
+    "screen",
+    "backlight",
+    "dim"
+   ]
+  },
+  "action.window.open_app": {
+   "ru": [
+    "запустить",
+    "программа",
+    "окно",
+    "рабочий",
+    "стол"
+   ],
+   "en": [
+    "launch",
+    "program",
+    "window",
+    "workspace"
+   ]
+  },
+  "action.window.arrange": {
+   "ru": [
+    "раскладка",
+    "окна",
+    "мониторы",
+    "расставить"
+   ],
+   "en": [
+    "layout",
+    "windows",
+    "monitors",
+    "tile"
+   ]
+  },
+  "action.audio.set_volume": {
+   "ru": [
+    "звук",
+    "громче",
+    "тише"
+   ],
+   "en": [
+    "sound",
+    "louder",
+    "quieter"
+   ]
+  },
+  "action.audio.set_output": {
+   "ru": [
+    "динамики",
+    "наушники",
+    "устройство",
+    "звука"
+   ],
+   "en": [
+    "speakers",
+    "headphones",
+    "audio",
+    "device",
+    "sink"
+   ]
+  },
+  "action.audio.mic_mute": {
+   "ru": [
+    "микрофон",
+    "выключить",
+    "звук"
+   ],
+   "en": [
+    "microphone",
+    "mute"
+   ]
+  },
+  "action.media.control": {
+   "ru": [
+    "плеер",
+    "музыка",
+    "пауза",
+    "трек"
+   ],
+   "en": [
+    "player",
+    "music",
+    "pause",
+    "track"
+   ]
+  },
+  "action.file.move": {
+   "ru": [
+    "файл",
+    "перенести",
+    "папка"
+   ],
+   "en": [
+    "file",
+    "relocate",
+    "folder"
+   ]
+  },
+  "action.file.rename": {
+   "ru": [
+    "файл",
+    "имя",
+    "название"
+   ],
+   "en": [
+    "file",
+    "name"
+   ]
+  },
+  "action.file.archive": {
+   "ru": [
+    "zip",
+    "упаковать",
+    "сжать"
+   ],
+   "en": [
+    "zip",
+    "pack",
+    "compress"
+   ]
+  },
+  "action.file.convert_image": {
+   "ru": [
+    "картинка",
+    "webp",
+    "png",
+    "размер"
+   ],
+   "en": [
+    "image",
+    "webp",
+    "png",
+    "resize"
+   ]
+  },
+  "action.http.request": {
+   "ru": [
+    "интернет",
+    "api",
+    "запрос",
+    "сайт"
+   ],
+   "en": [
+    "internet",
+    "api",
+    "request",
+    "website",
+    "web"
+   ]
+  },
+  "action.ai.gemini": {
+   "ru": [
+    "нейросеть",
+    "ии",
+    "перевод",
+    "объяснить",
+    "сократить"
+   ],
+   "en": [
+    "ai",
+    "llm",
+    "translate",
+    "explain",
+    "summarize"
+   ]
+  },
+  "action.vpn.set": {
+   "ru": [
+    "впн",
+    "туннель",
+    "прокси",
+    "включить впн"
+   ],
+   "en": [
+    "vpn",
+    "tunnel",
+    "proxy",
+    "turn on vpn",
+    "xray"
+   ]
+  },
+  "action.server.run": {
+   "ru": [
+    "сервер",
+    "ssh",
+    "команда",
+    "перезапуск"
+   ],
+   "en": [
+    "server",
+    "ssh",
+    "command",
+    "restart"
+   ]
+  },
+  "data.selected_text": {
+   "ru": [
+    "выделенное",
+    "выделение",
+    "текст"
+   ],
+   "en": [
+    "selection",
+    "highlighted",
+    "text"
+   ]
+  },
+  "data.selected_files": {
+   "ru": [
+    "выделенные",
+    "файлы",
+    "картинки"
+   ],
+   "en": [
+    "selected",
+    "files",
+    "images"
+   ]
+  },
+  "data.file_kind": {
+   "ru": [
+    "расширение",
+    "тип",
+    "картинка",
+    "документ",
+    "архив"
+   ],
+   "en": [
+    "extension",
+    "kind",
+    "image",
+    "document",
+    "archive"
+   ]
+  },
+  "event.time_at": {
+   "ru": [
+    "время",
+    "расписание",
+    "будильник",
+    "часы"
+   ],
+   "en": [
+    "time",
+    "schedule",
+    "alarm",
+    "clock"
+   ]
+  },
+  "event.interval": {
+   "ru": [
+    "повтор",
+    "периодически",
+    "таймер"
+   ],
+   "en": [
+    "repeat",
+    "periodic",
+    "timer"
+   ]
+  },
+  "event.sun": {
+   "ru": [
+    "закат",
+    "рассвет",
+    "солнце",
+    "вечер",
+    "утро"
+   ],
+   "en": [
+    "sunset",
+    "sunrise",
+    "sun",
+    "evening",
+    "morning"
+   ]
+  },
+  "event.app_opened": {
+   "ru": [
+    "окно",
+    "программа",
+    "открыли",
+    "запустили"
+   ],
+   "en": [
+    "window",
+    "program",
+    "opened",
+    "launched"
+   ]
+  },
+  "event.app_closed": {
+   "ru": [
+    "окно",
+    "программа",
+    "закрыли"
+   ],
+   "en": [
+    "window",
+    "program",
+    "closed",
+    "quit"
+   ]
+  },
+  "event.workspace": {
+   "ru": [
+    "рабочий",
+    "стол",
+    "переключили"
+   ],
+   "en": [
+    "workspace",
+    "desktop",
+    "switched"
+   ]
+  },
+  "event.monitor_added": {
+   "ru": [
+    "второй",
+    "монитор",
+    "экран",
+    "подключили"
+   ],
+   "en": [
+    "second",
+    "monitor",
+    "screen",
+    "connected"
+   ]
+  },
+  "event.monitor_removed": {
+   "ru": [
+    "монитор",
+    "экран",
+    "отключили"
+   ],
+   "en": [
+    "monitor",
+    "screen",
+    "disconnected"
+   ]
+  },
+  "event.idle": {
+   "ru": [
+    "простой",
+    "афк",
+    "неактивность"
+   ],
+   "en": [
+    "idle",
+    "afk",
+    "inactivity"
+   ]
+  },
+  "event.idle_return": {
+   "ru": [
+    "вернулся",
+    "афк",
+    "активность"
+   ],
+   "en": [
+    "back",
+    "afk",
+    "activity"
+   ]
+  },
+  "event.lock": {
+   "ru": [
+    "блокировка",
+    "экран",
+    "ушёл"
+   ],
+   "en": [
+    "lock",
+    "screen",
+    "away"
+   ]
+  },
+  "event.unlock": {
+   "ru": [
+    "разблокировка",
+    "вернулся"
+   ],
+   "en": [
+    "unlock",
+    "back"
+   ]
+  },
+  "event.login": {
+   "ru": [
+    "вход",
+    "сеанс",
+    "загрузка"
+   ],
+   "en": [
+    "login",
+    "session",
+    "startup"
+   ]
+  },
+  "ui.show_result": {
+   "ru": [
+    "показать",
+    "окно",
+    "вывод",
+    "результат"
+   ],
+   "en": [
+    "show",
+    "window",
+    "output",
+    "result",
+    "popup"
+   ]
+  },
+  "event.notification.received": {
+   "ru": [
+    "уведомление",
+    "оповещение",
+    "сообщение",
+    "приложение",
+    "пришло"
+   ],
+   "en": [
+    "notification",
+    "alert",
+    "message",
+    "app",
+    "received"
+   ]
+  },
+  "event.server.recovered": {
+   "ru": [
+    "сервер",
+    "поднялся",
+    "снова работает",
+    "восстановлен",
+    "узел"
+   ],
+   "en": [
+    "server",
+    "recovered",
+    "back up",
+    "restored",
+    "node"
+   ]
+  },
+  "action.shell.bar": {
+   "ru": [
+    "панель",
+    "бар",
+    "спрятать панель",
+    "автоскрытие"
+   ],
+   "en": [
+    "bar",
+    "panel",
+    "autohide",
+    "hide bar",
+    "top bar"
+   ]
+  },
+  "action.window.close": {
+   "ru": [
+    "закрыть окно",
+    "крестик",
+    "убить окно",
+    "завершить окно"
+   ],
+   "en": [
+    "close window",
+    "kill window",
+    "quit window",
+    "hyprctl"
+   ]
+  },
+  "action.open_link": {
+   "ru": [
+    "открыть сайт",
+    "браузер",
+    "ссылка",
+    "адрес"
+   ],
+   "en": [
+    "open url",
+    "browser",
+    "website",
+    "xdg-open",
+    "link"
+   ]
+  },
+  "action.timer": {
+   "ru": [
+    "таймер",
+    "обратный отсчёт",
+    "секундомер",
+    "помодоро",
+    "фокус"
+   ],
+   "en": [
+    "timer",
+    "countdown",
+    "pomodoro",
+    "focus",
+    "alarm"
+   ]
+  },
+  "action.screenshot": {
+   "ru": [
+    "скриншот",
+    "снимок экрана",
+    "скрин",
+    "экран"
+   ],
+   "en": [
+    "screenshot",
+    "screen capture",
+    "grab",
+    "screen"
+   ]
+  },
+  "event.clipboard.color": {
+   "ru": [
+    "цвет",
+    "hex",
+    "пипетка",
+    "копирование цвета"
+   ],
+   "en": [
+    "colour",
+    "color",
+    "hex",
+    "rgb",
+    "hsl",
+    "eyedropper"
+   ]
+  },
+  "event.clipboard.phone": {
+   "ru": [
+    "телефон",
+    "номер",
+    "позвонить",
+    "копирование номера"
+   ],
+   "en": [
+    "phone",
+    "number",
+    "call",
+    "tel",
+    "e164"
+   ]
+  },
+  "event.bluetooth.device": {
+   "ru": [
+    "блютуз",
+    "наушники",
+    "клавиатура",
+    "мышь",
+    "подключение устройства"
+   ],
+   "en": [
+    "bluetooth",
+    "headphones",
+    "keyboard",
+    "mouse",
+    "device connected"
+   ]
+  },
+  "event.vpn.changed": {
+   "ru": [
+    "впн",
+    "туннель",
+    "включился",
+    "упал"
+   ],
+   "en": [
+    "vpn",
+    "tunnel",
+    "connected",
+    "disconnected",
+    "failed"
+   ]
+  },
+  "event.wifi.disconnected": {
+   "ru": [
+    "вайфай",
+    "сеть",
+    "отключился",
+    "потеря сети"
+   ],
+   "en": [
+    "wifi",
+    "network",
+    "disconnected",
+    "lost network",
+    "ssid"
+   ]
+  }
+ }
+}

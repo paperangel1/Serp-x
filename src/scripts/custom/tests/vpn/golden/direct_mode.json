@@ -1,0 +1,144 @@
+{
+ "dns": {
+  "queryStrategy": "UseIP",
+  "servers": [
+   "77.88.8.8",
+   "77.88.8.1"
+  ]
+ },
+ "inbounds": [
+  {
+   "protocol": "tun",
+   "settings": {
+    "MTU": 1500,
+    "name": "serp-xray",
+    "userLevel": 0
+   },
+   "sniffing": {
+    "destOverride": [
+     "http",
+     "tls",
+     "quic"
+    ],
+    "enabled": true,
+    "routeOnly": true
+   },
+   "tag": "tun-in"
+  },
+  {
+   "listen": "127.0.0.1",
+   "port": 10808,
+   "protocol": "socks",
+   "settings": {
+    "auth": "noauth",
+    "udp": true
+   },
+   "sniffing": {
+    "destOverride": [
+     "http",
+     "tls",
+     "quic"
+    ],
+    "enabled": true,
+    "routeOnly": true
+   },
+   "tag": "socks-in"
+  }
+ ],
+ "log": {
+  "loglevel": "warning"
+ },
+ "outbounds": [
+  {
+   "protocol": "trojan",
+   "settings": {
+    "servers": [
+     {
+      "address": "us1.example.net",
+      "password": "trojan-pass",
+      "port": 443
+     }
+    ]
+   },
+   "streamSettings": {
+    "network": "tcp",
+    "security": "tls",
+    "sockopt": {
+     "mark": 9011
+    },
+    "tlsSettings": {
+     "serverName": "us1.example.net"
+    }
+   },
+   "tag": "proxy"
+  },
+  {
+   "protocol": "freedom",
+   "settings": {
+    "domainStrategy": "UseIP"
+   },
+   "streamSettings": {
+    "sockopt": {
+     "mark": 9011
+    }
+   },
+   "tag": "direct"
+  },
+  {
+   "protocol": "blackhole",
+   "tag": "block"
+  },
+  {
+   "protocol": "dns",
+   "streamSettings": {
+    "sockopt": {
+     "mark": 9011
+    }
+   },
+   "tag": "dns-out"
+  }
+ ],
+ "routing": {
+  "domainStrategy": "IPIfNonMatch",
+  "rules": [
+   {
+    "ip": [
+     "77.88.8.8",
+     "77.88.8.1"
+    ],
+    "outboundTag": "direct",
+    "type": "field"
+   },
+   {
+    "inboundTag": [
+     "tun-in",
+     "socks-in"
+    ],
+    "network": "udp",
+    "outboundTag": "dns-out",
+    "port": "53",
+    "type": "field"
+   },
+   {
+    "ip": [
+     "10.0.0.0/8",
+     "172.16.0.0/12",
+     "192.168.0.0/16",
+     "127.0.0.0/8",
+     "169.254.0.0/16",
+     "100.64.0.0/10",
+     "fc00::/7",
+     "fe80::/10",
+     "::1/128"
+    ],
+    "outboundTag": "direct",
+    "type": "field"
+   },
+   {
+    "network": "tcp,udp",
+    "outboundTag": "direct",
+    "type": "field"
+   }
+  ]
+ }
+}

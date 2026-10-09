@@ -1,0 +1,142 @@
+{
+  "format": 1,
+  "id": "example-wait-for-window",
+  "name": "Дождаться окна",
+  "description": "Спрашивает, сколько секунд ждать, и ждёт появления окна Firefox. Приходит событие — уведомление, нет — «не дождались».",
+  "enabled": true,
+  "nodes": [
+    {
+      "id": "n1",
+      "type": "event.manual@1",
+      "pos": [40, 40],
+      "props": {}
+    },
+    {
+      "id": "n2",
+      "type": "logic.ask@1",
+      "pos": [330, 40],
+      "props": {
+        "mode": "number",
+        "title": "Сколько секунд ждать Firefox?",
+        "default": "30",
+        "timeout": 60
+      }
+    },
+    {
+      "id": "n3",
+      "type": "logic.wait_event@1",
+      "pos": [700, 40],
+      "props": {
+        "event": "window.open",
+        "match": "firefox"
+      }
+    },
+    {
+      "id": "n4",
+      "type": "action.notify@1",
+      "pos": [1070, 40],
+      "props": {
+        "title": "Firefox открыт"
+      }
+    },
+    {
+      "id": "n5",
+      "type": "action.notify@1",
+      "pos": [1070, 240],
+      "props": {
+        "title": "Не дождались",
+        "body": "Окно Firefox не появилось"
+      }
+    },
+    {
+      "id": "n6",
+      "type": "action.notify@1",
+      "pos": [700, 360],
+      "props": {
+        "title": "Отменено"
+      }
+    }
+  ],
+  "wires": [
+    {
+      "from": [
+        "n1",
+        "exec"
+      ],
+      "to": [
+        "n2",
+        "exec_in"
+      ]
+    },
+    {
+      "from": [
+        "n2",
+        "exec_out"
+      ],
+      "to": [
+        "n3",
+        "exec_in"
+      ]
+    },
+    {
+      "from": [
+        "n2",
+        "number"
+      ],
+      "to": [
+        "n3",
+        "timeout"
+      ]
+    },
+    {
+      "from": [
+        "n3",
+        "exec_out"
+      ],
+      "to": [
+        "n4",
+        "exec_in"
+      ]
+    },
+    {
+      "from": [
+        "n3",
+        "detail"
+      ],
+      "to": [
+        "n4",
+        "body"
+      ]
+    },
+    {
+      "from": [
+        "n3",
+        "timed_out"
+      ],
+      "to": [
+        "n5",
+        "exec_in"
+      ]
+    },
+    {
+      "from": [
+        "n2",
+        "cancelled"
+      ],
+      "to": [
+        "n6",
+        "exec_in"
+      ]
+    }
+  ],
+  "capabilities": [
+    "notify.show",
+    "trigger.session",
+    "trigger.windows"
+  ],
+  "approved_capabilities": [
+    "notify.show",
+    "trigger.session",
+    "trigger.windows"
+  ]
+}

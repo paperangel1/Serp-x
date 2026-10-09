@@ -1,0 +1,239 @@
+{
+ "format": 1,
+ "id": "gallery-work",
+ "name": "Работа",
+ "description": "Открывает нужные приложения на их рабочих столах, включает «не беспокоить» и музыку.",
+ "enabled": false,
+ "nodes": [
+  {
+   "id": "n1",
+   "type": "event.manual@1",
+   "pos": [
+    0,
+    100
+   ],
+   "props": {}
+  },
+  {
+   "id": "n2",
+   "type": "action.window.open_app@1",
+   "pos": [
+    340,
+    100
+   ],
+   "props": {
+    "app": "code",
+    "workspace": 2
+   }
+  },
+  {
+   "id": "n3",
+   "type": "action.window.open_app@1",
+   "pos": [
+    680,
+    100
+   ],
+   "props": {
+    "app": "firefox",
+    "workspace": 1
+   }
+  },
+  {
+   "id": "n4",
+   "type": "action.window.open_app@1",
+   "pos": [
+    1020,
+    100
+   ],
+   "props": {
+    "app": "telegram-desktop",
+    "workspace": 3
+   }
+  },
+  {
+   "id": "n5",
+   "type": "action.shell.dnd@1",
+   "pos": [
+    1360,
+    100
+   ],
+   "props": {
+    "enabled": true,
+    "restore": "end"
+   }
+  },
+  {
+   "id": "n6",
+   "type": "action.media.control@1",
+   "pos": [
+    1700,
+    100
+   ],
+   "props": {
+    "command": "play"
+   }
+  },
+  {
+   "id": "n7",
+   "type": "action.notify@1",
+   "pos": [
+    2040,
+    100
+   ],
+   "props": {
+    "title": "Рабочий режим включён"
+   }
+  }
+ ],
+ "wires": [
+  {
+   "from": [
+    "n1",
+    "exec"
+   ],
+   "to": [
+    "n2",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n2",
+    "exec_out"
+   ],
+   "to": [
+    "n3",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n3",
+    "exec_out"
+   ],
+   "to": [
+    "n4",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n4",
+    "exec_out"
+   ],
+   "to": [
+    "n5",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n5",
+    "exec_out"
+   ],
+   "to": [
+    "n6",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n6",
+    "exec_out"
+   ],
+   "to": [
+    "n7",
+    "exec_in"
+   ]
+  }
+ ],
+ "variables": [],
+ "comments": [
+  {
+   "id": "c1",
+   "x": 0,
+   "y": -100,
+   "w": 300,
+   "h": 100,
+   "title": {
+    "ru": "Шаг 1. Запуск",
+    "en": "Step 1. Start"
+   },
+   "text": {
+    "ru": "Команда запускается вручную: из палитры или по хоткею.",
+    "en": "The command starts manually: from the palette or a hotkey."
+   },
+   "color": "#f9e2af"
+  },
+  {
+   "id": "c2",
+   "x": 340,
+   "y": -100,
+   "w": 980,
+   "h": 100,
+   "title": {
+    "ru": "Шаг 2. Приложения",
+    "en": "Step 2. Apps"
+   },
+   "text": {
+    "ru": "Каждый узел открывает приложение на своём столе, не переключая вас.",
+    "en": "Each node opens an app on its own workspace without switching to it."
+   },
+   "color": "#f9e2af"
+  },
+  {
+   "id": "c3",
+   "x": 1360,
+   "y": -100,
+   "w": 300,
+   "h": 100,
+   "title": {
+    "ru": "Шаг 3. Тишина",
+    "en": "Step 3. Quiet"
+   },
+   "text": {
+    "ru": "«Не беспокоить» откатится, когда команда закончится (restore: end).",
+    "en": "Do-not-disturb is rolled back when the command ends (restore: end)."
+   },
+   "color": "#f9e2af"
+  },
+  {
+   "id": "c4",
+   "x": 1700,
+   "y": -100,
+   "w": 300,
+   "h": 100,
+   "title": {
+    "ru": "Шаг 4. Музыка",
+    "en": "Step 4. Music"
+   },
+   "text": {
+    "ru": "Запускает воспроизведение в текущем плеере.",
+    "en": "Starts playback in the current player."
+   },
+   "color": "#f9e2af"
+  }
+ ],
+ "gallery": {
+  "name": {
+   "ru": "Работа",
+   "en": "Work"
+  },
+  "description": {
+   "ru": "Открывает нужные приложения на их рабочих столах, включает «не беспокоить» и музыку.",
+   "en": "Opens the right apps on their workspaces, turns on do-not-disturb and starts music."
+  },
+  "category": "windows",
+  "tags": {
+   "ru": [
+    "окна",
+    "музыка"
+   ],
+   "en": [
+    "windows",
+    "music"
+   ]
+  },
+  "packages": []
+ }
+}

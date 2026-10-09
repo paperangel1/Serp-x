@@ -1,0 +1,233 @@
+{
+ "format": 1,
+ "id": "gallery-converter",
+ "name": "Конвертер",
+ "description": "Выбранные картинки конвертируются в webp или png и уменьшаются до нужной ширины.",
+ "enabled": false,
+ "nodes": [
+  {
+   "id": "n1",
+   "type": "event.manual@1",
+   "pos": [
+    0,
+    100
+   ],
+   "props": {}
+  },
+  {
+   "id": "n2",
+   "type": "logic.ask@1",
+   "pos": [
+    340,
+    100
+   ],
+   "props": {
+    "mode": "choice",
+    "title": "Во что конвертировать?",
+    "options": [
+     "webp",
+     "png"
+    ]
+   }
+  },
+  {
+   "id": "n3",
+   "type": "logic.foreach@1",
+   "pos": [
+    680,
+    100
+   ],
+   "props": {}
+  },
+  {
+   "id": "n4",
+   "type": "data.selected_files@1",
+   "pos": [
+    340,
+    300
+   ],
+   "props": {}
+  },
+  {
+   "id": "n5",
+   "type": "action.file.convert_image@1",
+   "pos": [
+    1020,
+    100
+   ],
+   "props": {
+    "max_width": 1600
+   }
+  },
+  {
+   "id": "n6",
+   "type": "action.notify@1",
+   "pos": [
+    1020,
+    380
+   ],
+   "props": {
+    "title": "Конвертация закончена"
+   }
+  }
+ ],
+ "wires": [
+  {
+   "from": [
+    "n1",
+    "exec"
+   ],
+   "to": [
+    "n2",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n2",
+    "exec_out"
+   ],
+   "to": [
+    "n3",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n4",
+    "files"
+   ],
+   "to": [
+    "n3",
+    "list"
+   ]
+  },
+  {
+   "from": [
+    "n3",
+    "body"
+   ],
+   "to": [
+    "n5",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n3",
+    "item"
+   ],
+   "to": [
+    "n5",
+    "path"
+   ]
+  },
+  {
+   "from": [
+    "n2",
+    "text"
+   ],
+   "to": [
+    "n5",
+    "format"
+   ]
+  },
+  {
+   "from": [
+    "n3",
+    "completed"
+   ],
+   "to": [
+    "n6",
+    "exec_in"
+   ]
+  }
+ ],
+ "variables": [],
+ "comments": [
+  {
+   "id": "c1",
+   "x": 0,
+   "y": -100,
+   "w": 300,
+   "h": 100,
+   "title": {
+    "ru": "Запуск",
+    "en": "Start"
+   },
+   "text": {
+    "ru": "Вручную или по хоткею в файловом менеджере.",
+    "en": "Manually or by a hotkey in the file manager."
+   },
+   "color": "#f9e2af"
+  },
+  {
+   "id": "c2",
+   "x": 340,
+   "y": -100,
+   "w": 300,
+   "h": 100,
+   "title": {
+    "ru": "Формат",
+    "en": "Format"
+   },
+   "text": {
+    "ru": "Вопрос с выбором: webp или png.",
+    "en": "A choice question: webp or png."
+   },
+   "color": "#f9e2af"
+  },
+  {
+   "id": "c3",
+   "x": 680,
+   "y": -100,
+   "w": 300,
+   "h": 100,
+   "title": {
+    "ru": "Цикл",
+    "en": "Loop"
+   },
+   "text": {
+    "ru": "«Для каждого» повторяет тело для каждого файла, потом идёт ветка «Завершено».",
+    "en": "«For each» repeats its body for every file, then follows «Completed»."
+   },
+   "color": "#f9e2af"
+  },
+  {
+   "id": "c4",
+   "x": 1020,
+   "y": -100,
+   "w": 300,
+   "h": 100,
+   "title": {
+    "ru": "Конвертация",
+    "en": "Conversion"
+   },
+   "text": {
+    "ru": "Ширину можно поменять; картинка не растягивается.",
+    "en": "Change the width if needed; images are never enlarged."
+   },
+   "color": "#f9e2af"
+  }
+ ],
+ "gallery": {
+  "name": {
+   "ru": "Конвертер",
+   "en": "Converter"
+  },
+  "description": {
+   "ru": "Выбранные картинки конвертируются в webp или png и уменьшаются до нужной ширины.",
+   "en": "Selected images are converted to webp or png and resized to the width you want."
+  },
+  "category": "files",
+  "tags": {
+   "ru": [
+    "файлы"
+   ],
+   "en": [
+    "files"
+   ]
+  },
+  "packages": []
+ }
+}

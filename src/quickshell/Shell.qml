@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import "widgets"
+import "custom"  // serp-x hook
 
 ShellRoot {
     readonly property bool performanceMode: !!(Config.getSetting("general", {}).performance)
@@ -24,6 +25,7 @@ ShellRoot {
 
     Polkit {}
     PopoutManager {}
+    XTools {}  // serp-x hook
 
     Loader {
         active: dockEnabled

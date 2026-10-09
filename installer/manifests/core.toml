@@ -1,0 +1,107 @@
+id = "core"
+schema = 1
+order = 10
+core = true
+group = "upstream"
+presets = ["full", "minimal"]
+name = { ru = "Оболочка Serpantinum + база", en = "Shell + build base" }
+desc = { ru = "Оболочка Serpantinum (upstream), конфиги Hyprland, CLI serpantinum-x, логи, вкладка Updates.", en = "The Serpantinum shell (upstream), Hyprland configs, the serpantinum-x CLI, logs and the Updates tab." }
+notes = { ru = "Обязательный модуль. Существующие конфиги не теряются: перед заменой делается копия.", en = "Required module. Existing configs are never lost: a copy is made before replacing them." }
+# The 64 packages of upstream install/modules/deps.sh (REQUIRED_PKGS) minus the
+# AUR-only wl-gammarelay-rs, plus what the serp-x build base needs.
+packages = [
+  "kitty", "cava", "zbar", "pavucontrol", "alsa-utils",
+  "wl-clipboard", "fd", "qt6-multimedia", "qt6-5compat", "ripgrep",
+  "cliphist", "jq", "socat", "inotify-tools", "pamixer", "brightnessctl", "ddcutil", "acpi", "iw",
+  "bluez", "bluez-utils", "libnotify", "networkmanager", "lm_sensors", "bc", "matugen",
+  "pipewire", "wireplumber", "pipewire-pulse", "pipewire-alsa", "libpulse", "python",
+  "imagemagick", "wget", "file", "git", "psmisc",
+  "ffmpeg", "fastfetch", "quickshell", "unzip", "python-websockets", "python-jeepney", "qt6-websockets",
+  "grim", "playerctl", "satty", "xdg-desktop-portal-gtk", "slurp", "wmctrl", "power-profiles-daemon",
+  "easyeffects", "lsp-plugins-lv2", "nautilus", "qt5-wayland", "qt5-quickcontrols", "qt5-quickcontrols2",
+  "qt5-graphicaleffects", "qt6-wayland", "qt5ct", "qt6ct", "gpu-screen-recorder", "wf-recorder", "adw-gtk-theme",
+  "curl", "lua", "zstd", "kbd",
+]
+# No release binary exists upstream (checked: v1.0.1 has no assets), so AUR.
+aur = ["wl-gammarelay-rs"]
+root_files = ["/usr/local/bin/serpantinum", "/usr/local/bin/serpantinumd", "/etc/pacman.conf", "/usr/share/fonts/IosevkaNerdFont", "/var/lib/pacman/db.lck"]
+user_files = [
+  "~/.local/bin/serpantinum", "~/.local/bin/serpantinumd", "~/.local/bin/serpantinum-x",
+  "~/.local/state/serpantinum/version", "~/.config/serpantinum-x/modules.json",
+]
+estimate = { download_mib = 1100, disk_mib = 3200, build_s = 240, install_s = 540 }
+
+[[config]]
+key = "core.language"
+kind = "choice"
+choices = ["ru", "en"]
+default = "ru"
+label = { ru = "Язык оболочки", en = "Shell language" }
+
+# Ports of the upstream install/modules/*.sh (builtin = implemented in Go, see
+# internal/steps). Steps named core.pre.* run before the package steps.
+[[steps]]
+id = "core.pre.multilib"
+kind = "builtin"
+root = true
+title = { ru = "Включение репозитория multilib", en = "Enable the multilib repository" }
+estimate_s = 5
+
+[[steps]]
+id = "core.pre.tools"
+kind = "builtin"
+root = true
+title = { ru = "Базовые инструменты для установки", en = "Base tools for the install" }
+after = ["core.pre.multilib"]
+estimate_s = 10
+
+[[steps]]
+id = "core.pre.migrate"
+kind = "builtin"
+title = { ru = "Копия старых конфигов и миграция", en = "Back up old configs and migrate" }
+after = ["core.pre.tools"]
+estimate_s = 2
+
+[[steps]]
+id = "core.pre.cleanup"
+kind = "builtin"
+root = true
+title = { ru = "Удаление устаревшего quickshell-git", en = "Remove the obsolete quickshell-git" }
+after = ["core.pre.migrate"]
+estimate_s = 2
+
+[[steps]]
+id = "core.fonts"
+kind = "builtin"
+root = true
+title = { ru = "Шрифт Iosevka Nerd", en = "Iosevka Nerd Font" }
+estimate_s = 20
+
+[[steps]]
+id = "core.config"
+kind = "builtin"
+title = { ru = "Настройки оболочки (settings.json)", en = "Shell settings (settings.json)" }
+after = ["core.fonts"]
+estimate_s = 2
+
+[[steps]]
+id = "core.wallpapers"
+kind = "builtin"
+title = { ru = "Обои: несколько для начала", en = "Wallpapers: a few to start with" }
+after = ["core.config"]
+estimate_s = 60
+
+[[steps]]
+id = "core.links"
+kind = "link"
+title = { ru = "Оболочка: команды в ~/.local/bin", en = "Shell: commands in ~/.local/bin" }
+args = { links = ["serpantinum", "serpantinumd", "serpantinum-x"], dir = "~/.local/bin", system = ["serpantinum", "serpantinumd"], system_dir = "/usr/local/bin" }
+estimate_s = 1
+
+# Written after the services (upstream writes the version last): until then an
+# interrupted install is still treated as unfinished.
+[[steps]]
+id = "core.state"
+kind = "builtin"
+title = { ru = "Оболочка: версия и список модулей", en = "Shell: version and module list" }
+estimate_s = 1

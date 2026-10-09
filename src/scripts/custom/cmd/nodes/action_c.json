@@ -1,0 +1,562 @@
+{
+  "nodes": [
+    {
+      "id": "action.shell.bar",
+      "version": 1,
+      "category": "action",
+      "flow": "action",
+      "icon": "layout",
+      "name": {
+        "ru": "Панель: показать или спрятать",
+        "en": "Bar: show or hide"
+      },
+      "description": {
+        "ru": "Прячет верхнюю панель оболочки или возвращает её (режим «toggle» меняет на противоположное). Это тот же переключатель «автоскрытие», что и в настройках панели: спрятанная панель выезжает, когда подвести курсор к краю экрана. Прежнее состояние можно вернуть при завершении команды (свойство «Вернуть»). Выполняется через IPC-таргет xcmd оболочки.",
+        "en": "Hides the shell's bar or brings it back (\"toggle\" flips it). It is the same \"autohide\" switch as in the bar settings: a hidden bar slides in when the pointer touches the screen edge. The previous state can be restored when the command ends (the \"restore\" property). Goes through the shell's own `xcmd` IPC target."
+      },
+      "example": {
+        "ru": "Панель: спрятать (вернуть при завершении) на время презентации.",
+        "en": "Bar: hide (restore at the end) for the length of a presentation."
+      },
+      "inputs": [
+        {
+          "id": "exec_in",
+          "type": "exec"
+        },
+        {
+          "id": "mode",
+          "type": "text",
+          "label": {
+            "ru": "Действие",
+            "en": "Action"
+          },
+          "default": "hide",
+          "literal": true,
+          "choices": [
+            "show",
+            "hide",
+            "toggle"
+          ],
+          "choice_labels": {
+            "ru": {
+              "show": "показать",
+              "hide": "спрятать",
+              "toggle": "переключить"
+            },
+            "en": {
+              "show": "show",
+              "hide": "hide",
+              "toggle": "toggle"
+            }
+          },
+          "required": true
+        }
+      ],
+      "outputs": [
+        {
+          "id": "exec_out",
+          "type": "exec",
+          "label": {
+            "ru": "Готово",
+            "en": "Done"
+          }
+        }
+      ],
+      "executor": {
+        "kind": "py",
+        "ref": "shell_bar"
+      },
+      "capabilities": [
+        "shell.bar"
+      ],
+      "undo": {
+        "capture": "bar_capture",
+        "restore": "bar_restore",
+        "default": "end"
+      },
+      "timeout_s": 10,
+      "changes_state": true,
+      "side_effects": true
+    },
+    {
+      "id": "action.window.close",
+      "version": 1,
+      "category": "action",
+      "flow": "action",
+      "icon": "window",
+      "name": {
+        "ru": "Закрыть окно",
+        "en": "Close window"
+      },
+      "description": {
+        "ru": "Закрывает активное окно или окна по классу и/или заголовку (подстрока или re:выражение, оба условия вместе). Окну отправляется обычная просьба закрыться (hyprctl closewindow): приложение может спросить про несохранённое. Без «все подходящие» закрывается одно, последнее использованное. Вернуть закрытое окно нельзя.",
+        "en": "Closes the active window or windows matching a class and/or title (substring or re:regex, both conditions together). The window gets a normal request to close (hyprctl closewindow): the app may ask about unsaved work. Without \"all matching\" only the most recently used match is closed. A closed window cannot be brought back."
+      },
+      "example": {
+        "ru": "Закрыть окна класса «Slack» после 18:00.",
+        "en": "Close windows of class \"Slack\" after 18:00."
+      },
+      "inputs": [
+        {
+          "id": "exec_in",
+          "type": "exec"
+        },
+        {
+          "id": "mode",
+          "type": "text",
+          "label": {
+            "ru": "Какие окна",
+            "en": "Which windows"
+          },
+          "default": "active",
+          "literal": true,
+          "choices": [
+            "active",
+            "match"
+          ],
+          "choice_labels": {
+            "ru": {
+              "active": "активное",
+              "match": "по классу или заголовку"
+            },
+            "en": {
+              "active": "active",
+              "match": "by class or title"
+            }
+          },
+          "required": true
+        },
+        {
+          "id": "class_filter",
+          "type": "text",
+          "label": {
+            "ru": "Класс окна",
+            "en": "Window class"
+          },
+          "default": "",
+          "description": {
+            "ru": "Часть класса (или re:выражение). Только для режима «по классу или заголовку».",
+            "en": "Part of the class (or re:regex). Only for the \"by class or title\" mode."
+          }
+        },
+        {
+          "id": "title_filter",
+          "type": "text",
+          "label": {
+            "ru": "Заголовок",
+            "en": "Title"
+          },
+          "default": "",
+          "log": "length"
+        },
+        {
+          "id": "all",
+          "type": "bool",
+          "label": {
+            "ru": "Все подходящие",
+            "en": "All matching"
+          },
+          "default": false,
+          "literal": true
+        }
+      ],
+      "outputs": [
+        {
+          "id": "exec_out",
+          "type": "exec",
+          "label": {
+            "ru": "Готово",
+            "en": "Done"
+          }
+        },
+        {
+          "id": "closed",
+          "type": "int",
+          "label": {
+            "ru": "Закрыто окон",
+            "en": "Windows closed"
+          },
+          "default": 0
+        }
+      ],
+      "executor": {
+        "kind": "py",
+        "ref": "window_close"
+      },
+      "capabilities": [
+        "window.close"
+      ],
+      "timeout_s": 10,
+      "changes_state": true,
+      "side_effects": true,
+      "no_undo_reason": "закрытое окно (и его несохранённые данные) не вернуть"
+    },
+    {
+      "id": "action.open_link",
+      "version": 1,
+      "category": "action",
+      "flow": "action",
+      "icon": "link",
+      "name": {
+        "ru": "Открыть ссылку",
+        "en": "Open link"
+      },
+      "description": {
+        "ru": "Открывает ссылку в браузере по умолчанию (xdg-open). Допускаются только http, https и mailto: ссылки file:, javascript: и любые другие схемы отклоняются с ошибкой. Адрес не пишется в журнал (только схема).",
+        "en": "Opens a link in the default browser (xdg-open). Only http, https and mailto are accepted: file:, javascript: and any other scheme is rejected with an error. The address is not logged (only the scheme)."
+      },
+      "example": {
+        "ru": "Открыть «https://example.org».",
+        "en": "Open \"https://example.org\"."
+      },
+      "inputs": [
+        {
+          "id": "exec_in",
+          "type": "exec"
+        },
+        {
+          "id": "url",
+          "type": "text",
+          "label": {
+            "ru": "Ссылка",
+            "en": "Link"
+          },
+          "required": true,
+          "log": "length"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "exec_out",
+          "type": "exec",
+          "label": {
+            "ru": "Готово",
+            "en": "Done"
+          }
+        }
+      ],
+      "executor": {
+        "kind": "py",
+        "ref": "open_link"
+      },
+      "capabilities": [
+        "link.open"
+      ],
+      "timeout_s": 15,
+      "changes_state": false,
+      "side_effects": true
+    },
+    {
+      "id": "action.timer",
+      "version": 1,
+      "category": "action",
+      "flow": "latent",
+      "icon": "timer",
+      "name": {
+        "ru": "Таймер",
+        "en": "Timer"
+      },
+      "description": {
+        "ru": "Запускает обратный отсчёт в фоне и сразу идёт дальше (выход «Запущен»). Когда время выйдет, срабатывает отдельный выход «Время вышло», при желании с уведомлением в начале и в конце. Команда живёт, пока таймер не закончится (поэтому её таймаут в политике должен быть не меньше), а откаты («Вернуть при завершении») выполняются после него. Отмена команды останавливает таймер. В отличие от «Задержки», основная цепочка не стоит на месте.",
+        "en": "Starts a countdown in the background and moves on at once (the \"Started\" output). When time is up the separate \"Time is up\" output fires, optionally with a notification at the start and the end. The command lives until the timer ends (so its policy timeout must be at least as long) and the restores (\"restore at the end\") run after it. Cancelling the command stops the timer. Unlike \"Delay\", the main chain does not stand still."
+      },
+      "example": {
+        "ru": "Таймер 25 минут: сразу включить «Не беспокоить», а по окончании показать уведомление о перерыве.",
+        "en": "Timer 25 minutes: turn do-not-disturb on at once and show a break notification at the end."
+      },
+      "inputs": [
+        {
+          "id": "exec_in",
+          "type": "exec"
+        },
+        {
+          "id": "seconds",
+          "type": "float",
+          "label": {
+            "ru": "Секунды",
+            "en": "Seconds"
+          },
+          "default": 60,
+          "min": 1,
+          "max": 86400,
+          "required": true
+        },
+        {
+          "id": "name",
+          "type": "text",
+          "label": {
+            "ru": "Название",
+            "en": "Name"
+          },
+          "default": "",
+          "description": {
+            "ru": "Заголовок уведомлений таймера.",
+            "en": "Title of the timer's notifications."
+          }
+        },
+        {
+          "id": "notify_start",
+          "type": "bool",
+          "label": {
+            "ru": "Уведомить о запуске",
+            "en": "Notify at start"
+          },
+          "default": false,
+          "literal": true
+        },
+        {
+          "id": "notify_end",
+          "type": "bool",
+          "label": {
+            "ru": "Уведомить об окончании",
+            "en": "Notify at the end"
+          },
+          "default": true,
+          "literal": true
+        }
+      ],
+      "outputs": [
+        {
+          "id": "exec_out",
+          "type": "exec",
+          "label": {
+            "ru": "Запущен",
+            "en": "Started"
+          }
+        },
+        {
+          "id": "finished",
+          "type": "exec",
+          "label": {
+            "ru": "Время вышло",
+            "en": "Time is up"
+          }
+        }
+      ],
+      "executor": {
+        "kind": "builtin",
+        "ref": "timer"
+      },
+      "capabilities": [
+        "notify.show"
+      ],
+      "changes_state": false,
+      "side_effects": false
+    },
+    {
+      "id": "action.screenshot",
+      "version": 1,
+      "category": "action",
+      "flow": "action",
+      "icon": "image",
+      "name": {
+        "ru": "Снимок экрана",
+        "en": "Screenshot"
+      },
+      "description": {
+        "ru": "Делает снимок встроенным инструментом оболочки (serpantinum screenshot): весь экран, активное окно или область «x,y ШxВ». Без координат в режиме «область» открывается обычное окно выбора области — выбор делаете вы, и путь файла команда не узнает. Файл сохраняется в «Изображения/Screenshots». Инструмент всегда кладёт снимок в буфер обмена; при «в буфер: нет» прежний текст буфера возвращается обратно (изображение в буфере не восстанавливается). Выход «Файл» — путь снимка.",
+        "en": "Takes a screenshot with the shell's own tool (serpantinum screenshot): the whole screen, the active window or an area \"x,y WxH\". Without coordinates the \"area\" mode opens the usual area-selection overlay: you pick the area and the command does not learn the file path. The file goes to Pictures/Screenshots. The tool always copies the shot to the clipboard; with \"copy: no\" the previous clipboard text is put back (an image in the clipboard is not restored). The \"File\" output is the path of the shot."
+      },
+      "example": {
+        "ru": "Снимок активного окна → показать путь файла.",
+        "en": "Active window screenshot → show the file path."
+      },
+      "inputs": [
+        {
+          "id": "exec_in",
+          "type": "exec"
+        },
+        {
+          "id": "mode",
+          "type": "text",
+          "label": {
+            "ru": "Что снимать",
+            "en": "What to capture"
+          },
+          "default": "full",
+          "literal": true,
+          "choices": [
+            "full",
+            "window",
+            "area"
+          ],
+          "choice_labels": {
+            "ru": {
+              "full": "весь экран",
+              "window": "активное окно",
+              "area": "область"
+            },
+            "en": {
+              "full": "whole screen",
+              "window": "active window",
+              "area": "area"
+            }
+          },
+          "required": true
+        },
+        {
+          "id": "geometry",
+          "type": "text",
+          "label": {
+            "ru": "Область «x,y ШxВ»",
+            "en": "Area \"x,y WxH\""
+          },
+          "default": "",
+          "literal": true
+        },
+        {
+          "id": "copy",
+          "type": "bool",
+          "label": {
+            "ru": "Копировать в буфер",
+            "en": "Copy to clipboard"
+          },
+          "default": true,
+          "literal": true
+        }
+      ],
+      "outputs": [
+        {
+          "id": "exec_out",
+          "type": "exec",
+          "label": {
+            "ru": "Готово",
+            "en": "Done"
+          }
+        },
+        {
+          "id": "path",
+          "type": "text",
+          "label": {
+            "ru": "Файл",
+            "en": "File"
+          },
+          "default": ""
+        }
+      ],
+      "executor": {
+        "kind": "py",
+        "ref": "screenshot"
+      },
+      "capabilities": [
+        "screen.capture"
+      ],
+      "timeout_s": 40,
+      "changes_state": true,
+      "side_effects": true,
+      "no_undo_reason": "снимок — новый файл, его удаляйте сами"
+    },
+    {
+      "id": "action.vpn.set",
+      "version": 1,
+      "category": "action",
+      "flow": "action",
+      "icon": "shield",
+      "name": {
+        "ru": "VPN",
+        "en": "VPN"
+      },
+      "description": {
+        "ru": "Включает, выключает или переключает наш VPN из раздела «VPN» (режим «switch» — выбрать другой узел по имени или id; «toggle» — на противоположное). Работает через оболочку (она живёт в сеансе и вправе запускать службу); команда ждёт, пока VPN действительно включится или выключится. Уважает запреты модуля: пока работает Happ, наш VPN НЕ включается (понятная ошибка), а Happ «Команды» не выключают никогда. Выключение VPN открывает трафик напрямую.",
+        "en": "Turns our VPN from the VPN section on, off or switches it (\"switch\" picks another node by name or id; \"toggle\" flips it). Works through the shell (it lives in the session and may start the service); the command waits until the VPN is really on or off. Respects the module's rules: while Happ is running our VPN does NOT turn on (a clear error), and Commands never stop Happ. Turning the VPN off sends traffic directly."
+      },
+      "example": {
+        "ru": "VPN: включить (вернуть при завершении).",
+        "en": "VPN: on (restore at the end)."
+      },
+      "inputs": [
+        {
+          "id": "exec_in",
+          "type": "exec"
+        },
+        {
+          "id": "mode",
+          "type": "text",
+          "label": {
+            "ru": "Действие",
+            "en": "Action"
+          },
+          "default": "on",
+          "literal": true,
+          "choices": [
+            "on",
+            "off",
+            "toggle",
+            "switch"
+          ],
+          "choice_labels": {
+            "ru": {
+              "on": "включить",
+              "off": "выключить",
+              "toggle": "переключить",
+              "switch": "сменить узел"
+            },
+            "en": {
+              "on": "on",
+              "off": "off",
+              "toggle": "toggle",
+              "switch": "switch node"
+            }
+          },
+          "required": true
+        },
+        {
+          "id": "node",
+          "type": "text",
+          "label": {
+            "ru": "Узел (имя или id)",
+            "en": "Node (name or id)"
+          },
+          "default": "",
+          "description": {
+            "ru": "Пусто — выбранный в разделе «VPN» узел. Для «сменить узел» обязателен.",
+            "en": "Empty means the node selected in the VPN section. Required for \"switch node\"."
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "id": "exec_out",
+          "type": "exec",
+          "label": {
+            "ru": "Готово",
+            "en": "Done"
+          }
+        },
+        {
+          "id": "connected",
+          "type": "bool",
+          "label": {
+            "ru": "VPN включён",
+            "en": "VPN on"
+          },
+          "default": false
+        },
+        {
+          "id": "node_name",
+          "type": "text",
+          "label": {
+            "ru": "Узел",
+            "en": "Node"
+          },
+          "default": ""
+        }
+      ],
+      "executor": {
+        "kind": "py",
+        "ref": "vpn_set"
+      },
+      "capabilities": [
+        "vpn.control"
+      ],
+      "undo": {
+        "capture": "vpn_capture",
+        "restore": "vpn_restore",
+        "default": "off"
+      },
+      "timeout_s": 45,
+      "changes_state": true,
+      "side_effects": true
+    }
+  ]
+}

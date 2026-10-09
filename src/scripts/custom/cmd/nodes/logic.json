@@ -1,0 +1,481 @@
+{
+  "nodes": [
+    {
+      "id": "logic.if", "version": 1, "category": "logic", "flow": "action", "icon": "branch",
+      "name": {"ru": "Если", "en": "If"},
+      "description": {
+        "ru": "Выбирает ветку: если условие «да», выполняется «Тогда», иначе «Иначе».",
+        "en": "Chooses a branch: when the condition is yes, \"Then\" runs, otherwise \"Else\"."
+      },
+      "example": {
+        "ru": "Если громкость больше 50 → уведомление «Громко».",
+        "en": "If volume is above 50 → notification \"Loud\"."
+      },
+      "inputs": [
+        {"id": "exec_in", "type": "exec"},
+        {"id": "condition", "type": "bool", "required": true, "label": {"ru": "Условие", "en": "Condition"}}
+      ],
+      "outputs": [
+        {"id": "then", "type": "exec", "label": {"ru": "Тогда", "en": "Then"}},
+        {"id": "else", "type": "exec", "label": {"ru": "Иначе", "en": "Else"}}
+      ],
+      "executor": {"kind": "builtin", "ref": "if"},
+      "capabilities": [], "changes_state": false, "side_effects": false
+    },
+    {
+      "id": "logic.foreach", "version": 1, "category": "logic", "flow": "action", "icon": "loop",
+      "generics": {"T": "any"},
+      "name": {"ru": "Для каждого", "en": "For each"},
+      "description": {
+        "ru": "Выполняет ветку «Тело» для каждого элемента списка; когда список кончился, выполняется «Готово».",
+        "en": "Runs the \"Body\" branch for every list item; when the list ends, \"Completed\" runs."
+      },
+      "example": {
+        "ru": "Для каждого файла из списка → уведомление с его именем.",
+        "en": "For each file in the list → notification with its name."
+      },
+      "inputs": [
+        {"id": "exec_in", "type": "exec"},
+        {"id": "list", "type": "list<T>", "required": true, "label": {"ru": "Список", "en": "List"}}
+      ],
+      "outputs": [
+        {"id": "body", "type": "exec", "label": {"ru": "Тело", "en": "Body"}},
+        {"id": "item", "type": "T", "label": {"ru": "Элемент", "en": "Item"}},
+        {"id": "index", "type": "int", "label": {"ru": "Номер", "en": "Index"}, "default": 0},
+        {"id": "completed", "type": "exec", "label": {"ru": "Готово", "en": "Completed"}}
+      ],
+      "executor": {"kind": "builtin", "ref": "foreach"},
+      "capabilities": [], "changes_state": false, "side_effects": false
+    },
+    {
+      "id": "logic.delay", "version": 1, "category": "logic", "flow": "latent", "icon": "timer",
+      "name": {"ru": "Задержка", "en": "Delay"},
+      "description": {
+        "ru": "Ждёт указанное число секунд и продолжает выполнение. Команду можно отменить во время ожидания.",
+        "en": "Waits the given number of seconds, then continues. The command can be cancelled while waiting."
+      },
+      "example": {
+        "ru": "Уведомление → задержка 5 с → второе уведомление.",
+        "en": "Notification → delay 5 s → second notification."
+      },
+      "inputs": [
+        {"id": "exec_in", "type": "exec"},
+        {"id": "seconds", "type": "float", "default": 1, "min": 0, "max": 3600, "label": {"ru": "Секунды", "en": "Seconds"}}
+      ],
+      "outputs": [{"id": "exec_out", "type": "exec", "label": {"ru": "Готово", "en": "Done"}}],
+      "executor": {"kind": "builtin", "ref": "delay"},
+      "capabilities": [], "changes_state": false, "side_effects": false
+    },
+    {
+      "id": "logic.set_var", "version": 1, "category": "logic", "flow": "action", "icon": "store",
+      "name": {"ru": "Записать переменную", "en": "Set variable"},
+      "description": {
+        "ru": "Записывает значение в переменную команды. Тип значения должен совпадать с типом переменной.",
+        "en": "Stores a value in a command variable. The value's type must match the variable's type."
+      },
+      "example": {
+        "ru": "Записать переменную «приветствие» = «Привет».",
+        "en": "Set variable \"greeting\" = \"Hello\"."
+      },
+      "inputs": [
+        {"id": "exec_in", "type": "exec"},
+        {"id": "name", "type": "text", "required": true, "literal": true, "label": {"ru": "Имя переменной", "en": "Variable name"}},
+        {"id": "value", "type": "any", "required": true, "type_from_var": "name", "label": {"ru": "Значение", "en": "Value"}}
+      ],
+      "outputs": [{"id": "exec_out", "type": "exec", "label": {"ru": "Готово", "en": "Done"}}],
+      "executor": {"kind": "builtin", "ref": "set_var"},
+      "capabilities": [], "changes_state": false, "side_effects": false
+    },
+    {
+      "id": "logic.break",
+      "version": 1,
+      "category": "logic",
+      "flow": "action",
+      "icon": "appclose",
+      "name": {
+        "ru": "Прервать цикл",
+        "en": "Break loop"
+      },
+      "description": {
+        "ru": "Останавливает ближайший цикл «Для каждого» и сразу переходит к его выходу «Готово». Работает только внутри тела цикла.",
+        "en": "Stops the nearest \"For each\" loop and continues from its \"Completed\" output. Only valid inside a loop body."
+      },
+      "example": {
+        "ru": "Если нашли нужный файл → прервать цикл.",
+        "en": "If the file is found → break the loop."
+      },
+      "inputs": [
+        {
+          "id": "exec_in",
+          "type": "exec"
+        }
+      ],
+      "outputs": [],
+      "executor": {
+        "kind": "builtin",
+        "ref": "break"
+      },
+      "capabilities": [],
+      "changes_state": false,
+      "side_effects": false
+    },
+    {
+      "id": "logic.increment",
+      "version": 1,
+      "category": "logic",
+      "flow": "action",
+      "icon": "store",
+      "name": {
+        "ru": "Увеличить переменную",
+        "en": "Increment variable"
+      },
+      "description": {
+        "ru": "Прибавляет число к числовой переменной команды (по умолчанию 1) и отдаёт новое значение.",
+        "en": "Adds a number to a numeric command variable (1 by default) and returns the new value."
+      },
+      "example": {
+        "ru": "Счётчик «попыток» + 1.",
+        "en": "Counter \"tries\" + 1."
+      },
+      "inputs": [
+        {
+          "id": "exec_in",
+          "type": "exec"
+        },
+        {
+          "id": "name",
+          "type": "text",
+          "label": {
+            "ru": "Имя переменной",
+            "en": "Variable name"
+          },
+          "required": true,
+          "literal": true
+        },
+        {
+          "id": "by",
+          "type": "float",
+          "label": {
+            "ru": "Прибавить",
+            "en": "Add"
+          },
+          "default": 1,
+          "min": -1000000,
+          "max": 1000000
+        }
+      ],
+      "outputs": [
+        {
+          "id": "exec_out",
+          "type": "exec",
+          "label": {
+            "ru": "Готово",
+            "en": "Done"
+          }
+        },
+        {
+          "id": "value",
+          "type": "any",
+          "label": {
+            "ru": "Новое значение",
+            "en": "New value"
+          },
+          "type_from_var": "name"
+        }
+      ],
+      "executor": {
+        "kind": "builtin",
+        "ref": "increment"
+      },
+      "capabilities": [],
+      "changes_state": false,
+      "side_effects": false
+    },
+    {
+      "id": "logic.wait_event",
+      "version": 1,
+      "category": "logic",
+      "flow": "latent",
+      "icon": "clock",
+      "name": {
+        "ru": "Ждать событие",
+        "en": "Wait for event"
+      },
+      "description": {
+        "ru": "Приостанавливает команду, пока не придёт подходящее событие (окно, рабочий стол, монитор, блокировка сеанса). Если за отведённое время события нет, идёт выход «Время вышло». Команду можно отменить во время ожидания.",
+        "en": "Pauses the command until a matching event arrives (window, workspace, monitor, session lock). If nothing arrives in time, the \"Timed out\" output runs. The command can be cancelled while waiting."
+      },
+      "example": {
+        "ru": "Ждать открытия окна браузера до 60 секунд → уведомление.",
+        "en": "Wait up to 60 seconds for a browser window → notification."
+      },
+      "inputs": [
+        {
+          "id": "exec_in",
+          "type": "exec"
+        },
+        {
+          "id": "event",
+          "type": "text",
+          "label": {
+            "ru": "Событие",
+            "en": "Event"
+          },
+          "default": "window.open",
+          "literal": true,
+          "choices": [
+            "window.open",
+            "window.close",
+            "workspace",
+            "monitor.added",
+            "monitor.removed",
+            "session.lock",
+            "session.unlock",
+            "session.login"
+          ],
+          "choice_labels": {
+            "ru": {
+              "window.open": "Окно открылось",
+              "window.close": "Окно закрылось",
+              "workspace": "Смена рабочего стола",
+              "monitor.added": "Монитор подключён",
+              "monitor.removed": "Монитор отключён",
+              "session.lock": "Сеанс заблокирован",
+              "session.unlock": "Сеанс разблокирован",
+              "session.login": "Вход в сеанс"
+            },
+            "en": {
+              "window.open": "Window opened",
+              "window.close": "Window closed",
+              "workspace": "Workspace changed",
+              "monitor.added": "Monitor connected",
+              "monitor.removed": "Monitor disconnected",
+              "session.lock": "Session locked",
+              "session.unlock": "Session unlocked",
+              "session.login": "Session login"
+            }
+          }
+        },
+        {
+          "id": "match",
+          "type": "text",
+          "label": {
+            "ru": "Фильтр",
+            "en": "Filter"
+          },
+          "default": "",
+          "description": {
+            "ru": "Часть текста (или re:выражение) в данных события, например класс окна. Пусто — любое событие.",
+            "en": "Part of the event text (or re:regex), for example the window class. Empty matches any event."
+          }
+        },
+        {
+          "id": "timeout",
+          "type": "float",
+          "label": {
+            "ru": "Ждать (секунд)",
+            "en": "Wait (seconds)"
+          },
+          "default": 60,
+          "min": 0.1,
+          "max": 86400
+        }
+      ],
+      "outputs": [
+        {
+          "id": "exec_out",
+          "type": "exec",
+          "label": {
+            "ru": "Событие пришло",
+            "en": "Event arrived"
+          }
+        },
+        {
+          "id": "timed_out",
+          "type": "exec",
+          "label": {
+            "ru": "Время вышло",
+            "en": "Timed out"
+          }
+        },
+        {
+          "id": "detail",
+          "type": "text",
+          "label": {
+            "ru": "Данные события",
+            "en": "Event data"
+          }
+        }
+      ],
+      "executor": {
+        "kind": "builtin",
+        "ref": "wait_event"
+      },
+      "capabilities": [
+        "trigger.windows",
+        "trigger.session"
+      ],
+      "changes_state": false,
+      "side_effects": false
+    },
+    {
+      "id": "logic.ask",
+      "version": 1,
+      "category": "logic",
+      "flow": "latent",
+      "icon": "question",
+      "name": {
+        "ru": "Спросить меня",
+        "en": "Ask me"
+      },
+      "description": {
+        "ru": "Показывает в оболочке вопрос: выбор из списка, ввод текста, ввод числа или «да/нет». Выходы «Отмена» и «Время вышло» срабатывают, если ответа нет. Если оболочка не подключена, идёт «Время вышло».",
+        "en": "Shows a question in the shell: pick from a list, enter text, enter a number or yes/no. \"Cancelled\" and \"Timed out\" outputs run when there is no answer. Without a connected shell, \"Timed out\" runs."
+      },
+      "example": {
+        "ru": "Спросить «Что включить?» с вариантами → действие по ответу.",
+        "en": "Ask \"What to turn on?\" with options → act on the answer."
+      },
+      "inputs": [
+        {
+          "id": "exec_in",
+          "type": "exec"
+        },
+        {
+          "id": "mode",
+          "type": "text",
+          "label": {
+            "ru": "Вид вопроса",
+            "en": "Question kind"
+          },
+          "default": "choice",
+          "literal": true,
+          "choices": [
+            "choice",
+            "text",
+            "number",
+            "confirm"
+          ],
+          "choice_labels": {
+            "ru": {
+              "choice": "Выбор из списка",
+              "text": "Ввод текста",
+              "number": "Ввод числа",
+              "confirm": "Да / нет"
+            },
+            "en": {
+              "choice": "Pick from a list",
+              "text": "Enter text",
+              "number": "Enter a number",
+              "confirm": "Yes / no"
+            }
+          }
+        },
+        {
+          "id": "title",
+          "type": "text",
+          "label": {
+            "ru": "Вопрос",
+            "en": "Question"
+          },
+          "default": "Вопрос"
+        },
+        {
+          "id": "options",
+          "type": "list<text>",
+          "label": {
+            "ru": "Варианты",
+            "en": "Options"
+          },
+          "default": []
+        },
+        {
+          "id": "default",
+          "type": "text",
+          "label": {
+            "ru": "Значение по умолчанию",
+            "en": "Default value"
+          },
+          "default": ""
+        },
+        {
+          "id": "timeout",
+          "type": "float",
+          "label": {
+            "ru": "Ждать ответ (секунд)",
+            "en": "Wait for answer (seconds)"
+          },
+          "default": 120,
+          "min": 1,
+          "max": 86400
+        }
+      ],
+      "outputs": [
+        {
+          "id": "exec_out",
+          "type": "exec",
+          "label": {
+            "ru": "Ответ получен",
+            "en": "Answered"
+          }
+        },
+        {
+          "id": "cancelled",
+          "type": "exec",
+          "label": {
+            "ru": "Отмена",
+            "en": "Cancelled"
+          }
+        },
+        {
+          "id": "timed_out",
+          "type": "exec",
+          "label": {
+            "ru": "Время вышло",
+            "en": "Timed out"
+          }
+        },
+        {
+          "id": "text",
+          "type": "text",
+          "label": {
+            "ru": "Ответ (текст)",
+            "en": "Answer (text)"
+          }
+        },
+        {
+          "id": "number",
+          "type": "float",
+          "label": {
+            "ru": "Ответ (число)",
+            "en": "Answer (number)"
+          }
+        },
+        {
+          "id": "index",
+          "type": "int",
+          "label": {
+            "ru": "Номер варианта",
+            "en": "Option number"
+          },
+          "default": -1
+        },
+        {
+          "id": "yes",
+          "type": "bool",
+          "label": {
+            "ru": "Ответ «да»",
+            "en": "Answer yes"
+          }
+        }
+      ],
+      "executor": {
+        "kind": "builtin",
+        "ref": "ask"
+      },
+      "capabilities": [],
+      "changes_state": false,
+      "side_effects": false
+    }
+  ]
+}

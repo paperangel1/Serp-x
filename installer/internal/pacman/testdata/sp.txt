@@ -1,0 +1,5 @@
+warning: something odd
+1048576
+2097152
+kitty 9830400
+error: target not found: nope

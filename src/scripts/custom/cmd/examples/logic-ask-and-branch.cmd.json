@@ -1,0 +1,178 @@
+{
+  "format": 1,
+  "id": "example-ask-and-branch",
+  "name": "Спросить и выбрать",
+  "description": "Спрашивает, что включить, и по ответу выбирает действие. Есть пути для «Отмена» и «Время вышло».",
+  "enabled": true,
+  "nodes": [
+    {
+      "id": "n1",
+      "type": "event.manual@1",
+      "pos": [40, 40],
+      "props": {}
+    },
+    {
+      "id": "n2",
+      "type": "logic.ask@1",
+      "pos": [330, 40],
+      "props": {
+        "mode": "choice",
+        "title": "Что включить?",
+        "options": [
+          "Тихий режим",
+          "Яркий экран",
+          "Ничего"
+        ],
+        "timeout": 60
+      }
+    },
+    {
+      "id": "n3",
+      "type": "data.compare_text@1",
+      "pos": [700, 360],
+      "props": {
+        "op": "equals",
+        "b": "Тихий режим"
+      }
+    },
+    {
+      "id": "n4",
+      "type": "logic.if@1",
+      "pos": [1070, 360],
+      "props": {}
+    },
+    {
+      "id": "n5",
+      "type": "action.notify@1",
+      "pos": [1440, 360],
+      "props": {
+        "title": "Тихий режим",
+        "body": "Включаю тихий режим"
+      }
+    },
+    {
+      "id": "n6",
+      "type": "ui.show_result@1",
+      "pos": [1440, 560],
+      "props": {
+        "title": "Вы выбрали"
+      }
+    },
+    {
+      "id": "n7",
+      "type": "action.notify@1",
+      "pos": [700, 40],
+      "props": {
+        "title": "Отменено",
+        "body": "Вы закрыли вопрос"
+      }
+    },
+    {
+      "id": "n8",
+      "type": "action.notify@1",
+      "pos": [700, 220],
+      "props": {
+        "title": "Нет ответа",
+        "body": "Время на ответ вышло"
+      }
+    }
+  ],
+  "wires": [
+    {
+      "from": [
+        "n1",
+        "exec"
+      ],
+      "to": [
+        "n2",
+        "exec_in"
+      ]
+    },
+    {
+      "from": [
+        "n2",
+        "exec_out"
+      ],
+      "to": [
+        "n4",
+        "exec_in"
+      ]
+    },
+    {
+      "from": [
+        "n2",
+        "text"
+      ],
+      "to": [
+        "n3",
+        "a"
+      ]
+    },
+    {
+      "from": [
+        "n3",
+        "result"
+      ],
+      "to": [
+        "n4",
+        "condition"
+      ]
+    },
+    {
+      "from": [
+        "n4",
+        "then"
+      ],
+      "to": [
+        "n5",
+        "exec_in"
+      ]
+    },
+    {
+      "from": [
+        "n4",
+        "else"
+      ],
+      "to": [
+        "n6",
+        "exec_in"
+      ]
+    },
+    {
+      "from": [
+        "n2",
+        "text"
+      ],
+      "to": [
+        "n6",
+        "value"
+      ]
+    },
+    {
+      "from": [
+        "n2",
+        "cancelled"
+      ],
+      "to": [
+        "n7",
+        "exec_in"
+      ]
+    },
+    {
+      "from": [
+        "n2",
+        "timed_out"
+      ],
+      "to": [
+        "n8",
+        "exec_in"
+      ]
+    }
+  ],
+  "capabilities": [
+    "notify.show"
+  ],
+  "approved_capabilities": [
+    "notify.show"
+  ]
+}

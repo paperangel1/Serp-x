@@ -1,0 +1,186 @@
+{
+ "format": 1,
+ "id": "gallery-away",
+ "name": "Отсутствие",
+ "description": "При блокировке экрана ставит музыку на паузу и выключает микрофон; при разблокировке возвращает.",
+ "enabled": false,
+ "nodes": [
+  {
+   "id": "n1",
+   "type": "event.lock@1",
+   "pos": [
+    0,
+    100
+   ],
+   "props": {}
+  },
+  {
+   "id": "n2",
+   "type": "action.media.control@1",
+   "pos": [
+    340,
+    100
+   ],
+   "props": {
+    "command": "pause"
+   }
+  },
+  {
+   "id": "n3",
+   "type": "action.audio.mic_mute@1",
+   "pos": [
+    680,
+    100
+   ],
+   "props": {
+    "muted": true
+   }
+  },
+  {
+   "id": "n4",
+   "type": "event.unlock@1",
+   "pos": [
+    0,
+    420
+   ],
+   "props": {}
+  },
+  {
+   "id": "n5",
+   "type": "action.audio.mic_mute@1",
+   "pos": [
+    340,
+    420
+   ],
+   "props": {
+    "muted": false
+   }
+  },
+  {
+   "id": "n6",
+   "type": "action.media.control@1",
+   "pos": [
+    680,
+    420
+   ],
+   "props": {
+    "command": "play"
+   }
+  }
+ ],
+ "wires": [
+  {
+   "from": [
+    "n1",
+    "exec"
+   ],
+   "to": [
+    "n2",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n2",
+    "exec_out"
+   ],
+   "to": [
+    "n3",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n4",
+    "exec"
+   ],
+   "to": [
+    "n5",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n5",
+    "exec_out"
+   ],
+   "to": [
+    "n6",
+    "exec_in"
+   ]
+  }
+ ],
+ "variables": [],
+ "comments": [
+  {
+   "id": "c1",
+   "x": 0,
+   "y": -100,
+   "w": 300,
+   "h": 100,
+   "title": {
+    "ru": "Блокировка",
+    "en": "Lock"
+   },
+   "text": {
+    "ru": "Событие приходит от системы входа (logind), сеанс заблокирован.",
+    "en": "The event comes from the login manager (logind): the session is locked."
+   },
+   "color": "#f9e2af"
+  },
+  {
+   "id": "c2",
+   "x": 340,
+   "y": -100,
+   "w": 640,
+   "h": 70,
+   "title": {
+    "ru": "Пауза и тишина",
+    "en": "Pause and silence"
+   },
+   "text": {
+    "ru": "Музыка на паузу, микрофон выключен.",
+    "en": "Music paused, microphone muted."
+   },
+   "color": "#f9e2af"
+  },
+  {
+   "id": "c3",
+   "x": 0,
+   "y": 300,
+   "w": 640,
+   "h": 70,
+   "title": {
+    "ru": "Возвращение",
+    "en": "Back"
+   },
+   "text": {
+    "ru": "Разблокировка запускает обратные действия.",
+    "en": "Unlocking runs the opposite actions."
+   },
+   "color": "#f9e2af"
+  }
+ ],
+ "gallery": {
+  "name": {
+   "ru": "Отсутствие",
+   "en": "Away"
+  },
+  "description": {
+   "ru": "При блокировке экрана ставит музыку на паузу и выключает микрофон; при разблокировке возвращает.",
+   "en": "On screen lock pauses the music and mutes the microphone; on unlock it restores both."
+  },
+  "category": "sound",
+  "tags": {
+   "ru": [
+    "медиа",
+    "микрофон"
+   ],
+   "en": [
+    "media",
+    "microphone"
+   ]
+  },
+  "packages": []
+ }
+}

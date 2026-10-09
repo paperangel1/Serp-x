@@ -1,0 +1,13 @@
+singleton Glyphs 1.0 Glyphs.qml
+ServerDot 1.0 ServerDot.qml
+MetricTile 1.0 MetricTile.qml
+CmdButton 1.0 CmdButton.qml
+SecretField 1.0 SecretField.qml
+ServersView 1.0 ServersView.qml
+ServersFaceCompact 1.0 ServersFaceCompact.qml
+ServersFaceDetailed 1.0 ServersFaceDetailed.qml
+ServerTerminalView 1.0 ServerTerminalView.qml
+ServerTerminal 1.0 ServerTerminal.qml
+ConfirmView 1.0 ConfirmView.qml
+ConfirmWindow 1.0 ConfirmWindow.qml
+ServersTab 1.0 ServersTab.qml

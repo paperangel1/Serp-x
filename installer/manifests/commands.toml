@@ -1,0 +1,47 @@
+id = "commands"
+schema = 1
+order = 90
+group = "build"
+presets = ["full"]
+name = { ru = "Commands", en = "Commands" }
+desc = { ru = "Визуальные команды-автоматизации и демон serpantinum-cmdd.", en = "Visual automations and the serpantinum-cmdd daemon." }
+requires = ["core"]
+enhances = ["ai-gemini"]
+systemd_user = ["serpantinum-cmdd.service"]
+user_files = [
+  "~/.config/systemd/user/serpantinum-cmdd.service",
+  "~/.local/share/applications/serpantinum-commands.desktop",
+  "~/.local/share/applications/serpantinum-commands-palette.desktop",
+]
+estimate = { download_mib = 0, disk_mib = 0, install_s = 3 }
+
+[uninstall]
+keep_data = ["~/.config/serpantinum/commands"]
+
+[[config]]
+key = "commands.start_daemon"
+kind = "bool"
+default = true
+label = { ru = "Запустить демон сразу", en = "Start the daemon now" }
+
+[[config]]
+key = "commands.examples"
+kind = "bool"
+default = true
+label = { ru = "Поставить примеры из галереи", en = "Install gallery examples" }
+
+[[steps]]
+id = "commands.unit"
+kind = "script"
+title = { ru = "Commands: служба serpantinum-cmdd", en = "Commands: serpantinum-cmdd service" }
+args = { cmd = ["@BIN_X@", "cmd", "install"] }
+check = ["@BIN_X@", "cmd", "install", "--check"]
+undo = ["@BIN_X@", "cmd", "uninstall"]
+estimate_s = 2
+
+[[steps]]
+id = "commands.desktop"
+kind = "template"
+title = { ru = "Commands: значки в меню приложений", en = "Commands: app menu entries" }
+args = { from = "src/assets/custom-desktop/*.desktop", to = "~/.local/share/applications/" }
+estimate_s = 1

@@ -1,0 +1,983 @@
+{
+  "nodes": [
+    {
+      "id": "data.get_var", "version": 1, "category": "data", "flow": "pure", "icon": "load",
+      "name": {"ru": "Прочитать переменную", "en": "Get variable"},
+      "description": {
+        "ru": "Отдаёт текущее значение переменной команды. Тип выхода равен типу переменной.",
+        "en": "Returns the current value of a command variable. The output type equals the variable's type."
+      },
+      "example": {
+        "ru": "Прочитать «приветствие» → заголовок уведомления.",
+        "en": "Get \"greeting\" → notification title."
+      },
+      "inputs": [
+        {"id": "name", "type": "text", "required": true, "literal": true, "label": {"ru": "Имя переменной", "en": "Variable name"}}
+      ],
+      "outputs": [{"id": "value", "type": "any", "type_from_var": "name", "label": {"ru": "Значение", "en": "Value"}}],
+      "executor": {"kind": "builtin", "ref": "get_var"},
+      "capabilities": [], "changes_state": false, "side_effects": false
+    },
+    {
+      "id": "convert.to_text", "version": 1, "category": "data", "flow": "pure", "icon": "convert",
+      "name": {"ru": "Любое → Текст", "en": "Any → Text"},
+      "description": {
+        "ru": "Превращает любое значение в текст: число — в его запись, «да/нет» — в «да» или «нет», список — в элементы через запятую.",
+        "en": "Turns any value into text: a number into its digits, yes/no into \"да\"/\"нет\", a list into comma-separated items."
+      },
+      "example": {
+        "ru": "Номер элемента → в текст → тело уведомления.",
+        "en": "Item index → to text → notification body."
+      },
+      "converter": {"from": "any", "to": "text"},
+      "inputs": [{"id": "value", "type": "any", "required": true, "label": {"ru": "Значение", "en": "Value"}}],
+      "outputs": [{"id": "text", "type": "text", "label": {"ru": "Текст", "en": "Text"}}],
+      "executor": {"kind": "builtin", "ref": "to_text"},
+      "capabilities": [], "changes_state": false, "side_effects": false
+    },
+    {
+      "id": "convert.to_int", "version": 1, "category": "data", "flow": "pure", "icon": "convert",
+      "name": {"ru": "Текст → Число", "en": "Text → Number"},
+      "description": {
+        "ru": "Разбирает текст как целое число. Если это не число, узел завершается ошибкой.",
+        "en": "Parses text as a whole number. If it is not a number the node fails."
+      },
+      "example": {
+        "ru": "Вывод команды «42» → число 42.",
+        "en": "Command output \"42\" → number 42."
+      },
+      "converter": {"from": "text", "to": "int"},
+      "inputs": [{"id": "text", "type": "text", "required": true, "label": {"ru": "Текст", "en": "Text"}}],
+      "outputs": [{"id": "value", "type": "int", "label": {"ru": "Число", "en": "Number"}}],
+      "executor": {"kind": "builtin", "ref": "to_int"},
+      "capabilities": [], "changes_state": false, "side_effects": false
+    },
+    {
+      "id": "data.compare_number",
+      "version": 1,
+      "category": "data",
+      "flow": "pure",
+      "icon": "convert",
+      "name": {
+        "ru": "Сравнить числа",
+        "en": "Compare numbers"
+      },
+      "description": {
+        "ru": "Сравнивает два числа и отдаёт «да» или «нет».",
+        "en": "Compares two numbers and returns yes or no."
+      },
+      "example": {
+        "ru": "Громкость > 50 → да.",
+        "en": "Volume > 50 → yes."
+      },
+      "inputs": [
+        {
+          "id": "a",
+          "type": "float",
+          "label": {
+            "ru": "Число A",
+            "en": "Number A"
+          },
+          "default": 0
+        },
+        {
+          "id": "op",
+          "type": "text",
+          "label": {
+            "ru": "Сравнение",
+            "en": "Comparison"
+          },
+          "default": "==",
+          "literal": true,
+          "choices": [
+            "==",
+            "!=",
+            "<",
+            "<=",
+            ">",
+            ">="
+          ],
+          "choice_labels": {
+            "ru": {
+              "==": "равно",
+              "!=": "не равно",
+              "<": "меньше",
+              "<=": "меньше или равно",
+              ">": "больше",
+              ">=": "больше или равно"
+            },
+            "en": {
+              "==": "equal",
+              "!=": "not equal",
+              "<": "less",
+              "<=": "less or equal",
+              ">": "greater",
+              ">=": "greater or equal"
+            }
+          }
+        },
+        {
+          "id": "b",
+          "type": "float",
+          "label": {
+            "ru": "Число B",
+            "en": "Number B"
+          },
+          "default": 0
+        }
+      ],
+      "outputs": [
+        {
+          "id": "result",
+          "type": "bool",
+          "label": {
+            "ru": "Результат",
+            "en": "Result"
+          }
+        }
+      ],
+      "executor": {
+        "kind": "builtin",
+        "ref": "compare_number"
+      },
+      "capabilities": [],
+      "changes_state": false,
+      "side_effects": false
+    },
+    {
+      "id": "data.compare_text",
+      "version": 1,
+      "category": "data",
+      "flow": "pure",
+      "icon": "convert",
+      "name": {
+        "ru": "Сравнить тексты",
+        "en": "Compare texts"
+      },
+      "description": {
+        "ru": "Сравнивает два текста (равно, содержит, начинается, заканчивается, выражение re) и отдаёт «да» или «нет».",
+        "en": "Compares two texts (equals, contains, starts with, ends with, regex) and returns yes or no."
+      },
+      "example": {
+        "ru": "Ответ содержит «да» → да.",
+        "en": "Answer contains \"yes\" → yes."
+      },
+      "inputs": [
+        {
+          "id": "a",
+          "type": "text",
+          "label": {
+            "ru": "Текст A",
+            "en": "Text A"
+          },
+          "default": ""
+        },
+        {
+          "id": "op",
+          "type": "text",
+          "label": {
+            "ru": "Сравнение",
+            "en": "Comparison"
+          },
+          "default": "equals",
+          "literal": true,
+          "choices": [
+            "equals",
+            "not_equals",
+            "contains",
+            "starts_with",
+            "ends_with",
+            "regex"
+          ],
+          "choice_labels": {
+            "ru": {
+              "equals": "равно",
+              "not_equals": "не равно",
+              "contains": "содержит",
+              "starts_with": "начинается с",
+              "ends_with": "заканчивается на",
+              "regex": "подходит под выражение"
+            },
+            "en": {
+              "equals": "equals",
+              "not_equals": "not equals",
+              "contains": "contains",
+              "starts_with": "starts with",
+              "ends_with": "ends with",
+              "regex": "matches regex"
+            }
+          }
+        },
+        {
+          "id": "b",
+          "type": "text",
+          "label": {
+            "ru": "Текст B",
+            "en": "Text B"
+          },
+          "default": ""
+        },
+        {
+          "id": "ignore_case",
+          "type": "bool",
+          "label": {
+            "ru": "Без учёта регистра",
+            "en": "Ignore case"
+          },
+          "default": true,
+          "literal": true
+        }
+      ],
+      "outputs": [
+        {
+          "id": "result",
+          "type": "bool",
+          "label": {
+            "ru": "Результат",
+            "en": "Result"
+          }
+        }
+      ],
+      "executor": {
+        "kind": "builtin",
+        "ref": "compare_text"
+      },
+      "capabilities": [],
+      "changes_state": false,
+      "side_effects": false
+    },
+    {
+      "id": "data.and",
+      "version": 1,
+      "category": "data",
+      "flow": "pure",
+      "icon": "convert",
+      "name": {
+        "ru": "И",
+        "en": "And"
+      },
+      "description": {
+        "ru": "«Да», только если оба входа «да».",
+        "en": "Yes only when both inputs are yes."
+      },
+      "example": {
+        "ru": "Громко И ночь → да.",
+        "en": "Loud AND night → yes."
+      },
+      "inputs": [
+        {
+          "id": "a",
+          "type": "bool",
+          "label": {
+            "ru": "A",
+            "en": "A"
+          },
+          "default": false
+        },
+        {
+          "id": "b",
+          "type": "bool",
+          "label": {
+            "ru": "B",
+            "en": "B"
+          },
+          "default": false
+        }
+      ],
+      "outputs": [
+        {
+          "id": "result",
+          "type": "bool",
+          "label": {
+            "ru": "Результат",
+            "en": "Result"
+          }
+        }
+      ],
+      "executor": {
+        "kind": "builtin",
+        "ref": "and"
+      },
+      "capabilities": [],
+      "changes_state": false,
+      "side_effects": false
+    },
+    {
+      "id": "data.or",
+      "version": 1,
+      "category": "data",
+      "flow": "pure",
+      "icon": "convert",
+      "name": {
+        "ru": "Или",
+        "en": "Or"
+      },
+      "description": {
+        "ru": "«Да», если хотя бы один вход «да».",
+        "en": "Yes when at least one input is yes."
+      },
+      "example": {
+        "ru": "Браузер ИЛИ почта открыты → да.",
+        "en": "Browser OR mail open → yes."
+      },
+      "inputs": [
+        {
+          "id": "a",
+          "type": "bool",
+          "label": {
+            "ru": "A",
+            "en": "A"
+          },
+          "default": false
+        },
+        {
+          "id": "b",
+          "type": "bool",
+          "label": {
+            "ru": "B",
+            "en": "B"
+          },
+          "default": false
+        }
+      ],
+      "outputs": [
+        {
+          "id": "result",
+          "type": "bool",
+          "label": {
+            "ru": "Результат",
+            "en": "Result"
+          }
+        }
+      ],
+      "executor": {
+        "kind": "builtin",
+        "ref": "or"
+      },
+      "capabilities": [],
+      "changes_state": false,
+      "side_effects": false
+    },
+    {
+      "id": "data.not",
+      "version": 1,
+      "category": "data",
+      "flow": "pure",
+      "icon": "convert",
+      "name": {
+        "ru": "Не",
+        "en": "Not"
+      },
+      "description": {
+        "ru": "Меняет «да» на «нет» и наоборот.",
+        "en": "Turns yes into no and vice versa."
+      },
+      "example": {
+        "ru": "НЕ тихо → громко.",
+        "en": "NOT quiet → loud."
+      },
+      "inputs": [
+        {
+          "id": "value",
+          "type": "bool",
+          "label": {
+            "ru": "Значение",
+            "en": "Value"
+          },
+          "default": false
+        }
+      ],
+      "outputs": [
+        {
+          "id": "result",
+          "type": "bool",
+          "label": {
+            "ru": "Результат",
+            "en": "Result"
+          }
+        }
+      ],
+      "executor": {
+        "kind": "builtin",
+        "ref": "not"
+      },
+      "capabilities": [],
+      "changes_state": false,
+      "side_effects": false
+    },
+    {
+      "id": "data.concat",
+      "version": 1,
+      "category": "data",
+      "flow": "pure",
+      "icon": "convert",
+      "name": {
+        "ru": "Склеить текст",
+        "en": "Concatenate"
+      },
+      "description": {
+        "ru": "Соединяет два текста в один.",
+        "en": "Joins two texts into one."
+      },
+      "example": {
+        "ru": "«Привет, » + имя → «Привет, Аня».",
+        "en": "\"Hello, \" + name → \"Hello, Ann\"."
+      },
+      "inputs": [
+        {
+          "id": "a",
+          "type": "text",
+          "label": {
+            "ru": "Текст A",
+            "en": "Text A"
+          },
+          "default": ""
+        },
+        {
+          "id": "b",
+          "type": "text",
+          "label": {
+            "ru": "Текст B",
+            "en": "Text B"
+          },
+          "default": ""
+        }
+      ],
+      "outputs": [
+        {
+          "id": "text",
+          "type": "text",
+          "label": {
+            "ru": "Текст",
+            "en": "Text"
+          }
+        }
+      ],
+      "executor": {
+        "kind": "builtin",
+        "ref": "concat"
+      },
+      "capabilities": [],
+      "changes_state": false,
+      "side_effects": false
+    },
+    {
+      "id": "data.format",
+      "version": 1,
+      "category": "data",
+      "flow": "pure",
+      "icon": "convert",
+      "name": {
+        "ru": "Подставить в шаблон",
+        "en": "Format text"
+      },
+      "description": {
+        "ru": "Заменяет {a}, {b}, {c} в шаблоне на значения входов (числа и «да/нет» превращаются в текст сами).",
+        "en": "Replaces {a}, {b}, {c} in the template with the input values (numbers and yes/no become text automatically)."
+      },
+      "example": {
+        "ru": "«Осталось {a} из {b}» → «Осталось 3 из 10».",
+        "en": "\"{a} of {b} left\" → \"3 of 10 left\"."
+      },
+      "inputs": [
+        {
+          "id": "template",
+          "type": "text",
+          "label": {
+            "ru": "Шаблон",
+            "en": "Template"
+          },
+          "default": "{a}"
+        },
+        {
+          "id": "a",
+          "type": "any",
+          "label": {
+            "ru": "Значение a",
+            "en": "Value a"
+          },
+          "default": ""
+        },
+        {
+          "id": "b",
+          "type": "any",
+          "label": {
+            "ru": "Значение b",
+            "en": "Value b"
+          },
+          "default": ""
+        },
+        {
+          "id": "c",
+          "type": "any",
+          "label": {
+            "ru": "Значение c",
+            "en": "Value c"
+          },
+          "default": ""
+        }
+      ],
+      "outputs": [
+        {
+          "id": "text",
+          "type": "text",
+          "label": {
+            "ru": "Текст",
+            "en": "Text"
+          }
+        }
+      ],
+      "executor": {
+        "kind": "builtin",
+        "ref": "format"
+      },
+      "capabilities": [],
+      "changes_state": false,
+      "side_effects": false
+    },
+    {
+      "id": "data.split",
+      "version": 1,
+      "category": "data",
+      "flow": "pure",
+      "icon": "convert",
+      "name": {
+        "ru": "Разбить текст",
+        "en": "Split text"
+      },
+      "description": {
+        "ru": "Разбивает текст по разделителю в список текстов.",
+        "en": "Splits a text by a separator into a list of texts."
+      },
+      "example": {
+        "ru": "«яблоко,груша» по «,» → список из двух.",
+        "en": "\"apple,pear\" by \",\" → a list of two."
+      },
+      "inputs": [
+        {
+          "id": "text",
+          "type": "text",
+          "label": {
+            "ru": "Текст",
+            "en": "Text"
+          },
+          "default": ""
+        },
+        {
+          "id": "sep",
+          "type": "text",
+          "label": {
+            "ru": "Разделитель",
+            "en": "Separator"
+          },
+          "default": ","
+        }
+      ],
+      "outputs": [
+        {
+          "id": "list",
+          "type": "list<text>",
+          "label": {
+            "ru": "Список",
+            "en": "List"
+          }
+        }
+      ],
+      "executor": {
+        "kind": "builtin",
+        "ref": "split"
+      },
+      "capabilities": [],
+      "changes_state": false,
+      "side_effects": false
+    },
+    {
+      "id": "data.join",
+      "version": 1,
+      "category": "data",
+      "flow": "pure",
+      "icon": "convert",
+      "name": {
+        "ru": "Склеить список",
+        "en": "Join list"
+      },
+      "description": {
+        "ru": "Соединяет элементы списка в один текст через разделитель.",
+        "en": "Joins list items into one text using a separator."
+      },
+      "example": {
+        "ru": "Список файлов → «a.txt, b.txt».",
+        "en": "A file list → \"a.txt, b.txt\"."
+      },
+      "inputs": [
+        {
+          "id": "list",
+          "type": "list<any>",
+          "label": {
+            "ru": "Список",
+            "en": "List"
+          },
+          "required": true
+        },
+        {
+          "id": "sep",
+          "type": "text",
+          "label": {
+            "ru": "Разделитель",
+            "en": "Separator"
+          },
+          "default": ", "
+        }
+      ],
+      "outputs": [
+        {
+          "id": "text",
+          "type": "text",
+          "label": {
+            "ru": "Текст",
+            "en": "Text"
+          }
+        }
+      ],
+      "executor": {
+        "kind": "builtin",
+        "ref": "join"
+      },
+      "capabilities": [],
+      "changes_state": false,
+      "side_effects": false
+    },
+    {
+      "id": "data.math",
+      "version": 1,
+      "category": "data",
+      "flow": "pure",
+      "icon": "calc",
+      "name": {
+        "ru": "Арифметика",
+        "en": "Math"
+      },
+      "description": {
+        "ru": "Считает: сложение, вычитание, умножение, деление, остаток, минимум, максимум. Отдаёт и дробный, и целый (округлённый вниз) результат.",
+        "en": "Computes add, subtract, multiply, divide, remainder, min, max. Returns both a decimal and a whole (rounded down) result."
+      },
+      "example": {
+        "ru": "3 + 4 → 7.",
+        "en": "3 + 4 → 7."
+      },
+      "inputs": [
+        {
+          "id": "a",
+          "type": "float",
+          "label": {
+            "ru": "Число A",
+            "en": "Number A"
+          },
+          "default": 0
+        },
+        {
+          "id": "op",
+          "type": "text",
+          "label": {
+            "ru": "Действие",
+            "en": "Operation"
+          },
+          "default": "+",
+          "literal": true,
+          "choices": [
+            "+",
+            "-",
+            "*",
+            "/",
+            "%",
+            "min",
+            "max"
+          ],
+          "choice_labels": {
+            "ru": {
+              "+": "сложить",
+              "-": "вычесть",
+              "*": "умножить",
+              "/": "разделить",
+              "%": "остаток",
+              "min": "меньшее",
+              "max": "большее"
+            },
+            "en": {
+              "+": "add",
+              "-": "subtract",
+              "*": "multiply",
+              "/": "divide",
+              "%": "remainder",
+              "min": "smaller",
+              "max": "larger"
+            }
+          }
+        },
+        {
+          "id": "b",
+          "type": "float",
+          "label": {
+            "ru": "Число B",
+            "en": "Number B"
+          },
+          "default": 0
+        }
+      ],
+      "outputs": [
+        {
+          "id": "result",
+          "type": "float",
+          "label": {
+            "ru": "Результат",
+            "en": "Result"
+          }
+        },
+        {
+          "id": "whole",
+          "type": "int",
+          "label": {
+            "ru": "Целое",
+            "en": "Whole"
+          }
+        }
+      ],
+      "executor": {
+        "kind": "builtin",
+        "ref": "math"
+      },
+      "capabilities": [],
+      "changes_state": false,
+      "side_effects": false
+    },
+    {
+      "id": "data.list_length",
+      "version": 1,
+      "category": "data",
+      "flow": "pure",
+      "icon": "convert",
+      "name": {
+        "ru": "Длина списка",
+        "en": "List length"
+      },
+      "description": {
+        "ru": "Считает элементы списка.",
+        "en": "Counts the list items."
+      },
+      "example": {
+        "ru": "Список из 3 файлов → 3.",
+        "en": "A list of 3 files → 3."
+      },
+      "inputs": [
+        {
+          "id": "list",
+          "type": "list<any>",
+          "label": {
+            "ru": "Список",
+            "en": "List"
+          },
+          "required": true
+        }
+      ],
+      "outputs": [
+        {
+          "id": "length",
+          "type": "int",
+          "label": {
+            "ru": "Длина",
+            "en": "Length"
+          }
+        }
+      ],
+      "executor": {
+        "kind": "builtin",
+        "ref": "list_length"
+      },
+      "capabilities": [],
+      "changes_state": false,
+      "side_effects": false
+    },
+    {
+      "id": "data.list_get",
+      "version": 1,
+      "category": "data",
+      "flow": "pure",
+      "icon": "convert",
+      "name": {
+        "ru": "Элемент списка",
+        "en": "List item"
+      },
+      "generics": {
+        "T": "any"
+      },
+      "description": {
+        "ru": "Берёт элемент списка по номеру (с нуля). Если номера нет в списке, команда остановится с понятной ошибкой.",
+        "en": "Takes a list item by its index (from zero). If the index is outside the list, the command stops with a clear error."
+      },
+      "example": {
+        "ru": "Второй элемент списка → индекс 1.",
+        "en": "Second item of the list → index 1."
+      },
+      "inputs": [
+        {
+          "id": "list",
+          "type": "list<T>",
+          "label": {
+            "ru": "Список",
+            "en": "List"
+          },
+          "required": true
+        },
+        {
+          "id": "index",
+          "type": "int",
+          "label": {
+            "ru": "Номер",
+            "en": "Index"
+          },
+          "default": 0,
+          "min": 0
+        }
+      ],
+      "outputs": [
+        {
+          "id": "item",
+          "type": "T",
+          "label": {
+            "ru": "Элемент",
+            "en": "Item"
+          }
+        }
+      ],
+      "executor": {
+        "kind": "builtin",
+        "ref": "list_get"
+      },
+      "capabilities": [],
+      "changes_state": false,
+      "side_effects": false
+    },
+    {
+      "id": "data.range",
+      "version": 1,
+      "category": "data",
+      "flow": "pure",
+      "icon": "convert",
+      "name": {
+        "ru": "Числа подряд",
+        "en": "Number range"
+      },
+      "description": {
+        "ru": "Создаёт список целых чисел: start, start+1, … (count штук). Удобно для «повторить N раз».",
+        "en": "Creates a list of integers: start, start+1, … (count of them). Handy for \"repeat N times\"."
+      },
+      "example": {
+        "ru": "3 числа с 1 → 1, 2, 3.",
+        "en": "3 numbers from 1 → 1, 2, 3."
+      },
+      "inputs": [
+        {
+          "id": "start",
+          "type": "int",
+          "label": {
+            "ru": "Начало",
+            "en": "Start"
+          },
+          "default": 0
+        },
+        {
+          "id": "count",
+          "type": "int",
+          "label": {
+            "ru": "Сколько",
+            "en": "Count"
+          },
+          "default": 3,
+          "min": 0,
+          "max": 1000
+        }
+      ],
+      "outputs": [
+        {
+          "id": "list",
+          "type": "list<int>",
+          "label": {
+            "ru": "Список",
+            "en": "List"
+          }
+        }
+      ],
+      "executor": {
+        "kind": "builtin",
+        "ref": "range"
+      },
+      "capabilities": [],
+      "changes_state": false,
+      "side_effects": false
+    },
+    {
+      "id": "data.selected_text", "version": 1, "category": "data", "flow": "pure", "icon": "text",
+      "name": {"ru": "Выделенный текст", "en": "Selected text"},
+      "description": {
+        "ru": "Текст, выделенный мышью в любом приложении (первичное выделение Wayland). Если ничего не выделено, берётся содержимое буфера обмена. Выход «source» говорит, откуда взято: primary, clipboard или none.",
+        "en": "The text selected with the mouse in any app (the Wayland primary selection). With nothing selected the clipboard content is used. The \"source\" output tells which: primary, clipboard or none."
+      },
+      "example": {
+        "ru": "Выделили слово → оно становится входом перевода.",
+        "en": "Select a word → it becomes the input of a translation."
+      },
+      "inputs": [
+
+      ],
+      "outputs": [
+        {"id": "text", "type": "text", "log": "length", "default": "", "label": {"ru": "Текст", "en": "Text"}},
+        {"id": "source", "type": "text", "default": "none", "label": {"ru": "Источник", "en": "Source"}}
+      ],
+      "executor": {"kind": "py", "ref": "selected_text"},
+      "capabilities": ["read.selection"], "changes_state": false, "side_effects": false
+    },
+    {
+      "id": "data.selected_files", "version": 1, "category": "data", "flow": "pure", "icon": "files",
+      "name": {"ru": "Выбранные файлы", "en": "Selected files"},
+      "description": {
+        "ru": "Список файлов: из аргумента запуска (пути по одному в строке или file://), а если его нет, то из буфера обмена: файлы, скопированные в файловом менеджере (Ctrl+C). Несуществующие пути отбрасываются.",
+        "en": "A list of files: from the run argument (one path per line, or file:// URIs); without it, from the clipboard: files copied in the file manager (Ctrl+C). Paths that do not exist are dropped."
+      },
+      "example": {
+        "ru": "Скопировали три картинки → список из трёх путей.",
+        "en": "Three pictures copied → a list of three paths."
+      },
+      "inputs": [
+        {"id": "arg", "type": "text", "default": "", "log": "length", "label": {"ru": "Аргумент запуска", "en": "Run argument"}}
+      ],
+      "outputs": [
+        {"id": "files", "type": "list<text>", "default": [], "label": {"ru": "Файлы", "en": "Files"}},
+        {"id": "count", "type": "int", "default": 0, "label": {"ru": "Сколько", "en": "Count"}}
+      ],
+      "executor": {"kind": "py", "ref": "selected_files"},
+      "capabilities": ["read.selection"], "changes_state": false, "side_effects": false
+    },
+    {
+      "id": "data.file_kind", "version": 1, "category": "data", "flow": "pure", "icon": "tag",
+      "name": {"ru": "Вид файла", "en": "File kind"},
+      "description": {
+        "ru": "Определяет вид файла по расширению и типу MIME: image, document, archive, video, audio или other. Сам файл не читается.",
+        "en": "Classifies a file by extension and MIME type: image, document, archive, video, audio or other. The file itself is not read."
+      },
+      "example": {
+        "ru": "Путь «отчёт.pdf» → document.",
+        "en": "Path \"report.pdf\" → document."
+      },
+      "inputs": [
+        {"id": "path", "type": "text", "required": true, "label": {"ru": "Файл", "en": "File"}}
+      ],
+      "outputs": [
+        {"id": "kind", "type": "text", "default": "other", "label": {"ru": "Вид", "en": "Kind"}},
+        {"id": "ext", "type": "text", "default": "", "label": {"ru": "Расширение", "en": "Extension"}},
+        {"id": "mime", "type": "text", "default": "", "label": {"ru": "Тип MIME", "en": "MIME type"}}
+      ],
+      "executor": {"kind": "builtin", "ref": "file_kind"},
+      "capabilities": [], "changes_state": false, "side_effects": false
+    }
+  ]
+}

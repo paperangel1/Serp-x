@@ -1,0 +1,232 @@
+{
+ "format": 1,
+ "id": "gallery-evening",
+ "name": "Вечер",
+ "description": "На закате включает ночной фильтр, тёмную тему и уменьшает яркость; на рассвете возвращает всё.",
+ "enabled": false,
+ "nodes": [
+  {
+   "id": "n1",
+   "type": "event.sun@1",
+   "pos": [
+    0,
+    100
+   ],
+   "props": {
+    "kind": "sunset"
+   }
+  },
+  {
+   "id": "n2",
+   "type": "action.shell.night_filter@1",
+   "pos": [
+    340,
+    100
+   ],
+   "props": {
+    "enabled": true
+   }
+  },
+  {
+   "id": "n3",
+   "type": "action.shell.theme@1",
+   "pos": [
+    680,
+    100
+   ],
+   "props": {
+    "mode": "dark"
+   }
+  },
+  {
+   "id": "n4",
+   "type": "action.shell.brightness@1",
+   "pos": [
+    1020,
+    100
+   ],
+   "props": {
+    "percent": 30
+   }
+  },
+  {
+   "id": "n5",
+   "type": "event.sun@1",
+   "pos": [
+    0,
+    420
+   ],
+   "props": {
+    "kind": "sunrise"
+   }
+  },
+  {
+   "id": "n6",
+   "type": "action.shell.night_filter@1",
+   "pos": [
+    340,
+    420
+   ],
+   "props": {
+    "enabled": false
+   }
+  },
+  {
+   "id": "n7",
+   "type": "action.shell.theme@1",
+   "pos": [
+    680,
+    420
+   ],
+   "props": {
+    "mode": "light"
+   }
+  },
+  {
+   "id": "n8",
+   "type": "action.shell.brightness@1",
+   "pos": [
+    1020,
+    420
+   ],
+   "props": {
+    "percent": 80
+   }
+  }
+ ],
+ "wires": [
+  {
+   "from": [
+    "n1",
+    "exec"
+   ],
+   "to": [
+    "n2",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n2",
+    "exec_out"
+   ],
+   "to": [
+    "n3",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n3",
+    "exec_out"
+   ],
+   "to": [
+    "n4",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n5",
+    "exec"
+   ],
+   "to": [
+    "n6",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n6",
+    "exec_out"
+   ],
+   "to": [
+    "n7",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n7",
+    "exec_out"
+   ],
+   "to": [
+    "n8",
+    "exec_in"
+   ]
+  }
+ ],
+ "variables": [],
+ "comments": [
+  {
+   "id": "c1",
+   "x": 0,
+   "y": -100,
+   "w": 300,
+   "h": 100,
+   "title": {
+    "ru": "Закат",
+    "en": "Sunset"
+   },
+   "text": {
+    "ru": "Событие «Солнце» считает закат для вашего города. Можно сдвинуть на минуты.",
+    "en": "The Sun event computes sunset for your place. You can shift it by minutes."
+   },
+   "color": "#f9e2af"
+  },
+  {
+   "id": "c2",
+   "x": 340,
+   "y": -100,
+   "w": 980,
+   "h": 70,
+   "title": {
+    "ru": "Три настройки",
+    "en": "Three settings"
+   },
+   "text": {
+    "ru": "Фильтр, тема и яркость идут друг за другом по проводу порядка.",
+    "en": "Filter, theme and brightness follow each other along the execution wire."
+   },
+   "color": "#f9e2af"
+  },
+  {
+   "id": "c3",
+   "x": 0,
+   "y": 300,
+   "w": 640,
+   "h": 70,
+   "title": {
+    "ru": "Утро",
+    "en": "Morning"
+   },
+   "text": {
+    "ru": "Второй путь запускается на рассвете и возвращает дневные значения.",
+    "en": "A second path runs at sunrise and restores the daytime values."
+   },
+   "color": "#f9e2af"
+  }
+ ],
+ "gallery": {
+  "name": {
+   "ru": "Вечер",
+   "en": "Evening"
+  },
+  "description": {
+   "ru": "На закате включает ночной фильтр, тёмную тему и уменьшает яркость; на рассвете возвращает всё.",
+   "en": "At sunset turns on the night filter, dark theme and lower brightness; at sunrise puts it all back."
+  },
+  "category": "screen",
+  "tags": {
+   "ru": [
+    "экран",
+    "тема"
+   ],
+   "en": [
+    "screen",
+    "theme"
+   ]
+  },
+  "packages": []
+ }
+}

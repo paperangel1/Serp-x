@@ -1,0 +1,231 @@
+{
+ "format": 1,
+ "id": "gallery-headphones",
+ "name": "Наушники",
+ "description": "При подключении переключает звук на наушники, ставит 40% и продолжает трек; при отключении всё возвращает.",
+ "enabled": false,
+ "nodes": [
+  {
+   "id": "n1",
+   "type": "event.audio.headphones_connected@1",
+   "pos": [
+    0,
+    100
+   ],
+   "props": {}
+  },
+  {
+   "id": "n2",
+   "type": "action.audio.set_output@1",
+   "pos": [
+    340,
+    100
+   ],
+   "props": {}
+  },
+  {
+   "id": "n3",
+   "type": "action.audio.set_volume@1",
+   "pos": [
+    680,
+    100
+   ],
+   "props": {
+    "volume": 40
+   }
+  },
+  {
+   "id": "n4",
+   "type": "action.media.control@1",
+   "pos": [
+    1020,
+    100
+   ],
+   "props": {
+    "command": "play"
+   }
+  },
+  {
+   "id": "n5",
+   "type": "event.audio.headphones_disconnected@1",
+   "pos": [
+    0,
+    420
+   ],
+   "props": {}
+  },
+  {
+   "id": "n6",
+   "type": "action.audio.set_output@1",
+   "pos": [
+    340,
+    420
+   ],
+   "props": {
+    "device": "speakers"
+   }
+  },
+  {
+   "id": "n7",
+   "type": "action.media.control@1",
+   "pos": [
+    680,
+    420
+   ],
+   "props": {
+    "command": "pause"
+   }
+  }
+ ],
+ "wires": [
+  {
+   "from": [
+    "n1",
+    "exec"
+   ],
+   "to": [
+    "n2",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n2",
+    "exec_out"
+   ],
+   "to": [
+    "n3",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n3",
+    "exec_out"
+   ],
+   "to": [
+    "n4",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n1",
+    "name"
+   ],
+   "to": [
+    "n2",
+    "device"
+   ]
+  },
+  {
+   "from": [
+    "n5",
+    "exec"
+   ],
+   "to": [
+    "n6",
+    "exec_in"
+   ]
+  },
+  {
+   "from": [
+    "n6",
+    "exec_out"
+   ],
+   "to": [
+    "n7",
+    "exec_in"
+   ]
+  }
+ ],
+ "variables": [],
+ "comments": [
+  {
+   "id": "c1",
+   "x": 0,
+   "y": -100,
+   "w": 300,
+   "h": 100,
+   "title": {
+    "ru": "Событие",
+    "en": "Event"
+   },
+   "text": {
+    "ru": "Срабатывает, когда подключаются наушники. Выход «Название» — данные для следующего узла.",
+    "en": "Fires when headphones connect. The «Name» output is data for the next node."
+   },
+   "color": "#f9e2af"
+  },
+  {
+   "id": "c2",
+   "x": 340,
+   "y": -100,
+   "w": 300,
+   "h": 100,
+   "title": {
+    "ru": "Данные по проводу",
+    "en": "Data wire"
+   },
+   "text": {
+    "ru": "Название устройства идёт по цветному проводу в вход «Устройство».",
+    "en": "The device name travels along a coloured wire into the «Device» input."
+   },
+   "color": "#f9e2af"
+  },
+  {
+   "id": "c3",
+   "x": 680,
+   "y": -100,
+   "w": 640,
+   "h": 100,
+   "title": {
+    "ru": "Громкость и музыка",
+    "en": "Volume and music"
+   },
+   "text": {
+    "ru": "40% и продолжение трека.",
+    "en": "40% and the track resumes."
+   },
+   "color": "#f9e2af"
+  },
+  {
+   "id": "c4",
+   "x": 0,
+   "y": 200,
+   "w": 640,
+   "h": 60,
+   "title": {
+    "ru": "Обратный путь",
+    "en": "The way back"
+   },
+   "text": {
+    "ru": "Второе событие вернёт звук на колонки и поставит паузу.",
+    "en": "A second event puts the sound back on the speakers and pauses."
+   },
+   "color": "#f9e2af"
+  }
+ ],
+ "gallery": {
+  "name": {
+   "ru": "Наушники",
+   "en": "Headphones"
+  },
+  "description": {
+   "ru": "При подключении переключает звук на наушники, ставит 40% и продолжает трек; при отключении всё возвращает.",
+   "en": "On connect switches the sound to the headphones, sets 40% and resumes the track; on disconnect it puts everything back."
+  },
+  "category": "sound",
+  "tags": {
+   "ru": [
+    "звук",
+    "медиа"
+   ],
+   "en": [
+    "sound",
+    "media"
+   ]
+  },
+  "packages": []
+ }
+}

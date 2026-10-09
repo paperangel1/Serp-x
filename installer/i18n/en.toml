@@ -1,0 +1,116 @@
+# Installer UI strings (English). Keys must match ru.toml.
+
+[app]
+title = "serp-x installer"
+version = "serp-installer {version} ({commit})"
+
+[cmd]
+install = "install or reinstall"
+repair = "check and repair the installation"
+modules = "change the set of modules"
+uninstall = "uninstall"
+backup = "backup: export or import"
+reconcile = "bring the installation in line with the manifests"
+"export-config" = "write current settings to my-setup.toml"
+
+[usage]
+head = "Usage: serp-installer [flags] <command>"
+commands = "Commands:"
+flags = "Flags:"
+
+[flag]
+config = "my-setup.toml file for a non-interactive install"
+restore = "backup archive to restore"
+yes = "do not ask questions"
+plain = "line-by-line output instead of the full-screen UI"
+payload = "directory or archive with the build files"
+lang = "language: ru or en"
+glyphs = "icon style: nerd, unicode or ascii"
+resume = "continue an interrupted install"
+dry_run = "only show the plan, change nothing"
+preset = "module set: full, minimal or custom"
+modules = "comma-separated module list (for custom)"
+gpu = "pretend a GPU was detected: nvidia, amd, intel"
+out = "file or directory for the result (backup, export-config)"
+reinstall = "treat this as a reinstall: back up my data first, redeploy everything, restore the data"
+remove_data = "on uninstall also remove my data (after a backup)"
+version = "print the version"
+
+[err]
+unknown_command = "Unknown command: {name}"
+unknown_preset = "Unknown preset: {name}"
+bad_flag = "Bad value for flag {flag}: {value}"
+run_failed = "The run did not finish: {error}"
+not_installed = "Nothing is installed (no installed.toml). Run install first."
+need_yes = "Uninstall without the screen needs --yes."
+need_modules = "Name the modules: --modules a,b (preset custom)."
+config = "my-setup.toml: {error}"
+payload = "Build files: {error}"
+preflight_blocked = "The system check found blocking problems; nothing was changed."
+backup_usage = "Usage: serp-installer backup export [--out DIR] | backup import FILE"
+backup_failed = "Backup failed: {error}"
+unknown_mode = "Mode \"{mode}\" is not supported here."
+load_manifests = "Could not load manifests: {error}"
+load_i18n = "Could not load strings: {error}"
+unknown_module = "Unknown module: {id}"
+conflict = "Modules \"{a}\" and \"{b}\" cannot be installed together."
+no_core_deselect = "The base module cannot be turned off."
+
+[msg]
+backup_written = "Backup written: {path}"
+backup_restored = "Files restored: {n}"
+backup_retype = "Enter these again (secrets are not part of a backup):"
+config_saved = "Settings saved: {path}"
+log_at = "Log: {path}"
+reboot_failed = "Could not reboot: {error}"
+hyprland_failed = "Could not start Hyprland: {error}"
+skipped_modules = "Skipped: {list}"
+later = "Come back to the modules: serp-installer modules"
+
+[plan]
+header = "Plan: {steps} steps, {modules} modules ({list})"
+step = "[{i}/{n}] {title}"
+sudo_mark = "needs sudo"
+auto_mark = "auto: needed for {by}"
+totals = "Download ≈ {mib} MiB, time ≈ {min} min"
+dry_run_done = "Dry run: nothing was changed."
+cascade = "Turning off \"{id}\" will also turn off: {list}"
+enhances = "\"{id}\" works better together with: {list}"
+
+[step]
+preflight = "System check"
+sudo = "Getting administrator rights"
+pkg_sync = "Updating system packages"
+keyring = "Refreshing pacman keys"
+aur_helper = "Installing the AUR helper (yay)"
+pkg_repo = "Repository packages ({n})"
+aur = "AUR package: {pkg}"
+binary = "Download and verify: {name}"
+deploy_code = "Copying the shell code"
+deploy_configs = "Setting up configs (old ones are backed up)"
+secrets = "Saving keys and passwords"
+restore = "Restoring from backup"
+services = "Enabling services"
+verify = "Final check"
+finish = "Done"
+
+[preset]
+full = "Full"
+minimal = "Minimal"
+custom = "Custom"
+
+[group]
+build = "serp-x build"
+upstream = "Shell (upstream)"
+system = "System"
+
+[uninstall]
+un_backup = "Backup before uninstall"
+un_module = "Removing module {id}"
+un_links = "Removing commands from ~/.local/bin"
+un_hotkeys = "Unhooking hotkeys from Hyprland"
+un_code = "Removing the shell code"
+un_state = "Removing the version and module list"
+un_data = "Removing your data"
+un_packages = "Removing packages added by the installer"
+un_record = "Install record"

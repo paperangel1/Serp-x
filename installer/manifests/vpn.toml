@@ -1,0 +1,75 @@
+id = "vpn"
+schema = 1
+order = 80
+group = "build"
+presets = ["full"]
+name = { ru = "VPN (Xray)", en = "VPN (Xray)" }
+desc = { ru = "Свой VPN на Xray, подписка Remnawave, режим «Россия напрямую».", en = "Own Xray VPN, Remnawave subscription, Russia-direct mode." }
+notes = { ru = "Служба ставится выключенной. Не включай одновременно с другим VPN.", en = "The service is installed disabled. Do not run together with another VPN." }
+requires = ["core"]
+# TODO(stage 3): check whether xvpn really reads these lists; drop them if not.
+packages = ["v2ray-geoip", "v2ray-domain-list-community"]
+root_files = [
+  "/etc/systemd/system/serp-xray.service", "/etc/systemd/system/serp-xray-unblock.service",
+  "/usr/local/lib/serpantinum-xray/serp-xray-helper", "/etc/polkit-1/rules.d/49-serpantinum-xray.rules",
+]
+user_files = ["~/.local/share/serpantinum-x/vpn", "~/.config/serpantinum/secrets/vpn_subscription"]
+systemd_system = ["serp-xray.service", "serp-xray-unblock.service"]
+estimate = { download_mib = 15, disk_mib = 40, install_s = 30 }
+
+# sha256 taken from the official .dgst of the release AND re-computed locally on
+# the downloaded archive (both equal). Re-verify when bumping the version.
+[[binary]]
+name = "xray"
+version = "26.3.27"
+url = "https://github.com/XTLS/Xray-core/releases/download/v26.3.27/Xray-linux-64.zip"
+sha256 = "23cd9af937744d97776ee35ecad4972cf4b2109d1e0fe6be9930467608f7c8ae"
+archive_member = "xray"
+dest = "/usr/local/bin/xray"
+mode = "0755"
+skip_if_pkg = ["xray", "xray-bin"]
+
+[uninstall]
+keep_data = ["~/.config/serpantinum/secrets/vpn_subscription"]
+
+[[config]]
+key = "vpn.subscription"
+kind = "secret"
+skippable = true
+store = "secrets/vpn_subscription"
+validate = "^https://"
+label = { ru = "Ссылка на подписку", en = "Subscription URL" }
+
+[[config]]
+key = "vpn.mode"
+kind = "choice"
+choices = ["ru-direct", "all"]
+default = "ru-direct"
+store = "settings:vpn.mode"
+label = { ru = "Режим VPN", en = "VPN mode" }
+
+[[config]]
+key = "vpn.killswitch"
+kind = "bool"
+default = false
+store = "settings:vpn.killswitch"
+label = { ru = "Блокировать сеть при обрыве VPN", en = "Block the network if the VPN drops" }
+
+[[steps]]
+id = "vpn.root"
+kind = "root"
+title = { ru = "VPN: системная служба (выключена)", en = "VPN: system service (disabled)" }
+# x_vpn.sh refuses to write the root layer without XVPN_ALLOW_ROOT_INSTALL=1 and elevates itself
+# (`sudo -n install`), so it runs as the user. It has no uninstall command: the generic module
+# removal deletes root_files and disables the units.
+args = { cmd = ["bash", "@SRC@/scripts/custom/vpn/x_vpn.sh", "install", "--apply"], self_sudo = "true", setenv = ["XVPN_ALLOW_ROOT_INSTALL=1"] }
+check = ["bash", "@SRC@/scripts/custom/vpn/x_vpn.sh", "install", "--check"]
+estimate_s = 5
+
+[[steps]]
+id = "vpn.geo"
+kind = "script"
+title = { ru = "VPN: гео-списки", en = "VPN: geo lists" }
+args = { cmd = ["bash", "@SRC@/scripts/custom/vpn/x_vpn.sh", "geo-update"] }
+after = ["vpn.root"]
+estimate_s = 15

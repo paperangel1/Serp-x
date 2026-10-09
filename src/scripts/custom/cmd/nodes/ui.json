@@ -1,0 +1,24 @@
+{
+  "nodes": [
+    {
+      "id": "ui.show_result", "version": 1, "category": "ui", "flow": "latent", "icon": "window",
+      "name": {"ru": "Показать результат", "en": "Show result"},
+      "description": {
+        "ru": "Показывает значение в окне оболочки. Если оболочка не отвечает за 3 секунды, значение показывается обычным уведомлением.",
+        "en": "Shows a value in a shell window. If the shell does not answer within 3 seconds, the value is shown as a plain notification."
+      },
+      "example": {
+        "ru": "Вывод команды «date» → показать результат.",
+        "en": "Output of `date` → show result."
+      },
+      "inputs": [
+        {"id": "exec_in", "type": "exec"},
+        {"id": "title", "type": "text", "default": "", "label": {"ru": "Заголовок", "en": "Title"}},
+        {"id": "value", "type": "any", "required": true, "label": {"ru": "Значение", "en": "Value"}}
+      ],
+      "outputs": [{"id": "exec_out", "type": "exec", "label": {"ru": "Готово", "en": "Done"}}],
+      "executor": {"kind": "py", "ref": "show_result"},
+      "capabilities": [], "timeout_s": 10, "changes_state": false, "side_effects": true
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Name=Команды: быстрый запуск
+Name[en]=Commands: quick run
+GenericName=Палитра команд Serpantinum
+GenericName[en]=Serpantinum command palette
+Comment=Запустить команду по имени
+Comment[en]=Run a command by name
+Exec="@HOME@/.local/bin/serpantinum" ipc call xcmd palette
+Icon=system-search
+Terminal=false
+Categories=Utility;
+Keywords=команды;запуск;палитра;commands;palette;run;serpantinum;
+StartupNotify=false

@@ -1,0 +1,6 @@
+#!/bin/sh
+echo "Сервер будет перезагружен через несколько секунд."
+if command -v systemd-run >/dev/null 2>&1; then
+    systemd-run --on-active=4 --unit=serp-reboot systemctl reboot >/dev/null 2>&1 && exit 0
+fi
+( sleep 4; /sbin/reboot ) >/dev/null 2>&1 &

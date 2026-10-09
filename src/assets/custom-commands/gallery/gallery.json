@@ -1,0 +1,221 @@
+{
+ "format": 1,
+ "gallery": [
+  {
+   "id": "away",
+   "file": "away.cmd.json",
+   "category": "sound",
+   "ready": true,
+   "missing": [],
+   "packages": [],
+   "capabilities": [
+    "audio.mic",
+    "media.control",
+    "trigger.session"
+   ],
+   "events": [
+    "event.lock",
+    "event.unlock"
+   ],
+   "nodes": 6
+  },
+  {
+   "id": "color-clipboard",
+   "file": "color-clipboard.cmd.json",
+   "category": "screen",
+   "ready": true,
+   "missing": [],
+   "packages": [],
+   "capabilities": [
+    "trigger.clipboard"
+   ],
+   "events": [
+    "event.clipboard.color"
+   ],
+   "nodes": 3
+  },
+  {
+   "id": "converter",
+   "file": "converter.cmd.json",
+   "category": "files",
+   "ready": true,
+   "missing": [],
+   "packages": [],
+   "capabilities": [
+    "file.write",
+    "image.convert",
+    "notify.show",
+    "read.selection"
+   ],
+   "events": [],
+   "nodes": 6
+  },
+  {
+   "id": "evening",
+   "file": "evening.cmd.json",
+   "category": "screen",
+   "ready": true,
+   "missing": [],
+   "packages": [],
+   "capabilities": [
+    "screen.control",
+    "shell.theme",
+    "trigger.time"
+   ],
+   "events": [
+    "event.sun",
+    "event.sun"
+   ],
+   "nodes": 8
+  },
+  {
+   "id": "explain",
+   "file": "explain.cmd.json",
+   "category": "gemini",
+   "ready": true,
+   "missing": [],
+   "packages": [],
+   "capabilities": [
+    "net.gemini",
+    "read.selection"
+   ],
+   "events": [],
+   "nodes": 4
+  },
+  {
+   "id": "focus-25",
+   "file": "focus-25.cmd.json",
+   "category": "windows",
+   "ready": true,
+   "missing": [],
+   "packages": [],
+   "capabilities": [
+    "notify.show",
+    "shell.dnd"
+   ],
+   "events": [],
+   "nodes": 4
+  },
+  {
+   "id": "headphones",
+   "file": "headphones.cmd.json",
+   "category": "sound",
+   "ready": true,
+   "missing": [],
+   "packages": [],
+   "capabilities": [
+    "audio.output",
+    "audio.volume",
+    "media.control",
+    "trigger.audio"
+   ],
+   "events": [
+    "event.audio.headphones_connected",
+    "event.audio.headphones_disconnected"
+   ],
+   "nodes": 7
+  },
+  {
+   "id": "node-down",
+   "file": "node-down.cmd.json",
+   "category": "servers",
+   "ready": true,
+   "missing": [],
+   "packages": [],
+   "capabilities": [
+    "notify.show",
+    "servers.run",
+    "trigger.servers"
+   ],
+   "events": [
+    "event.server.unreachable"
+   ],
+   "nodes": 7
+  },
+  {
+   "id": "second-monitor",
+   "file": "second-monitor.cmd.json",
+   "category": "windows",
+   "ready": true,
+   "missing": [],
+   "packages": [],
+   "capabilities": [
+    "notify.show",
+    "shell.wallpaper",
+    "trigger.windows",
+    "window.manage"
+   ],
+   "events": [
+    "event.monitor_added"
+   ],
+   "nodes": 4
+  },
+  {
+   "id": "sort-downloads",
+   "file": "sort-downloads.cmd.json",
+   "category": "files",
+   "ready": true,
+   "missing": [],
+   "packages": [],
+   "capabilities": [
+    "file.write",
+    "trigger.folder"
+   ],
+   "events": [
+    "event.folder.new_file"
+   ],
+   "nodes": 11
+  },
+  {
+   "id": "video-link",
+   "file": "video-link.cmd.json",
+   "category": "files",
+   "ready": true,
+   "missing": [],
+   "packages": [
+    "yt-dlp"
+   ],
+   "capabilities": [
+    "exec.script",
+    "trigger.clipboard"
+   ],
+   "events": [
+    "event.clipboard.link"
+   ],
+   "nodes": 10
+  },
+  {
+   "id": "wifi-vpn",
+   "file": "wifi-vpn.cmd.json",
+   "category": "servers",
+   "ready": true,
+   "missing": [],
+   "packages": [],
+   "capabilities": [
+    "trigger.network",
+    "vpn.control"
+   ],
+   "events": [
+    "event.wifi.connected",
+    "event.wifi.disconnected"
+   ],
+   "nodes": 8
+  },
+  {
+   "id": "work",
+   "file": "work.cmd.json",
+   "category": "windows",
+   "ready": true,
+   "missing": [],
+   "packages": [],
+   "capabilities": [
+    "media.control",
+    "notify.show",
+    "shell.dnd",
+    "window.manage"
+   ],
+   "events": [],
+   "nodes": 7
+  }
+ ]
+}

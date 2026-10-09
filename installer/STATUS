@@ -1,0 +1,256 @@
+serp-installer status
+=====================
+
+Stages 0-8 DONE (skeleton/manifests, journal/fsx, steps/engine, preflight/plain/config/backup/eta,
+TUI + CLI wiring, bootstrap/build.sh, shell integration, QEMU stand).
+QEMU scenarios 1-9: all PASS.
+
+Remaining before a public release
+- release signing key and release/download URLs for the bootstrap scripts
+- shellcheck pass over the shell scripts (bootstrap, tests/vm)
+
+Stage 1 contents
+- go.mod (module serpx/installer, go 1.27, toolchain go1.27.1), vendor/ committed.
+- cmd/serp-installer: all flags and sub-commands parse. Only
+  `install --dry-run` works (prints the plan, exit 0); other modes exit 3
+  ("not implemented"); usage errors exit 2; real failures exit 1.
+  The plan skeleton in cmd/serp-installer/plan.go is a placeholder for
+  internal/plan (stage 3).
+- internal/manifest: schema 1, strict TOML decode, validation, canonical order.
+- internal/resolve: requires closure, auto reasons, conflicts, enhances hints,
+  CascadeOff on deselect, core not removable, presets (full/minimal/custom).
+- internal/i18n: ru/en catalogs, completeness + placeholder check, language
+  detection (flag > LC_ALL > LC_MESSAGES > LANG).
+- internal/xlog: xlog.py-compatible lines, 0700/0600, rotation 512 KB x 3,
+  redaction of registered secrets and patterns.
+- manifests/*.toml: 13 modules. src/scripts/custom/xlog/xlog.py knows
+  the "installer" module.
+- Tests: GOFLAGS=-mod=vendor go test ./... -count=1  (also -race, go vet).
+
+Stage 2 contents
+- internal/journal: JSONL, crc32 of the line without the crc field, single
+  write + fsync, torn/bad-CRC tail truncated on Open (Repair), keys that look
+  like secrets (key/token/secret/pass/pwd/uuid) are written as "set",
+  WriteAtomic/WriteJSON, NeedsResume (plan.json and no finish event).
+- internal/fsx: path allow-list (symlink-aware), backup of foreign files to
+  backups/<run>/files/<abs>, owned-files.txt, per-tag Rollback (idempotent,
+  change log survives restart in backups/<run>/changes.jsonl), Write/Symlink/Remove.
+- internal/run: Runner, ExecRunner (line streaming, redact hook, sudo -n with
+  Whitelist), FakeRunner (records calls, canned replies), KeepAlive (sudo -n -v).
+- Tests: kill -9 of a child writing 1000 records, torn/CRC cases, etc.
+
+Stage 3 contents
+- internal/pacman: parsers (-Sp sizes, -T missing, install/download progress,
+  db.lck state, keyring age, Required By) on recorded fixtures.
+- internal/steps: Step contract (Estimate() has no eta.Model yet - stage 4),
+  Env (temp HOME / fake rootfs friendly), ports of upstream deps/deploy/config/
+  service/migrate/state/version: multilib, bootstrap tools, quickshell-git
+  cleanup, keyring, -Syyu (fresh/legacy only), ONE `pacman -S --needed`
+  transaction (non-repo packages fall back to yay/paru as upstream), AUR
+  packages, yay-bin only without yay/paru, pinned binary (download -> sha256
+  -> zip member -> `sudo install`), fonts, mirror deploy (bin/ src/), configs
+  (kitty/cava/fastfetch + compositors with the upstream *_backup dir),
+  settings.json merge (jq `*` in Go), wallpapers, SDDM, services for
+  systemd/openrc/dinit/runit/s6, legacy migration, version state, plus the
+  generic kinds script/root/files/link/template/hypr/secret/download/restore.
+  Kind `builtin` was added to the manifest schema (step id -> Go code).
+- internal/plan: skeleton of 4.2 + `core.pre.*` before the packages, core.state
+  after services (upstream writes the version last), modes-mode partial plans
+  (Only), plan.json doc (secrets only as "set").
+- internal/engine: Check/Apply/Verify with journal, retry/skip/abort, module
+  rollback + cascade to dependents, core cannot be skipped, resume, repair
+  (recheck all), reconcile, modules (diff with installed.toml), uninstall
+  (data kept unless RemoveData + backup + confirm), timings.json, installed.toml.
+- run.Whitelist grew: ln -s into root_files, rm -r only for RootTrees, RootGlobs,
+  init managers (rc-update, rc-service, dinitctl, s6-rc-bundle-update).
+  fsx got Backup() and Own().
+- Tests: internal/steps/stepstest = temp HOME + fake root + pacman/systemd
+  simulator (nothing real runs); golden command sequence of the Full preset
+  (internal/engine/testdata/install-full.golden, UPDATE_GOLDEN=1);
+  upstream drift guard (internal/steps/testdata/upstream.sha256, covers
+  install/install.sh and install/modules/*.sh; UPDATE_UPSTREAM_HASHES=1 after
+  reviewing the port).
+- CLI: `install --dry-run` now prints the plan from internal/plan (33 steps
+  for Full). The non-dry modes are still exit 3: wiring them needs the plain
+  reporter / TUI (stages 4-5); the engine API is engine.Install/Repair/Modules/
+  Uninstall/Reconcile with engine.Setup.
+
+Deviations from upstream (deliberate)
+- deploy: mirror instead of rm -rf; only files from the previous deploy list
+  are removed, foreign files stay; a foreign file that must be replaced is
+  saved by fsx first. The git-diff incremental branch is gone (payload is not
+  a git repo); an unchanged file is simply not rewritten. __pycache__ skipped.
+- compositor config dir: upstream deleted every file not in the source; we do
+  the same (after the *_backup copy) but keep owned files and files of
+  selected modules (user_keybinds.lua).
+- bootstrap no longer installs fzf/pciutils (they served the bash UI only).
+- cp errors in the compositor backup stop the run (upstream ignored them).
+- root file writes go through `sudo install` (whitelisted), not tee/cp/sed.
+- core.wallpapers (3 random pictures, a ~300 MiB clone) is opt-in
+  (Options.WallpaperSample); the wallpapers module is the full pack.
+- no telemetry anywhere.
+
+Decisions
+- Charm line: v2 (charm.land/bubbletea/v2 etc., v2.0.10 is stable and
+  downloadable) - ONE line for all Charm packages. Not added yet: stage 1 is
+  stdlib + BurntSushi/toml only; Charm arrives with stage 5 (go mod tidy would
+  drop unused requirements anyway).
+- Added manifest fields beyond plan 3.1: `order` (canonical module order) and
+  `presets` (data-driven presets). `steps.args` stays free-form.
+- Xray v26.3.27 sha256 pinned (23cd9af9...c8ae): from the release .dgst AND
+  recomputed locally on the downloaded zip (equal). Archive member "xray"
+  confirmed present.
+- wl-gammarelay-rs: GitHub release v1.0.1 has no binary assets -> stays AUR.
+
+Unverified / open (stage 3)
+- Nothing ran against real pacman/sudo/systemctl/makepkg: only the simulator.
+  Real pacman output formats (progress with a pty, `-Sp` print-format) are
+  from memory + fixtures, not captured from a live system.
+- The sddm module uses the upstream theme/drop-in names (material-you,
+  10-material-you.conf), not the `serpantinum` names of the stage-1 manifest.
+- nvidia.hypr writes hl.env() lines into config/serp_nvidia.lua and prepends a
+  require to hyprland.lua; the hl.env syntax is copied from env.lua, not run.
+- Iosevka font download is unpinned (as upstream).
+- Uninstall: hyprland/kitty/cava configs and packages stay by default.
+- Preflight/sudo steps are hooks (Env.Hooks); the real preflight is stage 4.
+- Stage-2 leftovers still open: no pty, sudo never really executed.
+- Stage 2: no pty mode (needs creack/pty, a new dependency - coordinator must
+  approve; stdlib pipes only for now). Real `sudo` was never executed
+  (whitelist tested, keep-alive only with FakeRunner). Chown on rollback is
+  best effort and untested as root. fsx does not track mkdir'ed directories.
+  The engine "panic on write outside paths" is fsx.ErrNotAllowed; the panic
+  itself is for stage 3. Whitelist install/rm rules are my interpretation of
+  plan 4.3 and need a look when the real root steps are written.
+- Step kinds/args/check commands in manifests are specifications for stage 3;
+  nothing executes them yet. hotkeys.require has no `check` (the
+  `x_keybinds.sh ensure-require --check` flag does not exist - verify in stage 3).
+- Core package list is upstream REQUIRED_PKGS (63, incl. no hyprland) + curl lua
+  zstd kbd; whether Hyprland itself must be added is not decided here.
+- vpn: v2ray-geoip / v2ray-domain-list-community may be unnecessary (TODO in
+  the manifest). sddm theme source path `@SRC@/sddm` and wallpapers
+  source are placeholders until stage 3 reads upstream deploy.sh.
+- Download/time estimates are the plan's guesses (VM measurement is stage 8).
+
+Stage 4 contents
+- internal/preflight: all I1 checks over injected inputs (os-release, sysfs,
+  meminfo, Statfs, Runner, NetProbe); Report{Checks,Facts}; DecideConsole /
+  ApplyConsole (TERM=linux -> ascii, 16 colors, setfont cyr-sun16 or en);
+  HTTPProbe (HEAD + 1 MiB speed sample). Messages ru/en live in the package.
+- internal/config: my-setup.toml strict parse (errors with line numbers),
+  secrets only as file:/env: refs (literal values refused, never echoed),
+  ResolveSecrets, Marshal (export-config writes empty secrets).
+- internal/backup: tar.zst export/import (zstd binary via Compressor), manifest
+  with sha256, allow-listed files, settings.json filtered (general.location and
+  secret-looking keys), hostile-archive checks, "enter again" list, AutoBackup
+  with local secrets.tar (700/600, keep 2), RestoreSecretsIfEmpty.
+- internal/eta: EWMA speed, estimators, Smoother (25 %/s), Format, Tracker over
+  engine events, timings.json.
+- internal/plain: Sink interface (engine reports to it; TUI will too), Printer
+  with on_error policy, --yes confirm, preflight/retype output.
+- Not wired into cmd/serp-installer yet (needs stage 3 engine).
+
+Stage 5 contents
+- Deps (v2 line, vendored): charm.land/bubbletea/v2 v2.1.0, lipgloss/v2 v2.0.6,
+  bubbles/v2 v2.2.1 (textinput as editor, viewport for the log), harmonica
+  v0.2.0 (spring for the bar and the screen slide), x/ansi, x/term,
+  x/exp/teatest/v2 + x/exp/golden (tests only). go.mod "go 1.27" unchanged.
+- internal/tui: screens I1..I11 (check, mode, modules, wizard incl. the SSH
+  step, summary, progress + log + error modal + quit confirm, finish), ru/en
+  (F2 at any time), glyph modes nerd / unicode / ascii (ascii = Linux VT:
+  square CP437 corners, 16 colours, VT palette \e]P..., symbols outside the
+  VT font are mapped to ASCII). Logic is in the model (Update and small pure
+  helpers), View only draws. The engine is reached through tui.Backend; the
+  progress events come through one session (channel) and the error modal
+  blocks the engine goroutine in Handler.Decide until the user answers.
+  Secrets: masked fields never render their value; the typed values live only
+  in the field editors and in the Request handed to the backend.
+- internal/tui FakeBackend (scripted run, fail-N-times per step) is used by the
+  tests; nothing in tui touches the system.
+- Tests: golden screens (strip ANSI) for 10 screens x {ru,en} x {nerd,ascii} at
+  100x32 with an injected clock (UPDATE: go test ./internal/tui -run TestScreens
+  -update); logic tests of the model; teatest scenarios (Full preset through the
+  wizard, error -> skip module, abort of a required module, retry twice,
+  ctrl+c) with a probe model that records every frame; a check that the fake
+  secrets never appear in any frame nor in the program output; string catalog
+  completeness (ru/en verbs, every key used exists).
+- internal/app: Service implements tui.Backend and the line-by-line runs:
+  environment (Env, Setup, whitelist arming, sudo keep-alive), Plan for every
+  mode (engine.PlanUninstall was added), Run for install / repair / modules /
+  uninstall / reconcile with the engine events turned into Handler calls, a
+  per-run log (0600, redacted) at ~/.local/state/serpantinum-installer/logs/
+  <run>.log, reinstall = auto backup + restore hook (backup.Import +
+  RestoreSecretsIfEmpty), backup export/import, export-config, SSH key for the
+  servers widget (ssh-keygen ed25519, exact authorized_keys line), payload
+  search / .tar.zst unpack, my-setup.toml <-> Request mapping.
+  internal/app/apptest builds a simulated machine (Sim runner, fake root, fake
+  downloads, preflight inputs) for the tests of app and the CLI.
+- cmd/serp-installer: install / repair / modules / uninstall / reconcile /
+  backup export|import / export-config are wired. Exit codes: 0 ok, 1 failure
+  (run failed, nothing installed, preflight blocked, payload), 2 usage / bad
+  config. New flags: --out, --remove-data. The exit-code-3 stubs are gone.
+  Full screen UI when stdin and stdout are terminals, TERM is not dumb and none
+  of --plain / --yes / --config is given; otherwise lines (plain.Printer).
+  The preflight (and the sudo password prompt) runs on the normal screen before
+  the program starts. Final action (reboot / Hyprland) goes through finishHook.
+- Mockup deviations (deliberate): the Gemini page has the proxy as a text field
+  inside the key box (the mockup has a separate radio box); the token/panel
+  check ("connected: 3 nodes") and the Gemini test request are not done (format
+  check only, a note says the request test comes after the install); step
+  descriptions in the "Now" panel are generic; the logo is a 3-row box-drawing
+  font, not the thin outlined letters.
+
+Unverified / open (stage 5)
+- Never run in a real terminal or the Linux console: no pty/tmux session was
+  driven here (the preflight would call a real sudo). Rendering is verified
+  through the model (goldens), teatest and bubbletea's own renderer only.
+- Nerd caps U+E0B6/E0B4 need a Nerd Font; they are only checked as strings.
+- Real pacman progress is not parsed into Detail (download MiB / speed): the
+  panel shows it only when a backend sends Detail; the TUI parses the file
+  name from pacman lines. ETA uses estimates + eta.Tracker, not live bytes.
+- "Resume" asks for the modules and secrets again (secrets are not in the
+  journal) and then skips the steps the journal marks done.
+- Modules mode: removing modules asks nothing in the TUI (packages are kept).
+- The payload as a .tar.zst needs the zstd binary; not exercised with the real
+  binary.
+- Stage 6 (bootstrap scripts) was built in parallel and is not touched here.
+
+Stage 8: how to run and watch the VM stand
+- Images live OUTSIDE git: tests/vm/{images,state,out} are symlinks to ~/vmstand/
+  (/tmp is a 7.8G tmpfs, qcow2 images would eat RAM).
+- Build the base image once (~2 min):   tests/vm/vm.sh base
+- Boot an overlay:                      tests/vm/vm.sh up NAME ; tests/vm/vm.sh ssh ; tests/vm/vm.sh down
+- WATCH live in a terminal (kitty):     tmux attach -t serp-vm
+  (created by `tests/vm/vm.sh watch`, which the scenarios call; window "tui" mirrors the
+  tmux session "tui" inside the VM that the TUI scenarios drive; ctrl-b n = serial console log)
+- Real QEMU window instead of headless: VM_DISPLAY=gtk tests/vm/vm.sh up NAME   (or sdl)
+- Scenarios: tests/vm/scenarios/NN-*.sh (each prints PASS/FAIL, logs in tests/vm/out/NN/).
+
+Stage 8 progress (scenarios)
+- PASS: 01–09 (06 and 09 were run separately).
+- Fixed on the way: --reinstall flag (plain/config mode did no auto backup before; only the TUI
+  "reinstall" did); backup keeps settings.json bytes when nothing is stripped; the "enter again"
+  secrets list is now shown after a restore (plain output + TUI finish screen; it was only logged);
+  uninstall no longer needs a payload; uninstall removes the emptied /usr/local/lib/serpantinum-xray
+  (rmdir added to the root whitelist, only private serpantinum*/serp-* parents of root_files).
+- Stand notes: scenarios 5/7 compare settings.json without general.location (stripped from backups
+  by design; location.sh refreshes updated_at on reinstall). Upstream location.sh leaves a background
+  weather.sh that can rewrite settings.json after a data wipe (scenario 8 waits for it; the installer
+  does not). tests/vm/out/<scenario>/dist is per scenario (a shared dist truncated an scp during a
+  parallel run). Scenario 1 failed once on "yay wl-gammarelay-rs: transfer too slow" (network), passed on rerun.
+
+- Parallel runs: set VM_SSH_PORT / VM_HTTP_PORT / VM_TMUX (watch session name) / VM_NAME apart;
+  scenarios name their overlay after themselves (images/NN-name.qcow2), so different scenarios do not collide.
+
+Stage 8, scenarios 6 and 9
+- 06-over-upstream: real upstream a0d8292 (2.2.4) installed in the VM (git archive + telemetry patch;
+  driver skips the tty menu, picks hyprland, forces INSTALL_STATE=fresh because upstream's own telemetry-id
+  helper writes the version file while sourcing and makes a clean box look "current"). Found and fixed:
+  install over upstream did not back up and skipped the config redeploy (upstream "current" = update).
+  Now Service.adoptUpstream treats it as --reinstall (auto backup, redeploy, restore); test
+  TestInstallOverUpstreamBacksUp. Unverified: --resume of an interrupted conversion (the backup is made
+  only on the first run; restore on resume has no archive), TUI path (same Service code, not driven).
+- 09-errors: the old "no network" step used QMP set_link on a NIC id that does not exist, so it never went
+  offline (and silently installed base-devel). Now the default route is removed inside the VM. The offline
+  message said only "Cannot reach: ..."; now "No internet connection: cannot reach ... Check the network and
+  try again". Root run: refused at the system check. Low space: refused ("Not enough disk space: /: 592/5120 MiB").
+  A root run still creates ~/.local/state/serpantinum-installer under /root (log dir only).

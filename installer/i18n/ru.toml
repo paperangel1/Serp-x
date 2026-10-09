@@ -1,0 +1,116 @@
+# Строки установщика (русский). Ключи должны совпадать с en.toml.
+
+[app]
+title = "Установщик serp-x"
+version = "serp-installer {version} ({commit})"
+
+[cmd]
+install = "установить или переустановить"
+repair = "проверить и починить установку"
+modules = "изменить набор модулей"
+uninstall = "удалить"
+backup = "резервная копия: export или import"
+reconcile = "привести установку в соответствие с манифестами"
+"export-config" = "записать текущие настройки в my-setup.toml"
+
+[usage]
+head = "Использование: serp-installer [флаги] <команда>"
+commands = "Команды:"
+flags = "Флаги:"
+
+[flag]
+config = "файл my-setup.toml для неинтерактивной установки"
+restore = "архив резервной копии для восстановления"
+yes = "не задавать вопросов"
+plain = "построчный вывод без полноэкранного интерфейса"
+payload = "каталог или архив с файлами сборки"
+lang = "язык: ru или en"
+glyphs = "вид значков: nerd, unicode или ascii"
+resume = "продолжить прерванную установку"
+dry_run = "только показать план, ничего не менять"
+preset = "набор модулей: full, minimal или custom"
+modules = "список модулей через запятую (для custom)"
+gpu = "считать, что найдена видеокарта: nvidia, amd, intel"
+out = "файл или каталог для результата (backup, export-config)"
+reinstall = "считать это переустановкой: сначала бэкап данных, полная перезаливка, восстановление данных"
+remove_data = "при удалении удалить и мои данные (после бэкапа)"
+version = "показать версию"
+
+[err]
+unknown_command = "Неизвестная команда: {name}"
+unknown_preset = "Неизвестный набор: {name}"
+bad_flag = "Неверное значение флага {flag}: {value}"
+run_failed = "Запуск не завершён: {error}"
+not_installed = "Ничего не установлено (нет installed.toml). Сначала выполните install."
+need_yes = "Удаление без экрана требует --yes."
+need_modules = "Укажите модули: --modules a,b (набор custom)."
+config = "my-setup.toml: {error}"
+payload = "Файлы сборки: {error}"
+preflight_blocked = "Проверка системы нашла блокирующие проблемы, ничего не изменено."
+backup_usage = "Использование: serp-installer backup export [--out КАТАЛОГ] | backup import ФАЙЛ"
+backup_failed = "Бэкап не удался: {error}"
+unknown_mode = "Режим «{mode}» здесь не поддерживается."
+load_manifests = "Не удалось загрузить манифесты: {error}"
+load_i18n = "Не удалось загрузить строки: {error}"
+unknown_module = "Неизвестный модуль: {id}"
+conflict = "Модули «{a}» и «{b}» нельзя ставить вместе."
+no_core_deselect = "Базовый модуль нельзя отключить."
+
+[msg]
+backup_written = "Бэкап записан: {path}"
+backup_restored = "Восстановлено файлов: {n}"
+backup_retype = "Введите заново (секреты не входят в бэкап):"
+config_saved = "Настройки записаны: {path}"
+log_at = "Лог: {path}"
+reboot_failed = "Не удалось перезагрузить: {error}"
+hyprland_failed = "Не удалось запустить Hyprland: {error}"
+skipped_modules = "Пропущено: {list}"
+later = "Вернуться к модулям: serp-installer modules"
+
+[plan]
+header = "План: шагов {steps}, модулей {modules} ({list})"
+step = "[{i}/{n}] {title}"
+sudo_mark = "нужен sudo"
+auto_mark = "авто: нужен для {by}"
+totals = "Скачать ≈ {mib} МиБ, время ≈ {min} мин"
+dry_run_done = "Пробный запуск: ничего не изменено."
+cascade = "Вместе с «{id}» отключится: {list}"
+enhances = "«{id}» лучше работает вместе с: {list}"
+
+[step]
+preflight = "Проверка системы"
+sudo = "Получение прав администратора"
+pkg_sync = "Обновление системных пакетов"
+keyring = "Обновление ключей pacman"
+aur_helper = "Установка помощника AUR (yay)"
+pkg_repo = "Программы из репозитория ({n} шт.)"
+aur = "Программа из AUR: {pkg}"
+binary = "Загрузка и проверка: {name}"
+deploy_code = "Копирование кода оболочки"
+deploy_configs = "Настройка конфигов (с копией старых)"
+secrets = "Сохранение ключей и паролей"
+restore = "Восстановление из резервной копии"
+services = "Включение служб"
+verify = "Итоговая проверка"
+finish = "Готово"
+
+[preset]
+full = "Полный"
+minimal = "Минимальный"
+custom = "Свой"
+
+[group]
+build = "Сборка serp-x"
+upstream = "Оболочка (upstream)"
+system = "Система"
+
+[uninstall]
+un_backup = "Резервная копия перед удалением"
+un_module = "Удаление модуля {id}"
+un_links = "Удаление команд из ~/.local/bin"
+un_hotkeys = "Отключение горячих клавиш от Hyprland"
+un_code = "Удаление кода оболочки"
+un_state = "Удаление версии и списка модулей"
+un_data = "Удаление ваших данных"
+un_packages = "Удаление пакетов установщика"
+un_record = "Запись об установке"

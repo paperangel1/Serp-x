@@ -1,0 +1,16 @@
+{
+  "format": 1,
+  "id": "example-hello",
+  "name": "Привет",
+  "description": "Самая простая команда: показывает уведомление.",
+  "enabled": true,
+  "nodes": [
+    {"id": "n1", "type": "event.manual@1", "pos": [40, 40], "props": {}},
+    {"id": "n2", "type": "action.notify@1", "pos": [320, 40], "props": {"title": "Привет", "body": "Это первая команда Serpantinum"}}
+  ],
+  "wires": [
+    {"from": ["n1", "exec"], "to": ["n2", "exec_in"]}
+  ],
+  "capabilities": ["notify.show"],
+  "approved_capabilities": ["notify.show"]
+}

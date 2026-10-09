@@ -1,0 +1,249 @@
+{
+  "format": 1,
+  "id": "example-shopping-list",
+  "name": "Список покупок",
+  "description": "Перебирает список и спрашивает по каждому пункту «Купили?». Считает «да», а если окно закрыть — прерывает цикл.",
+  "enabled": true,
+  "variables": [
+    {
+      "name": "bought",
+      "type": "int",
+      "initial": 0
+    }
+  ],
+  "nodes": [
+    {
+      "id": "n1",
+      "type": "event.manual@1",
+      "pos": [40, 40],
+      "props": {}
+    },
+    {
+      "id": "n2",
+      "type": "data.split@1",
+      "pos": [330, 40],
+      "props": {
+        "text": "молоко,хлеб,сыр,яйца",
+        "sep": ","
+      }
+    },
+    {
+      "id": "n3",
+      "type": "logic.foreach@1",
+      "pos": [700, 40],
+      "props": {}
+    },
+    {
+      "id": "n4",
+      "type": "data.format@1",
+      "pos": [1070, 40],
+      "props": {
+        "template": "Купили: {a}?"
+      }
+    },
+    {
+      "id": "n5",
+      "type": "logic.ask@1",
+      "pos": [1440, 40],
+      "props": {
+        "mode": "confirm",
+        "timeout": 120
+      }
+    },
+    {
+      "id": "n6",
+      "type": "logic.if@1",
+      "pos": [1810, 40],
+      "props": {}
+    },
+    {
+      "id": "n7",
+      "type": "logic.increment@1",
+      "pos": [2180, 40],
+      "props": {
+        "name": "bought",
+        "by": 1
+      }
+    },
+    {
+      "id": "n8",
+      "type": "logic.break@1",
+      "pos": [1810, 260],
+      "props": {}
+    },
+    {
+      "id": "n9",
+      "type": "data.list_length@1",
+      "pos": [700, 330],
+      "props": {}
+    },
+    {
+      "id": "n10",
+      "type": "data.format@1",
+      "pos": [1070, 330],
+      "props": {
+        "template": "Куплено {a} из {b}"
+      }
+    },
+    {
+      "id": "n11",
+      "type": "data.get_var@1",
+      "pos": [700, 520],
+      "props": {
+        "name": "bought"
+      }
+    },
+    {
+      "id": "n12",
+      "type": "ui.show_result@1",
+      "pos": [1440, 420],
+      "props": {
+        "title": "Итог покупок"
+      }
+    }
+  ],
+  "wires": [
+    {
+      "from": [
+        "n1",
+        "exec"
+      ],
+      "to": [
+        "n3",
+        "exec_in"
+      ]
+    },
+    {
+      "from": [
+        "n2",
+        "list"
+      ],
+      "to": [
+        "n3",
+        "list"
+      ]
+    },
+    {
+      "from": [
+        "n3",
+        "body"
+      ],
+      "to": [
+        "n5",
+        "exec_in"
+      ]
+    },
+    {
+      "from": [
+        "n3",
+        "item"
+      ],
+      "to": [
+        "n4",
+        "a"
+      ]
+    },
+    {
+      "from": [
+        "n4",
+        "text"
+      ],
+      "to": [
+        "n5",
+        "title"
+      ]
+    },
+    {
+      "from": [
+        "n5",
+        "exec_out"
+      ],
+      "to": [
+        "n6",
+        "exec_in"
+      ]
+    },
+    {
+      "from": [
+        "n5",
+        "yes"
+      ],
+      "to": [
+        "n6",
+        "condition"
+      ]
+    },
+    {
+      "from": [
+        "n6",
+        "then"
+      ],
+      "to": [
+        "n7",
+        "exec_in"
+      ]
+    },
+    {
+      "from": [
+        "n5",
+        "cancelled"
+      ],
+      "to": [
+        "n8",
+        "exec_in"
+      ]
+    },
+    {
+      "from": [
+        "n2",
+        "list"
+      ],
+      "to": [
+        "n9",
+        "list"
+      ]
+    },
+    {
+      "from": [
+        "n3",
+        "completed"
+      ],
+      "to": [
+        "n12",
+        "exec_in"
+      ]
+    },
+    {
+      "from": [
+        "n11",
+        "value"
+      ],
+      "to": [
+        "n10",
+        "a"
+      ]
+    },
+    {
+      "from": [
+        "n9",
+        "length"
+      ],
+      "to": [
+        "n10",
+        "b"
+      ]
+    },
+    {
+      "from": [
+        "n10",
+        "text"
+      ],
+      "to": [
+        "n12",
+        "value"
+      ]
+    }
+  ],
+  "capabilities": [],
+  "approved_capabilities": []
+}

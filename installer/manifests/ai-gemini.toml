@@ -1,0 +1,36 @@
+id = "ai-gemini"
+schema = 1
+order = 60
+group = "build"
+presets = ["full"]
+name = { ru = "ИИ: Gemini", en = "AI: Gemini" }
+desc = { ru = "Перевод списка изменений и узел Gemini в Commands. Нужен свой ключ.", en = "Changelog translation and the Gemini node in Commands. Needs your own key." }
+notes = { ru = "Без ключа модуль просто не работает. Прокси по умолчанию не используется.", en = "Without a key the module simply does nothing. No proxy is used by default." }
+requires = ["core"]
+user_files = ["~/.config/serpantinum/secrets/gemini_key"]
+estimate = { download_mib = 0, disk_mib = 0, install_s = 1 }
+
+[[config]]
+key = "ai.gemini_key"
+kind = "secret"
+skippable = true
+store = "secrets/gemini_key"
+validate = "^AIza[0-9A-Za-z_-]{20,}$"
+label = { ru = "Ключ Gemini API", en = "Gemini API key" }
+help = { ru = "Создаётся в Google AI Studio. Хранится только на этом компьютере.", en = "Created in Google AI Studio. Stored only on this computer." }
+
+[[config]]
+key = "ai.proxy"
+kind = "text"
+default = ""
+skippable = true
+store = "settings:ai.proxy"
+validate = "^$|^(socks5h?|http|https)://[^\\s]+$"
+label = { ru = "Прокси для Gemini (пусто = без прокси)", en = "Proxy for Gemini (empty = none)" }
+
+[[steps]]
+id = "ai-gemini.secret"
+kind = "secret"
+title = { ru = "ИИ: сохранение ключа Gemini", en = "AI: store the Gemini key" }
+args = { key = "ai.gemini_key" }
+estimate_s = 1

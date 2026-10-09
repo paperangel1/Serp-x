@@ -213,8 +213,8 @@ Item {
                             iconFontSize: rootObj.s(16)
                             fillDuration: 1200
 
-                            onTriggered: {
-                                let cmd = "if command -v kitty >/dev/null 2>&1; then kitty --hold bash -c 'eval \"$(curl -fsSL https://raw.githubusercontent.com/ilyamiro/serpantinum/master/install/install.sh)\"'; else ${TERM:-xterm} -hold -e bash -c 'eval \"$(curl -fsSL https://raw.githubusercontent.com/ilyamiro/serpantinum/master/install/install.sh)\"'; fi";
+                            onTriggered: { if (rootObj.isGuidePopup) { rootObj.gotoTab("updates"); return; } // serp-x hook: outside the guide run our updater
+                                let cmd = "X=\"$HOME/.local/bin/serpantinum-x\"; [ -x \"$X\" ] || X=\"$HOME/.local/share/serpantinum/bin/serpantinum-x\"; if command -v kitty >/dev/null 2>&1; then kitty --hold \"$X\" update run --foreground; else ${TERM:-xterm} -hold -e \"$X\" update run --foreground; fi"; // serp-x hook: our updater instead of curl|eval
                                 Quickshell.execDetached(["bash", "-c", cmd]);
                                 Quickshell.execDetached(["bash", rootObj.appPaths.serpantinumDir + "/scripts/qs_manager.sh", "close"]);
                             }

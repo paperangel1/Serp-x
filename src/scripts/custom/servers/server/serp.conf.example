@@ -1,0 +1,6 @@
+# /etc/serpantinum/serp.conf — optional overrides read by serp-root before every command.
+# Remnawave node container name and its compose directory (used by act-restart-node / act-update-container).
+NODE_CONTAINER=remnanode
+NODE_DIR=/opt/remnanode
+# Seconds before a command is killed.
+SERP_TIMEOUT=60

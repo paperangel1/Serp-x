@@ -1,0 +1,352 @@
+{
+  "format": 1,
+  "id": "functions-demo",
+  "name": "Свои узлы: пример",
+  "description": "Вызывает две функции из библиотеки: «Приветствие» и «Среднее».",
+  "enabled": true,
+  "policy": {},
+  "variables": [],
+  "nodes": [
+    {
+      "id": "e",
+      "type": "event.manual@1",
+      "pos": [
+        40,
+        60
+      ],
+      "props": {}
+    },
+    {
+      "id": "c1",
+      "type": "fn.greet@1",
+      "pos": [
+        340,
+        60
+      ],
+      "props": {
+        "name": "Serpantinum"
+      }
+    },
+    {
+      "id": "c2",
+      "type": "fn.average@1",
+      "pos": [
+        340,
+        260
+      ],
+      "props": {
+        "x": 3,
+        "y": 8
+      }
+    },
+    {
+      "id": "t",
+      "type": "convert.to_text@1",
+      "pos": [
+        700,
+        260
+      ],
+      "props": {}
+    },
+    {
+      "id": "n",
+      "type": "action.notify@1",
+      "pos": [
+        900,
+        60
+      ],
+      "props": {
+        "title": "Среднее 3 и 8"
+      }
+    }
+  ],
+  "wires": [
+    {
+      "from": [
+        "e",
+        "exec"
+      ],
+      "to": [
+        "c1",
+        "exec_in"
+      ]
+    },
+    {
+      "from": [
+        "c1",
+        "exec_out"
+      ],
+      "to": [
+        "n",
+        "exec_in"
+      ]
+    },
+    {
+      "from": [
+        "c2",
+        "avg"
+      ],
+      "to": [
+        "t",
+        "value"
+      ]
+    },
+    {
+      "from": [
+        "t",
+        "text"
+      ],
+      "to": [
+        "n",
+        "body"
+      ]
+    }
+  ],
+  "comments": [
+    {
+      "id": "c1",
+      "x": 330,
+      "y": -20,
+      "w": 300,
+      "h": 70,
+      "title": "Функция",
+      "text": "Узел «Приветствие» — свёрнутая группа из библиотеки функций.",
+      "color": "#89b4fa"
+    }
+  ],
+  "functions": [
+    {
+      "format": 1,
+      "kind": "function",
+      "id": "greet",
+      "name": "Приветствие",
+      "description": "Показывает приветствие и возвращает его текст.",
+      "icon": "hand",
+      "exec": true,
+      "inputs": [
+        {
+          "id": "name",
+          "type": "text",
+          "label": "Имя",
+          "default": "мир"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "msg",
+          "type": "text",
+          "label": "Сообщение"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "fn_in",
+          "type": "function.input@1",
+          "pos": [
+            40,
+            80
+          ],
+          "props": {}
+        },
+        {
+          "id": "fn_out",
+          "type": "function.output@1",
+          "pos": [
+            760,
+            80
+          ],
+          "props": {}
+        },
+        {
+          "id": "t",
+          "type": "data.format@1",
+          "pos": [
+            300,
+            200
+          ],
+          "props": {
+            "template": "Привет, {a}!"
+          }
+        },
+        {
+          "id": "n",
+          "type": "action.notify@1",
+          "pos": [
+            420,
+            60
+          ],
+          "props": {}
+        }
+      ],
+      "wires": [
+        {
+          "from": [
+            "fn_in",
+            "exec"
+          ],
+          "to": [
+            "n",
+            "exec_in"
+          ]
+        },
+        {
+          "from": [
+            "fn_in",
+            "name"
+          ],
+          "to": [
+            "t",
+            "a"
+          ]
+        },
+        {
+          "from": [
+            "t",
+            "text"
+          ],
+          "to": [
+            "n",
+            "title"
+          ]
+        },
+        {
+          "from": [
+            "n",
+            "exec_out"
+          ],
+          "to": [
+            "fn_out",
+            "exec_in"
+          ]
+        },
+        {
+          "from": [
+            "t",
+            "text"
+          ],
+          "to": [
+            "fn_out",
+            "msg"
+          ]
+        }
+      ],
+      "variables": [],
+      "comments": []
+    },
+    {
+      "format": 1,
+      "kind": "function",
+      "id": "average",
+      "name": "Среднее",
+      "description": "Среднее арифметическое двух чисел.",
+      "icon": "calculator",
+      "exec": false,
+      "inputs": [
+        {
+          "id": "x",
+          "type": "float",
+          "label": "x"
+        },
+        {
+          "id": "y",
+          "type": "float",
+          "label": "y"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "avg",
+          "type": "float",
+          "label": "avg"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "fn_in",
+          "type": "function.input@1",
+          "pos": [
+            40,
+            60
+          ],
+          "props": {}
+        },
+        {
+          "id": "fn_out",
+          "type": "function.output@1",
+          "pos": [
+            780,
+            60
+          ],
+          "props": {}
+        },
+        {
+          "id": "s",
+          "type": "data.math@1",
+          "pos": [
+            280,
+            40
+          ],
+          "props": {
+            "op": "+"
+          }
+        },
+        {
+          "id": "d",
+          "type": "data.math@1",
+          "pos": [
+            520,
+            40
+          ],
+          "props": {
+            "op": "/",
+            "b": 2
+          }
+        }
+      ],
+      "wires": [
+        {
+          "from": [
+            "fn_in",
+            "x"
+          ],
+          "to": [
+            "s",
+            "a"
+          ]
+        },
+        {
+          "from": [
+            "fn_in",
+            "y"
+          ],
+          "to": [
+            "s",
+            "b"
+          ]
+        },
+        {
+          "from": [
+            "s",
+            "result"
+          ],
+          "to": [
+            "d",
+            "a"
+          ]
+        },
+        {
+          "from": [
+            "d",
+            "result"
+          ],
+          "to": [
+            "fn_out",
+            "avg"
+          ]
+        }
+      ],
+      "variables": [],
+      "comments": []
+    }
+  ]
+}

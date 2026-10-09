@@ -148,11 +148,21 @@ check "attacker signature: bad-signature message" $r "$OUT"
 run --version nonexistent
 [ $RC -ne 0 ]; check "unknown version: stops" $? "$OUT"
 
-# placeholder fingerprint is refused
+# the pinned default fingerprint is the real release key: a release signed by another key is refused
 OUT=$(env -u SERP_GPG_FINGERPRINT "$BOOT" --version v1 2>&1); RC=$?
-[ $RC -ne 0 ]; check "placeholder fingerprint: refuses to run" $? "$OUT"
-case $OUT in *"not configured"*) r=0 ;; *) r=1 ;; esac
-check "placeholder fingerprint: clear message" $r "$OUT"
+[ $RC -ne 0 ]; check "pinned default fingerprint: foreign key refused" $? "$OUT"
+case $OUT in *"FINGERPRINT MISMATCH"*) r=0 ;; *) r=1 ;; esac
+check "pinned default fingerprint: clear message" $r "$OUT"
+grep -q '^SERP_KEY_FPR_DEFAULT="[0-9A-F]\{40\}"$' "$BOOT" && ! grep -q '"0\{40\}"' "$BOOT"
+check "bootstrap.sh pins a real (non-zero) fingerprint" $?
+fp=$(gpg --batch --show-keys --with-colons "$here/../release-key.asc" 2>/dev/null | awk -F: '$1=="fpr"{print $10; exit}')
+grep -q "SERP_KEY_FPR_DEFAULT=\"$fp\"" "$BOOT"; check "pinned fingerprint matches installer/release-key.asc" $?
+OUT=$(env -u SERP_RELEASE_BASE_URL "$BOOT" --bootstrap-dry-run --version v2.2.5-s1 2>&1); RC=$?
+case $OUT in *"https://github.com/paperangel1/Serp-x/releases/download/v2.2.5-s1/{SHA256SUMS"*) r=0 ;; *) r=1 ;; esac
+check "default URL: GitHub releases/download/<tag>" $r "$OUT"
+OUT=$(env -u SERP_RELEASE_BASE_URL "$BOOT" --bootstrap-dry-run 2>&1)
+case $OUT in *"https://github.com/paperangel1/Serp-x/releases/latest/download/{SHA256SUMS"*) r=0 ;; *) r=1 ;; esac
+check "default URL: GitHub releases/latest/download" $r "$OUT"
 
 # plain http to a non-local host is refused
 OUT=$(SERP_RELEASE_BASE_URL=http://example.invalid "$BOOT" --version v1 2>&1); RC=$?

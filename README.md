@@ -1,3 +1,6 @@
+> **serp-x** - this repository is a modified build of Serpantinum (installer, signed releases, extra modules).
+> One-line install and details: [README-serp-x.md](README-serp-x.md). The text below is upstream's README.
+
 <div align="center">
   <a href="https://ko-fi.com/ilyamiro">
     <img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="ko-fi" />

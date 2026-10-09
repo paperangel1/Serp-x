@@ -17,8 +17,10 @@
 #   repair-hooks             re-apply the GuidePopup/AboutTab hook by anchors (working tree)
 #
 # Channels (~/.config/serpantinum-x/update.toml: channel, fork_dir, base_url, pubkey_fpr):
-#   release (default for fresh installs)  numbered releases from base_url; no git checkout needed.
-#                                         Without base_url every command reports "not-configured".
+#   release (default for fresh installs)  numbered, gpg-signed releases; no git checkout needed.
+#                                         base_url defaults to the GitHub releases of paperangel1/Serp-x,
+#                                         pubkey_fpr to the pinned release key (installer/release-key.asc).
+#                                         Without a valid pubkey_fpr every command reports "not-configured".
 #   dev     (the developer's own machine) the git flow described above, from the checkout in
 #                                         fork_dir / SERPANTINUM_FORK_DIR. "git" is accepted as an alias.
 #
@@ -90,14 +92,15 @@ state_get() {
     awk -F= -v k="$1" '$1 == k { gsub(/"/, "", $2); print $2 }' "$VERSION_FILE" | head -1
 }
 
-state_rewrite() {   # state_rewrite VERSION UPSTREAM_COMMIT FORK_COMMIT
+state_rewrite() {   # state_rewrite VERSION UPSTREAM_COMMIT FORK_COMMIT [RELEASE]
     mkdir -p "$(dirname "$VERSION_FILE")"
     local tmp="$VERSION_FILE.tmp.$$"
     {
         printf 'SERPANTINUM_VERSION="%s"\n' "$1"
         printf 'SERPANTINUM_COMMIT="%s"\n' "$2"
         printf 'SERPANTINUM_FORK_COMMIT="%s"\n' "$3"
-        [ -f "$VERSION_FILE" ] && grep -vE '^(SERPANTINUM_VERSION|SERPANTINUM_COMMIT|SERPANTINUM_FORK_COMMIT|TELEMETRY_ID|ENABLE_TELEMETRY)=' "$VERSION_FILE"
+        [ -n "${4:-}" ] && printf 'SERPANTINUM_RELEASE="%s"\n' "$4"
+        [ -f "$VERSION_FILE" ] && grep -vE '^(SERPANTINUM_VERSION|SERPANTINUM_COMMIT|SERPANTINUM_FORK_COMMIT|SERPANTINUM_RELEASE|TELEMETRY_ID|ENABLE_TELEMETRY)=' "$VERSION_FILE"
         true   # grep -v exits 1 when it keeps no line; that must not abort the rewrite
     } > "$tmp" 2>/dev/null && mv -f "$tmp" "$VERSION_FILE"
 }
@@ -746,11 +749,12 @@ rollback() {
     restore_from "$BACKUP_DIR"
     restart_shell
     wait_for_healthy || true
-    g reset --hard "$FORK_PRE_COMMIT" >/dev/null 2>&1
+    [ -n "$FORK_PRE_COMMIT" ] && g reset --hard "$FORK_PRE_COMMIT" >/dev/null 2>&1
     notify-send -a "Serpantinum" -i dialog-warning "Обновление не удалось, выполнен откат" "Ничего не потеряно." 2>/dev/null
 }
 
 run_worker() {
+    if [ "$CHANNEL" != dev ]; then run_worker_release; return $?; fi
     FROM_VERSION="$(state_get SERPANTINUM_VERSION)"
     status_write running preflight "" ""
     log_line "run_worker: installed=$FROM_VERSION/$(state_get SERPANTINUM_COMMIT) fork=$FORK_DIR branch=$BRANCH"
@@ -916,27 +920,279 @@ cmd_ack() {
     jq -c '.ack = true' "$STATUS_FILE" > "$tmp" 2>/dev/null && mv -f "$tmp" "$STATUS_FILE"
 }
 
-# release channel: numbered releases from base_url. Not wired up yet (installer stage 2+);
-# without base_url the honest answer is "not-configured".
-cmd_release() {
-    local sub="$1" st=not-configured code=no_base_url
-    if [ -n "$BASE_URL" ]; then st=error; code=release_channel_unsupported; fi
-    case "$sub" in
-        check) jq -cn --arg s "$st" --arg c "$code" --arg ch "$CHANNEL" --argjson ts "$(date +%s)" \
-                   '{status:$s,error:$c,channel:$ch,hasUpdate:false,updateLabel:"",ts:$ts}' ;;
-        run|bootstrap) status_write "$st" preflight "$code" ""; jq -cn --arg s "$st" --arg c "$code" '{status:$s,code:$c}'; return 1 ;;
+# ---------------------------------------------------------------------------------------
+# release channel: numbered, gpg-signed releases (GitHub releases of this repo by default).
+#   resolve latest tag -> SHA256SUMS + SHA256SUMS.sig + key -> gpg against the PINNED fingerprint
+#   -> sha256 of the payload -> refuse if not newer -> the same pipeline as dev:
+#   validate -> backup -> mirror -> restart -> health check -> auto-rollback.
+# base_url forms: https://github.com/OWNER/REPO/releases   (API: releases/latest, files: releases/download/TAG/F)
+#                 anything else: <base>/latest.txt holds the tag, files live in <base>/<tag>/F
+# ---------------------------------------------------------------------------------------
+
+RELEASE_DEFAULT_BASE="https://github.com/paperangel1/Serp-x/releases"
+RELEASE_KEY_FPR_DEFAULT="8F84E4915C98F28DFA1E7F484E2045971CEF3BD0"   # public key: installer/release-key.asc
+RELEASE_KEY_FILE="serp-x-release.asc"
+REL_BASE="${BASE_URL:-$RELEASE_DEFAULT_BASE}"
+REL_BASE="${REL_BASE%/}"
+REL_FPR="${SERPANTINUM_UPDATE_PUBKEY_FPR:-$(x_conf_get pubkey_fpr)}"
+REL_FPR="${REL_FPR:-$RELEASE_KEY_FPR_DEFAULT}"
+REL_FPR="${REL_FPR//[[:space:]]/}"; REL_FPR="${REL_FPR^^}"
+
+REL_TAG=""; REL_ERR=""; REL_DL=""
+
+rel_fetch() {   # rel_fetch URL OUTFILE
+    case "$1" in
+        https://*|http://127.0.0.1[:/]*|http://localhost[:/]*) ;;
+        *) return 2 ;;
+    esac
+    curl -fsSL --proto '=https,http' --max-time 90 --retry 1 -o "$2" "$1" 2>>"$LOG_FILE"
+}
+
+ver_norm() { local v="${1#v}"; printf '%s' "$v"; }
+ver_gt() {   # ver_gt A B : A is strictly newer than B
+    local a b; a="$(ver_norm "$1")"; b="$(ver_norm "$2")"
+    [ "$a" != "$b" ] && [ "$(printf '%s\n%s\n' "$a" "$b" | sort -V | tail -1)" = "$a" ]
+}
+installed_release() {
+    local r; r="$(state_get SERPANTINUM_RELEASE)"
+    [ -n "$r" ] || r="$(state_get SERPANTINUM_VERSION)"
+    printf '%s' "$r"
+}
+
+# Sets REL_TAG and REL_DL (directory URL of the release files) or REL_ERR.
+release_resolve() {
+    REL_TAG=""; REL_ERR=""; REL_DL=""
+    [[ $REL_FPR =~ ^[0-9A-F]{40}$ ]] || { REL_ERR="no_pubkey"; return 1; }
+    local tmp meta api
+    tmp="$(mktemp)" || { REL_ERR="tmp_failed"; return 1; }
+    if [[ $REL_BASE =~ ^(https?://[^/]+)/([^/]+)/([^/]+)/releases$ ]]; then
+        api="${X_UPDATE_API_URL:-}"
+        [ -n "$api" ] || { [ "${BASH_REMATCH[1]}" = "https://github.com" ] && api="https://api.github.com/repos/${BASH_REMATCH[2]}/${BASH_REMATCH[3]}/releases/latest"; }
+        [ -n "$api" ] || { rm -f "$tmp"; REL_ERR="bad_base_url"; return 1; }
+        rel_fetch "$api" "$tmp" || { rm -f "$tmp"; REL_ERR="release_unreachable"; return 1; }
+        REL_TAG="$(jq -r 'select((.draft // false) == false and (.prerelease // false) == false) | .tag_name // empty' "$tmp" 2>/dev/null | head -1)"
+        REL_DL="$REL_BASE/download/$REL_TAG"
+    else
+        rel_fetch "$REL_BASE/latest.txt" "$tmp" || { rm -f "$tmp"; REL_ERR="release_unreachable"; return 1; }
+        REL_TAG="$(head -1 "$tmp" | tr -d '[:space:]')"
+        REL_DL="$REL_BASE/$REL_TAG"
+    fi
+    rm -f "$tmp"
+    [[ $REL_TAG =~ ^v?[0-9][0-9A-Za-z._+-]*$ ]] || { REL_TAG=""; REL_ERR="bad_release_meta"; return 1; }
+    return 0
+}
+
+cmd_check_release() {
+    local err="" installed target has_update=false label=""
+    installed="$(installed_release)"
+    release_resolve || err="$REL_ERR"
+    target="$REL_TAG"
+    if [ -z "$err" ] && ver_gt "$target" "$installed"; then has_update=true; label="$(ver_norm "$target")"; fi
+    local st=ok; [ -n "$err" ] && st=error; [ "$err" = no_pubkey ] && st=not-configured
+    jq -cn --arg status "$st" --arg error "$err" --arg ch "$CHANNEL" --arg base "$REL_BASE" \
+        --arg iv "$installed" --arg tv "$target" --argjson hu "$has_update" --arg label "$label" \
+        --argjson ts "$(date +%s)" \
+        '{status:$status,error:$error,channel:$ch,baseUrl:$base,forkDir:"",branch:"",branchOk:true,clean:true,drift:false,
+          installedVersion:$iv,installedCommit:"",headVersion:$iv,targetVersion:$tv,targetCommit:"",
+          commitsAhead:0,hasUpdate:$hu,updateLabel:$label,
+          dryRun:{clean:true,files:[],hookOnly:false},ts:$ts}'
+}
+
+# release_verify DIR : fills DIR with SHA256SUMS(+.sig, key) and the payload; checks signature and sha256.
+# Sets REL_TARBALL. Error code in REL_ERR.
+release_verify() {
+    local d="$1" have status bin
+    REL_TARBALL=""
+    local f
+    for f in SHA256SUMS SHA256SUMS.sig "$RELEASE_KEY_FILE"; do
+        rel_fetch "$REL_DL/$f" "$d/$f" || { REL_ERR="download_failed"; log_line "download failed: $REL_DL/$f"; return 1; }
+    done
+    mkdir -m 700 "$d/gnupg" || { REL_ERR="tmp_failed"; return 1; }
+    export GNUPGHOME="$d/gnupg"
+    if ! gpg --batch --quiet --import "$d/$RELEASE_KEY_FILE" >/dev/null 2>&1; then
+        REL_ERR="key_import_failed"; return 1
+    fi
+    have="$(gpg --batch --with-colons --fingerprint 2>/dev/null | awk -F: '$1=="pub"{p=1;next} p&&$1=="fpr"{print $10; p=0}')"
+    if ! printf '%s\n' "$have" | grep -qx "$REL_FPR"; then REL_ERR="key_mismatch"; return 1; fi
+    status="$(gpg --batch --status-fd 1 --verify "$d/SHA256SUMS.sig" "$d/SHA256SUMS" 2>/dev/null || true)"
+    if ! printf '%s\n' "$status" | awk -v f="$REL_FPR" '$2=="VALIDSIG" && toupper($12)==f {ok=1} END{exit !ok}'; then
+        REL_ERR="bad_signature"; return 1
+    fi
+    REL_TARBALL="$(awk '$2 ~ /^serp-x-[A-Za-z0-9._+-]+\.tar\.zst$/ {print $2; exit}' "$d/SHA256SUMS")"
+    [ -n "$REL_TARBALL" ] || { REL_ERR="bad_release_meta"; return 1; }
+    rel_fetch "$REL_DL/$REL_TARBALL" "$d/$REL_TARBALL" || { REL_ERR="download_failed"; return 1; }
+    if ! (cd "$d" && grep -E "  $REL_TARBALL\$" SHA256SUMS | sha256sum -c --quiet - >/dev/null 2>&1); then
+        REL_ERR="sha256_mismatch"; return 1
+    fi
+    gpgconf --kill all >/dev/null 2>&1 || true
+    unset GNUPGHOME
+    return 0
+}
+
+# release_extract TARBALL DESTDIR : refuses absolute paths, "..", and links leaving the tree.
+release_extract() {
+    local tb="$1" dest="$2"
+    zstd -dc "$tb" 2>/dev/null | python3 -I -c '
+import sys, tarfile, posixpath
+t = tarfile.open(fileobj=sys.stdin.buffer, mode="r|")
+for m in t:
+    n = posixpath.normpath(m.name)
+    if n.startswith("/") or n == ".." or n.startswith("../"):
+        sys.exit(1)
+    if m.isdev() or m.isfifo():
+        sys.exit(1)
+    if m.issym() or m.islnk():
+        base = posixpath.dirname(n) if m.issym() else ""
+        tgt = posixpath.normpath(posixpath.join(base, m.linkname))
+        if m.linkname.startswith("/") or tgt == ".." or tgt.startswith("../"):
+            sys.exit(1)
+' || return 1
+    mkdir -p "$dest" && zstd -dc "$tb" 2>/dev/null | tar -xf - -C "$dest" --no-same-owner --no-same-permissions 2>>"$LOG_FILE"
+}
+
+# file_syntax_ok FILE REL : 0 = fine (or of a kind that is not checked)
+file_syntax_ok() {
+    case "$2" in
+        *.json) jq empty "$1" >/dev/null 2>&1 ;;
+        *.sh)   bash -n "$1" 2>/dev/null ;;
+        *.py)   python3 -I -c "import ast,sys; ast.parse(open(sys.argv[1]).read())" "$1" >/dev/null 2>&1 ;;
+        *qmldir) [ -s "$1" ] ;;
+        *) return 0 ;;
     esac
 }
 
-case "${1:-}" in
-    check|run|bootstrap) if [ "$CHANNEL" != dev ]; then cmd_release "$1"; exit $?; fi ;;
-esac
+# A file that is broken in the new release fails the update, unless the installed copy of the same
+# file is broken as well (a defect that already ships with upstream is not a reason to refuse).
+validate_release_tree() {   # validate_release_tree DIR
+    local d="$1" f rel
+    VALIDATION_ERRORS=""
+    [ -f "$d/bin/serpantinum-x" ] && [ -f "$d/src/quickshell/Shell.qml" ] && [ -f "$d/version.txt" ] ||
+        { vfail "payload" "missing bin/serpantinum-x, src/quickshell/Shell.qml or version.txt"; return 1; }
+    while IFS= read -r -d '' f; do
+        rel="${f#"$d"/}"
+        file_syntax_ok "$f" "$rel" && continue
+        if [ -f "$INSTALL_DIR/$rel" ] && ! file_syntax_ok "$INSTALL_DIR/$rel" "$rel"; then
+            log_line "validation: $rel is broken in the release and in the install (kept as is)"
+            continue
+        fi
+        vfail "$rel" "syntax error"
+    done < <(find "$d/bin" "$d/src" -type f -print0 2>/dev/null)
+    [ -z "$VALIDATION_ERRORS" ]
+}
+
+REL_WORK=""
+run_worker_release() {
+    local rc
+    run_worker_release_inner; rc=$?
+    gpgconf --kill all >/dev/null 2>&1 || true
+    unset GNUPGHOME
+    [ -n "$REL_WORK" ] && rm -rf "$REL_WORK"
+    return $rc
+}
+
+run_worker_release_inner() {
+    FROM_VERSION="$(installed_release)"
+    status_write running preflight "" ""
+    log_line "run_worker(release): installed=$FROM_VERSION base=$REL_BASE"
+    local t
+    for t in curl gpg sha256sum tar zstd jq; do
+        command -v "$t" >/dev/null 2>&1 || { status_write error preflight "missing_tool" "$t"; log_line "preflight failed: missing $t"; return 1; }
+    done
+    [ -d "$INSTALL_DIR/bin" ] && [ -d "$INSTALL_DIR/src" ] || { status_write error preflight install_missing "$INSTALL_DIR"; return 1; }
+
+    status_write running fetching "" ""
+    if ! release_resolve; then
+        status_write "$([ "$REL_ERR" = no_pubkey ] && echo not-configured || echo error)" fetching "$REL_ERR" ""
+        log_line "release resolve failed: $REL_ERR"
+        return 1
+    fi
+    TO_VERSION="$(ver_norm "$REL_TAG")"; TO_LABEL="$TO_VERSION"
+    if ! ver_gt "$REL_TAG" "$FROM_VERSION"; then
+        if [ "$(ver_norm "$REL_TAG")" = "$(ver_norm "$FROM_VERSION")" ]; then
+            status_write ok done "" "already up to date"
+            log_line "already up to date ($FROM_VERSION)"
+            printf '%s\n' "$(jq -cn '{status:"ok",message:"already up to date"}')"
+            return 0
+        fi
+        status_write error fetching not_newer "$REL_TAG <= $FROM_VERSION"
+        log_line "release $REL_TAG is not newer than $FROM_VERSION; refused"
+        return 1
+    fi
+
+    local work stage
+    work="$(mktemp -d "$STATE_DIR/dl.XXXXXX")" || { status_write error fetching tmp_failed ""; return 1; }
+    chmod 700 "$work"; REL_WORK="$work"
+    status_write running dryrun "" ""   # download + signature + checksum
+    if ! release_verify "$work"; then
+        status_write error dryrun "$REL_ERR" "$REL_TAG"
+        log_line "release verification failed: $REL_ERR ($REL_TAG); nothing installed"
+        return 1
+    fi
+    log_line "release $REL_TAG: signature and sha256 OK"
+
+    stage="$work/stage"
+    if ! release_extract "$work/$REL_TARBALL" "$stage"; then
+        status_write error merging bad_archive ""
+        log_line "archive rejected (unsafe paths or unreadable)"
+        return 1
+    fi
+
+    status_write running validating "" ""
+    if ! validate_release_tree "$stage"; then
+        status_write error validating validation_failed "$VALIDATION_ERRORS"
+        log_line "validation failed: $VALIDATION_ERRORS"
+        return 1
+    fi
+    local tag_ver; tag_ver="$(tr -d '[:space:]' < "$stage/version.txt")"
+
+    FORK_PRE_COMMIT=""
+    status_write running backup "" ""
+    if ! make_backup; then status_write error backup backup_failed ""; return 1; fi
+
+    status_write running syncing "" ""
+    if ! mirror_dir "$stage/bin" "$INSTALL_DIR/bin" || ! mirror_dir "$stage/src" "$INSTALL_DIR/src"; then
+        rollback
+        status_write error syncing sync_failed ""
+        return 1
+    fi
+    fix_perms
+
+    status_write running state "" ""
+    # SERPANTINUM_VERSION = upstream version of the payload, SERPANTINUM_RELEASE = our numbered release
+    state_rewrite "${tag_ver:-$TO_VERSION}" "$(state_get SERPANTINUM_COMMIT)" "release-$TO_VERSION" "$TO_VERSION"
+    python3 "$INSTALL_DIR/src/scripts/custom/x_migrate.py" >>"$LOG_FILE" 2>&1 || log_line "migrate failed (ignored)"
+
+    status_write running restarting "" ""
+    restart_shell
+    status_write running healthcheck "" ""
+    if ! wait_for_healthy; then
+        log_line "health check failed: $HEALTH_ERR -- rolling back"
+        rollback
+        status_write error healthcheck health_failed "$HEALTH_ERR"
+        return 1
+    fi
+
+    # bring modules in line with the manifests of the new release (best effort, never fatal)
+    local inst
+    inst="$(command -v serp-installer 2>/dev/null || true)"; [ -n "$inst" ] || inst="$HOME/.local/bin/serp-installer"
+    if [ -x "$inst" ] && [ -z "${X_UPDATE_NO_RECONCILE:-}" ]; then
+        timeout 900 "$inst" reconcile --plain --payload "$stage" >>"$LOG_FILE" 2>&1 || log_line "reconcile failed (ignored)"
+    fi
+
+    prune_backups
+    status_write ok done "" ""
+    log_line "update complete: $FROM_VERSION -> $TO_LABEL"
+    notify-send -a "Serpantinum" -i software-update-available "Serpantinum обновлён" "$FROM_VERSION → $TO_LABEL" 2>/dev/null
+    printf '%s\n' "$(jq -cn --arg f "$FROM_VERSION" --arg t "$TO_LABEL" '{status:"ok",from:$f,to:$t}')"
+    return 0
+}
+
 # repair-hooks edits a working tree: with no checkout use the install (same bin/ + src/ layout)
 [ "${1:-}" = repair-hooks ] && [ -z "$FORK_DIR" ] && FORK_DIR="$INSTALL_DIR"
 
 case "${1:-}" in
     channel)       echo "$CHANNEL" ;;
-    check)         cmd_check ;;
+    check)         if [ "$CHANNEL" = dev ]; then cmd_check; else cmd_check_release; fi ;;
     run)           shift; cmd_run "$@" ;;
     bootstrap)     ALLOW_DRIFT=true; X_UPDATE_VERBOSE=1; shift; cmd_run --foreground --allow-drift "$@" ;;
     _worker)

@@ -11,6 +11,7 @@ Files of the upstream project that this build changes (everything else is added 
   src/quickshell/guide/AboutTab.qml                 update button leads to the Updates tab (serp-x hook)
   src/quickshell/screenshot/ScreenshotOverlay.qml   XOcrButton (serp-x hook)
   CHANGELOG-serp-x.md                                 changes of this build (2.2.4-sN); upstream CHANGELOG.md is not modified
+  README.md                                        +3 lines at the top: pointer to README-serp-x.md (the README of this build)
   src/scripts/updater.py                            +4 lines: with serpantinum-x present the upstream update check is skipped (serp-x hook)
 
   install/install.sh                                telemetry calls removed

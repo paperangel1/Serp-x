@@ -3,6 +3,9 @@ merging a new upstream version never conflicts here.
 
 ### 2.2.5-s1
 
+- feat(release): signed numbered releases on GitHub; `release` update channel (GPG against a pinned key, sha256, refuses downgrades, backup and automatic rollback), one-line install via bootstrap.sh
+- feat(release): installer/scripts/release.sh builds, signs and prints the `gh release create` command
+- docs: README-serp-x.md (install, modules, credits); upstream README.md only gets a 3-line pointer
 - merge: upstream 2.2.5 (ScreenSaver idle inhibit for games, lsp-plugins-lv2 for the equalizer)
 - fix(vpn): repeated or concurrent connect/disconnect/toggle clicks are dropped, the toggle has an explicit intent (no more double toggle)
 - feat(installer): serp-installer is finished and tested in a QEMU VM on 9 scenarios (fresh install, repair, modules, uninstall, backup/restore, install over upstream, errors)

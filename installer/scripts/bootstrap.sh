@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # serp-x bootstrap (published as install.sh):
-#   curl -fsSL <base>/latest/install.sh | bash
-#   curl -fsSL <base>/latest/install.sh | bash -s -- --version v2.2.4-s3 [installer args...]
+#   curl -fsSL https://raw.githubusercontent.com/paperangel1/Serp-x/main/installer/scripts/bootstrap.sh | bash
+#   ... | bash -s -- --version v2.2.5-s1 [installer args...]
 # Downloads the static serp-installer + payload, verifies the gpg signature of
 # SHA256SUMS against the fingerprint embedded below, checks sha256, then runs it.
 # Any mismatch stops the run (no fallback). Emergency path: --from-source.
@@ -15,10 +15,13 @@
 # Env: SERP_RELEASE_BASE_URL, SERP_SOURCE_URL, SERP_GPG_FINGERPRINT
 set -euo pipefail
 
-# Release signing key (primary key fingerprint). Placeholder until a key exists.
-SERP_KEY_FPR_DEFAULT="0000000000000000000000000000000000000000"
-BASE_URL=${SERP_RELEASE_BASE_URL:-https://releases.invalid/serp-x}
-SOURCE_URL=${SERP_SOURCE_URL:-https://source.invalid/serp-x.git}
+# Release signing key (primary key fingerprint; public key: installer/release-key.asc in the repo).
+SERP_KEY_FPR_DEFAULT="8F84E4915C98F28DFA1E7F484E2045971CEF3BD0"
+# Default: GitHub releases of this repo (layout: releases/latest/download/F, releases/download/TAG/F).
+# SERP_RELEASE_BASE_URL (tests, mirrors) uses the layout <base>/<version>/F instead.
+GH_RELEASES=https://github.com/paperangel1/Serp-x/releases
+BASE_URL=${SERP_RELEASE_BASE_URL:-}
+SOURCE_URL=${SERP_SOURCE_URL:-https://github.com/paperangel1/Serp-x.git}
 KEY_FILE=serp-x-release.asc
 
 case ${LC_ALL:-${LC_MESSAGES:-${LANG:-}}} in ru*) L=ru ;; *) L=en ;; esac
@@ -95,12 +98,15 @@ fi
 for t in curl gpg sha256sum tar zstd; do
 	command -v "$t" >/dev/null || die "не найдено: $t" "missing tool: $t"
 done
-[ "$fpr" != "$SERP_KEY_FPR_DEFAULT" ] || die \
-	"ключ релизов ещё не настроен в этом скрипте; подпись проверить нечем (используй --from-source)" \
-	"release signing key is not configured in this script; cannot verify (use --from-source)"
 [[ $fpr =~ ^[0-9A-F]{40}$ ]] || die "некорректный отпечаток ключа" "malformed key fingerprint"
 
-url="${BASE_URL%/}/$version"
+if [ -n "$BASE_URL" ]; then
+	url="${BASE_URL%/}/$version"
+elif [ "$version" = latest ]; then
+	url="$GH_RELEASES/latest/download"
+else
+	url="$GH_RELEASES/download/$version"
+fi
 if [ $dry = 1 ]; then
 	echo "[dry-run] download $url/{SHA256SUMS,SHA256SUMS.sig,$KEY_FILE}"
 	echo "[dry-run] gpg --verify (fingerprint $fpr), sha256sum -c, extract payload"

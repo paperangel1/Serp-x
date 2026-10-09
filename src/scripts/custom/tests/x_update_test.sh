@@ -215,10 +215,13 @@ rm -f "$CONF"
 # explicit SERPANTINUM_FORK_DIR (the whole suite above) means channel dev
 check "channel: env fork dir -> dev" '[ "$(bash "$SCRIPT" channel)" = dev ]'
 check "channel: nothing configured -> release" '[ "$(nofork bash "$SCRIPT" channel)" = release ]'
-CK="$(nofork bash "$SCRIPT" check)"
-check "release without base_url: check says not-configured" '[ "$(jq -r .status <<< "$CK")" = not-configured ] && [ "$(jq -r .hasUpdate <<< "$CK")" = false ]'
-nofork bash "$SCRIPT" run --foreground > "$T/out.json" 2>/dev/null; RC=$?
-check "release without base_url: run refuses, status not-configured" '[ "$RC" = 1 ] && [ "$(st .status)" = not-configured ]'
+# the release channel itself is covered by x_update_release_test.sh; here only the "not configured" and "unreachable" answers
+CK="$(nofork env SERPANTINUM_UPDATE_PUBKEY_FPR=bogus bash "$SCRIPT" check)"
+check "release with an invalid pubkey_fpr: check says not-configured" '[ "$(jq -r .status <<< "$CK")" = not-configured ] && [ "$(jq -r .hasUpdate <<< "$CK")" = false ]'
+nofork env SERPANTINUM_UPDATE_PUBKEY_FPR=bogus bash "$SCRIPT" run --foreground > "$T/out.json" 2>/dev/null; RC=$?
+check "release with an invalid pubkey_fpr: run refuses, status not-configured" '[ "$RC" = 1 ] && [ "$(st .status)" = not-configured ]'
+CK="$(nofork env SERPANTINUM_UPDATE_BASE_URL=http://127.0.0.1:1 bash "$SCRIPT" check)"
+check "release, server unreachable: check reports an error, no update" '[ "$(jq -r .status <<< "$CK")" = error ] && [ "$(jq -r .hasUpdate <<< "$CK")" = false ]'
 mkdir -p "$(dirname "$CONF")"
 printf 'channel = "dev"  # developer machine\nfork_dir = "%s"\n' "$FORK" > "$CONF"
 check "update.toml channel=dev is honoured" '[ "$(nofork bash "$SCRIPT" channel)" = dev ]'
